@@ -1,0 +1,251 @@
+WOS CALCULATOR - BUILD PLAN
+
+PROJECT GOAL
+- Build a public, alliance-friendly Whiteout Survival calculator website.
+- Start with building upgrades and resource planning.
+- Keep architecture modular so chief gear/charm calculators can be added later.
+
+
+V1 SCOPE (BUILD THIS FIRST)
+- Buildings calculator (levels start below 24).
+- Current level -> target level cost calculation.
+- Current level + backpack -> highest reachable level calculation.
+- Construction speed and position buff fields.
+- Building prerequisite auto-fill (example: Furnace target auto-fills Embassy/Research requirements).
+- Custom resource chest support.
+- Multi-account profile support (stored locally in browser).
+- Language selector for multilingual alliance members.
+- Export/share profile snapshot for alliance planning.
+
+
+OUT OF SCOPE FOR V1 (V2+)
+- Direct account connection to Whiteout Survival (optional, likely no official API).
+- Chief gear calculator.
+- Chief charm calculator.
+
+
+RECOMMENDED FILE STRUCTURE
+- index.html
+- styles.css
+- script.js
+- data/buildings.json
+- data/prerequisites.json
+- data/locales/en.json
+- data/locales/es.json
+- data/locales/fr.json (or whichever languages your alliance needs)
+- pseudocode.txt
+
+
+DATA MODEL (JSON)
+1) buildings.json
+- Purpose: level-by-level upgrade costs and optional base construction times.
+- Shape:
+	{
+		"version": "1.0.0",
+		"buildings": {
+			"furnace": {
+				"displayNameKey": "building.furnace",
+				"levels": {
+					"1": { "wood": 1000, "meat": 800, "coal": 0, "iron": 0, "seconds": 60 },
+					"2": { ... }
+				}
+			},
+			"embassy": { ... }
+		}
+	}
+
+2) prerequisites.json
+- Purpose: dependency rules used by auto-fill.
+- Shape:
+	{
+		"furnace": {
+			"requires": [
+				{ "building": "embassy", "offset": -1 },
+				{ "building": "research_center", "offset": -1 }
+			]
+		}
+	}
+
+3) locales/*.json
+- Purpose: UI text translations.
+- Shape:
+	{
+		"app.title": "Whiteout Survival Calculator",
+		"label.currentLevel": "Current Level",
+		"label.targetLevel": "Target Level"
+	}
+
+
+UI SECTIONS
+1) Profile bar
+- Select profile
+- Create profile
+- Rename/Delete profile
+- Language selector
+
+2) Upgrade target panel
+- Building type dropdown
+- Current level input
+- Target level input
+- Toggle: include prerequisites
+
+3) Buff panel
+- Construction speed bonus (%)
+- Position buff bonus (%)
+- Future: global event buff (%), VIP (%), skins (%)
+
+4) Backpack panel
+- Resource inputs: wood, meat, coal, iron, etc.
+- Custom chest count input
+- Chest value input/options per chest type
+
+5) Results panel
+- Total resources required
+- Missing resources (deficits)
+- Surplus resources
+- Suggested chest allocation by resource
+- Estimated time after buffs
+- Highest reachable level with current resources
+
+6) Share panel
+- Export current profile snapshot to JSON file
+- Import profile snapshot from JSON file
+- Copy compact share string (optional)
+- Include timestamp and data version in export
+
+
+CORE CALCULATION LOGIC
+1) Validate inputs
+- currentLevel >= 1
+- targetLevel > currentLevel
+- all numeric inputs >= 0
+- selected building exists in data
+
+2) Sum required resources
+- For level = currentLevel + 1 to targetLevel:
+	add buildings[building].levels[level] resources to requiredTotals
+
+3) Apply prerequisites if enabled
+- Read prerequisites rules
+- For each required building:
+	auto-set dependency target level using offset logic
+	add dependency costs to total required costs
+
+4) Apply time buffs
+- effectiveSeconds = baseSeconds / (1 + (constructionBuff + positionBuff) / 100)
+
+5) Compare required vs backpack
+- deficit[resource] = max(required - owned, 0)
+- surplus[resource] = max(owned - required, 0)
+
+6) Chest allocation logic
+- Inputs:
+	chestCount and value options
+- Compute total chest resource capacity
+- Strategy for V1:
+	auto-allocate to largest deficits first
+- Output:
+	how many chests needed per resource
+	remaining deficits after chest use
+
+7) Highest reachable level mode
+- Start from currentLevel
+- Iteratively test next level requirements
+- Stop when total available resources cannot satisfy next level
+- Return max reachable level and limiting resource
+
+
+MULTI-ACCOUNT SUPPORT
+- Store profiles in localStorage as JSON.
+- Each profile includes:
+	name, selected language, backpack values, last building selection, last levels, buff settings.
+- Add import/export profile JSON for sharing between alliance members.
+
+
+EXPORT/SHARE FORMAT (V1)
+- Use a stable JSON schema so files stay compatible after updates.
+- Suggested top-level shape:
+	{
+		"schemaVersion": "1.0.0",
+		"exportedAt": "2026-03-21T12:34:56Z",
+		"appDataVersion": "1.0.0",
+		"profile": {
+			"name": "PlayerName",
+			"language": "en",
+			"building": "furnace",
+			"currentLevel": 27,
+			"targetLevel": 30,
+			"buffs": { "construction": 25, "position": 10 },
+			"resources": { "wood": 0, "meat": 0, "coal": 0, "iron": 0 },
+			"chests": { "customCount": 0, "customValue": 0 }
+		}
+	}
+- On import:
+	validate schemaVersion
+	validate numeric fields >= 0
+	fail gracefully with clear error if invalid
+
+
+ALLIANCE/SVS SUPPORT MODE (V1.1 TARGET)
+- Purpose: help leadership prioritize buffs for strongest battle impact.
+- Add "priority score" view per imported player profile.
+- Example score inputs:
+	upgrade readiness percent
+	time-to-target after buffs
+	resource deficit size
+- Output a sortable table:
+	Player | Target | Readiness % | Time Saved by Buff | Suggested Priority
+- This can be built after base export/import is working.
+
+
+MULTILINGUAL SUPPORT (I18N)
+- Use key-based text in HTML/JS.
+- Load locale JSON by selected language.
+- Default fallback language: en.
+- Persist selected language per profile.
+- Keep numeric formatting locale-aware where practical.
+
+
+OTHER IMPORTANT FEATURES TO ADD EARLY
+1) Data versioning
+- Include "version" in JSON data.
+- Show version in footer so users know data currency.
+
+2) Admin-friendly data updates
+- Keep game data in JSON only, not hardcoded JS.
+- This allows quick updates when game patches change costs.
+
+3) Validation and guardrails
+- Show clear messages when level data is missing.
+- Clamp impossible values and prevent negative numbers.
+
+4) Mobile-first usability
+- Most players will use phones.
+- Keep controls large and readable.
+
+5) Privacy notice
+- State that all profile data is local browser storage.
+- No login required for V1.
+
+
+MVP IMPLEMENTATION ORDER
+1) Build basic UI skeleton in index.html.
+2) Add locale loader and language switcher.
+3) Load buildings/prerequisites JSON.
+4) Implement single-building calculate flow.
+5) Implement prerequisite auto-fill.
+6) Implement chest allocation.
+7) Implement max reachable level mode.
+8) Implement profile save/load.
+9) Polish mobile UI and publish.
+
+
+SUCCESS CRITERIA FOR V1
+- User can calculate costs from current level to target level.
+- User can include prerequisite buildings automatically.
+- User can include buff percentages and see time impact.
+- User can include custom chests and see allocation recommendations.
+- User can manage multiple local profiles.
+- User can switch language.
+- User can see highest reachable level with current resources.
+- User can export and import profile snapshots for alliance sharing.

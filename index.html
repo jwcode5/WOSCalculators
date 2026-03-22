@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WOS Calculator - Lesson 1</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="container">
+    <h1>WOS Calculator</h1>
+    <p>Lesson 1: Read inputs and show a result.</p>
+
+    <label for="currentLevel">Current Level</label>
+    <input id="currentLevel" type="number" min="1" value="1" />
+
+    <label for="targetLevel">Target Level</label>
+    <input id="targetLevel" type="number" min="1" value="2" />
+
+    <label for="ownedWood">Owned Wood</label>
+    <input id="ownedWood" type="number" min="0" value="0" />
+
+    <button id="calculateBtn" type="button">Calculate</button>
+
+    <section id="result" class="result">Result will appear here.</section>
+  </main>
+</body>
+</html>
