@@ -60,9 +60,10 @@ calculateBtn.addEventListener("click", () => {
   const missingWood = Math.max(requiredWood - ownedWood, 0);
   const missingMeat = Math.max(requiredMeat - ownedMeat, 0);
 
-  resultEl.innerHTML =
-    `<strong>Wood:</strong> Need ${requiredWood.toLocaleString()}, Own ${ownedWood.toLocaleString()}, Missing ${missingWood.toLocaleString()}<br>` +
-    `<strong>Meat:</strong> Need ${requiredMeat.toLocaleString()}, Own ${ownedMeat.toLocaleString()}, Missing ${missingMeat.toLocaleString()}`;
+  resultEl.innerHTML = `
+    <div class="result-row"><strong>Wood:</strong> Need ${requiredWood.toLocaleString()}, Own ${ownedWood.toLocaleString()}, Missing ${missingWood.toLocaleString()}</div>
+    <div class="result-row"><strong>Meat:</strong> Need ${requiredMeat.toLocaleString()}, Own ${ownedMeat.toLocaleString()}, Missing ${missingMeat.toLocaleString()}</div>
+  `;
 });
 
 // Start loading data immediately when page opens.

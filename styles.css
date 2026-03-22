@@ -39,3 +39,7 @@ button {
   border-radius: 8px;
   background: #eef4ff;
 }
+
+.result-row + .result-row {
+  margin-top: 8px;
+}
