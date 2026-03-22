@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WOS Calculator - Lesson 1</title>
+  <title>WOS Calculator - Lesson 3</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="script.js" defer></script>
 </head>
 <body>
   <main class="container">
     <h1>WOS Calculator</h1>
-    <p>Lesson 1: Read inputs and show a result.</p>
+    <p>Lesson 3: Load building cost data from a JSON file.</p>
 
     <label for="currentLevel">Current Level</label>
     <input id="currentLevel" type="number" min="1" value="1" />
@@ -21,9 +21,12 @@
     <label for="ownedWood">Owned Wood</label>
     <input id="ownedWood" type="number" min="0" value="0" />
 
+    <label for="ownedMeat">Owned Meat</label>
+    <input id="ownedMeat" type="number" min="0" value="0" />
+
     <button id="calculateBtn" type="button">Calculate</button>
 
-    <section id="result" class="result">Result will appear here.</section>
+    <section id="result" class="result">Loading building data...</section>
   </main>
 </body>
 </html>
