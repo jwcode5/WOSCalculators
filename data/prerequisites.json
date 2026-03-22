@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "prerequisites": {
+    "furnace": [
+      { "building": "embassy", "levelOffset": -1 },
+      { "building": "research_center", "levelOffset": -1 }
+    ]
+  }
+}

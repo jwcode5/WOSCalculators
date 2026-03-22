@@ -3,26 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WOS Calculator - Lesson 3</title>
+  <title>WOS Calculator - Lesson 4</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="script.js" defer></script>
 </head>
 <body>
   <main class="container">
     <h1>WOS Calculator</h1>
-    <p>Lesson 3: Load building cost data from a JSON file.</p>
+    <p>Lesson 4: Multi-building calculator with prerequisites.</p>
 
-    <label for="currentLevel">Current Level</label>
-    <input id="currentLevel" type="number" min="1" value="1" />
+    <!-- Target Building Selection -->
+    <fieldset>
+      <legend>Target Building</legend>
+      <label for="targetBuilding">Building</label>
+      <select id="targetBuilding">
+        <option value="furnace">Furnace</option>
+        <option value="embassy">Embassy</option>
+        <option value="research_center">Research Center</option>
+      </select>
 
-    <label for="targetLevel">Target Level</label>
-    <input id="targetLevel" type="number" min="1" value="2" />
+      <label for="currentLevel">Current Level</label>
+      <input id="currentLevel" type="number" min="1" value="1" />
 
-    <label for="ownedWood">Owned Wood</label>
-    <input id="ownedWood" type="number" min="0" value="0" />
+      <label for="targetLevel">Target Level</label>
+      <input id="targetLevel" type="number" min="1" value="2" />
+    </fieldset>
 
-    <label for="ownedMeat">Owned Meat</label>
-    <input id="ownedMeat" type="number" min="0" value="0" />
+    <!-- Backpack Resources -->
+    <fieldset>
+      <legend>Your Resources</legend>
+      <label for="ownedWood">Wood</label>
+      <input id="ownedWood" type="number" min="0" value="0" />
+
+      <label for="ownedMeat">Meat</label>
+      <input id="ownedMeat" type="number" min="0" value="0" />
+
+      <label for="ownedCoal">Coal</label>
+      <input id="ownedCoal" type="number" min="0" value="0" />
+
+      <label for="ownedIron">Iron</label>
+      <input id="ownedIron" type="number" min="0" value="0" />
+    </fieldset>
+
+    <!-- Prerequisites Section -->
+    <fieldset id="prerequisitesSection" style="display: none;">
+      <legend>Required Buildings</legend>
+      <div id="prerequisitesContainer"></div>
+    </fieldset>
 
     <button id="calculateBtn" type="button">Calculate</button>
 
