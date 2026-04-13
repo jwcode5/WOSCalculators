@@ -20,29 +20,65 @@
         <option value="furnace">Furnace</option>
         <option value="embassy">Embassy</option>
         <option value="research_center">Research Center</option>
+        <option value="infirmary">Infirmary</option>
+        <option value="infantry_camp">Infantry Camp</option>
+        <option value="lancer_camp">Lancer Camp</option>
+        <option value="marksman_camp">Marksman Camp</option>
+        <option value="barricade">Barricade</option>
+        <option value="command_center">Command Center</option>
+        <option value="storehouse">Storehouse</option>
       </select>
 
-      <label for="currentLevel">Current Level</label>
-      <input id="currentLevel" type="number" min="1" value="1" />
-
-      <label for="targetLevel">Target Level</label>
-      <input id="targetLevel" type="number" min="1" value="2" />
+      <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 10px;">
+        <div style="flex: 1 1 180px; min-width: 150px;">
+          <label for="currentLevel">Current Level</label>
+          <select id="currentLevel"></select>
+        </div>
+        <div style="flex: 1 1 180px; min-width: 150px;">
+          <label for="targetLevel">Target (Goal) Level</label>
+          <select id="targetLevel"></select>
+        </div>
+      </div>
     </fieldset>
 
     <!-- Backpack Resources -->
     <fieldset>
       <legend>Your Resources</legend>
-      <label for="ownedWood">Wood</label>
-      <input id="ownedWood" type="number" min="0" value="0" />
-
       <label for="ownedMeat">Meat</label>
-      <input id="ownedMeat" type="number" min="0" value="0" />
+      <input id="ownedMeat" type="text" value="0" inputmode="decimal" placeholder="e.g. 953.14M" />
+
+      <label for="ownedWood">Wood</label>
+      <input id="ownedWood" type="text" value="0" inputmode="decimal" placeholder="e.g. 953.14M" />
 
       <label for="ownedCoal">Coal</label>
-      <input id="ownedCoal" type="number" min="0" value="0" />
+      <input id="ownedCoal" type="text" value="0" inputmode="decimal" placeholder="e.g. 953.14M" />
 
       <label for="ownedIron">Iron</label>
-      <input id="ownedIron" type="number" min="0" value="0" />
+      <input id="ownedIron" type="text" value="0" inputmode="decimal" placeholder="e.g. 953.14M" />
+
+      <label for="generalSpeedups">General Speedups (minutes)</label>
+      <input id="generalSpeedups" type="number" min="0" value="0" />
+
+      <label for="constructionSpeedups">Construction Speedups (minutes)</label>
+      <input id="constructionSpeedups" type="number" min="0" value="0" />
+    </fieldset>
+
+    <fieldset>
+      <legend>Construction Buffs (%)</legend>
+      <label for="constructionSpeedPct">Construction Speed</label>
+      <input id="constructionSpeedPct" type="number" min="0" step="0.1" value="0" />
+
+      <label for="doubleTimePct">Double Time Speed</label>
+      <input id="doubleTimePct" type="number" min="0" step="0.1" value="0" />
+
+      <label for="hyenaBuffPct">Builder's Aide (Hyena) Buff</label>
+      <input id="hyenaBuffPct" type="number" min="0" step="0.1" value="0" />
+
+      <label for="castleBuffPct">Castle Buff</label>
+      <input id="castleBuffPct" type="number" min="0" step="0.1" value="0" />
+
+      <label for="positionBuffPct">Position Buff</label>
+      <input id="positionBuffPct" type="number" min="0" step="0.1" value="0" />
     </fieldset>
 
     <!-- Prerequisites Section -->
