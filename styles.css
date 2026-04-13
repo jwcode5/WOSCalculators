@@ -14,6 +14,18 @@ body {
   border-radius: 10px;
 }
 
+fieldset {
+  margin: 0 0 14px;
+  padding: 12px;
+  border: 1px solid #dbe1ea;
+  border-radius: 8px;
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: 700;
+}
+
 label {
   display: block;
   margin-top: 12px;
@@ -21,16 +33,44 @@ label {
   font-weight: 600;
 }
 
-input, button {
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+input, select, button {
   width: 100%;
   padding: 10px;
   font-size: 16px;
   box-sizing: border-box;
 }
 
+input[type="checkbox"] {
+  width: auto;
+  min-height: auto;
+  padding: 0;
+  margin: 0;
+  transform: scale(1.1);
+}
+
+select {
+  min-height: 44px;
+  background: #fff;
+  border: 1px solid #c7d2e0;
+  border-radius: 6px;
+}
+
+input {
+  min-height: 44px;
+  border: 1px solid #c7d2e0;
+  border-radius: 6px;
+}
+
 button {
   margin-top: 14px;
   cursor: pointer;
+  min-height: 46px;
 }
 
 .result {
@@ -42,4 +82,26 @@ button {
 
 .result-row + .result-row {
   margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin: 10px;
+    padding: 14px;
+    border-radius: 8px;
+  }
+
+  h1 {
+    font-size: 1.35rem;
+    margin: 0 0 8px;
+  }
+
+  label {
+    margin-top: 10px;
+  }
+
+  input, select, button {
+    font-size: 16px;
+    min-height: 46px;
+  }
 }

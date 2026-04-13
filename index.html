@@ -65,17 +65,27 @@
 
     <fieldset>
       <legend>Construction Buffs (%)</legend>
+      <label for="doubleTimeEnabled" class="checkbox-row">
+        <input id="doubleTimeEnabled" type="checkbox" />
+        Double Time (20%)
+      </label>
+
+      <label for="castleBuffEnabled" class="checkbox-row">
+        <input id="castleBuffEnabled" type="checkbox" />
+        Castle Buff (10%)
+      </label>
+
       <label for="constructionSpeedPct">Construction Speed</label>
       <input id="constructionSpeedPct" type="number" min="0" step="0.1" value="0" />
 
-      <label for="doubleTimePct">Double Time Speed</label>
-      <input id="doubleTimePct" type="number" min="0" step="0.1" value="0" />
-
       <label for="hyenaBuffPct">Builder's Aide (Hyena) Buff</label>
-      <input id="hyenaBuffPct" type="number" min="0" step="0.1" value="0" />
-
-      <label for="castleBuffPct">Castle Buff</label>
-      <input id="castleBuffPct" type="number" min="0" step="0.1" value="0" />
+      <select id="hyenaBuffPct">
+        <option value="5">5%</option>
+        <option value="7">7%</option>
+        <option value="9">9%</option>
+        <option value="12" selected>12%</option>
+        <option value="15">15%</option>
+      </select>
 
       <label for="positionBuffPct">Position Buff</label>
       <input id="positionBuffPct" type="number" min="0" step="0.1" value="0" />

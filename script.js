@@ -350,9 +350,9 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const generalSpeedupsMinutes = parseInt(document.getElementById("generalSpeedups").value) || 0;
   const constructionSpeedupsMinutes = parseInt(document.getElementById("constructionSpeedups").value) || 0;
   const constructionSpeedPct = parseFloat(document.getElementById("constructionSpeedPct").value) || 0;
-  const doubleTimePct = parseFloat(document.getElementById("doubleTimePct").value) || 0;
   const hyenaBuffPct = parseFloat(document.getElementById("hyenaBuffPct").value) || 0;
-  const castleBuffPct = parseFloat(document.getElementById("castleBuffPct").value) || 0;
+  const doubleTimePct = document.getElementById("doubleTimeEnabled").checked ? 20 : 0;
+  const castleBuffPct = document.getElementById("castleBuffEnabled").checked ? 10 : 0;
   const positionBuffPct = parseFloat(document.getElementById("positionBuffPct").value) || 0;
 
   // Collect all buildings to calculate (target + prerequisites)
