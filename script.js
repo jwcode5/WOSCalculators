@@ -122,6 +122,31 @@ function loadOptionalBuildings() {
   renderOptionalBuildings();
 }
 
+function savePrerequisiteState(buildingName, state) {
+  const existing = {};
+  const raw = localStorage.getItem("wosCalc_prereqState");
+  if (raw) {
+    try {
+      Object.assign(existing, JSON.parse(raw));
+    } catch (e) {
+      // ignore corrupt data
+    }
+  }
+  existing[buildingName] = state;
+  localStorage.setItem("wosCalc_prereqState", JSON.stringify(existing));
+}
+
+function loadPrerequisiteState(buildingName) {
+  const raw = localStorage.getItem("wosCalc_prereqState");
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && parsed[buildingName] ? parsed[buildingName] : {};
+  } catch (e) {
+    return {};
+  }
+}
+
 function getAllBuildingOptionsHTML(selectedValue) {
   const buildingSelect = document.getElementById("targetBuilding");
   if (!buildingSelect) return "";
@@ -365,14 +390,19 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
       </div>
     `;
 
+    const savedPrereqState = loadPrerequisiteState(selectedBuilding);
+
     for (const [buildingName, requiredLevel] of prereqMap.entries()) {
       const hasCostData = !!(BUILDING_COSTS && BUILDING_COSTS[buildingName]);
       const buildingLabel = buildingName.replace("_", " ").toUpperCase();
       const existingCurrentInput = document.getElementById(`${buildingName}CurrentLevel`);
       const existingTargetInput = document.getElementById(`${buildingName}Level`);
       const levelOptions = getBuildingLevelOrder(buildingName);
-      const existingCurrentLevel = existingCurrentInput ? String(existingCurrentInput.value) : "";
-      const existingTargetLevel = existingTargetInput ? String(existingTargetInput.value) : String(requiredLevel);
+      const savedState = savedPrereqState[buildingName] || {};
+      const savedCurrentLevel = String(savedState.currentLevel || "");
+      const savedTargetLevel = String(savedState.targetLevel || "");
+      const existingCurrentLevel = existingCurrentInput ? String(existingCurrentInput.value) : savedCurrentLevel;
+      const existingTargetLevel = existingTargetInput ? String(existingTargetInput.value) : savedTargetLevel;
       const requiredLevelKey = String(requiredLevel);
       const fallbackCurrent = levelOptions[0] || "1";
       const fallbackTarget = levelOptions.includes(requiredLevelKey) ? requiredLevelKey : (levelOptions[levelOptions.length - 1] || requiredLevelKey);
@@ -431,8 +461,39 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
       setAllButton.addEventListener("click", function() {
         const selectedValue = document.getElementById("prereqBatchCurrent").value;
         setAllPrerequisiteCurrentLevels(selectedValue);
+
+        const savedState = loadPrerequisiteState(selectedBuilding);
+        document.querySelectorAll("#prerequisitesContainer select[id$='CurrentLevel']").forEach(sel => {
+          const prereqBuilding = sel.dataset.building;
+          if (!prereqBuilding) return;
+          if (!savedState[prereqBuilding]) savedState[prereqBuilding] = {};
+          savedState[prereqBuilding].currentLevel = sel.value;
+        });
+        savePrerequisiteState(selectedBuilding, savedState);
       });
     }
+
+    document.querySelectorAll("#prerequisitesContainer select[data-building][id$='CurrentLevel']").forEach(sel => {
+      sel.addEventListener("change", function() {
+        const prereqBuilding = this.dataset.building;
+        if (!prereqBuilding) return;
+        const savedState = loadPrerequisiteState(selectedBuilding);
+        if (!savedState[prereqBuilding]) savedState[prereqBuilding] = {};
+        savedState[prereqBuilding].currentLevel = this.value;
+        savePrerequisiteState(selectedBuilding, savedState);
+      });
+    });
+
+    document.querySelectorAll("#prerequisitesContainer select[data-building][id$='Level']").forEach(sel => {
+      sel.addEventListener("change", function() {
+        const prereqBuilding = this.dataset.building;
+        if (!prereqBuilding) return;
+        const savedState = loadPrerequisiteState(selectedBuilding);
+        if (!savedState[prereqBuilding]) savedState[prereqBuilding] = {};
+        savedState[prereqBuilding].targetLevel = this.value;
+        savePrerequisiteState(selectedBuilding, savedState);
+      });
+    });
 
     prereqsFieldset.style.display = "block";
   } else {
