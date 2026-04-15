@@ -4,6 +4,7 @@
 
 let BUILDING_COSTS = null;
 let PREREQUISITES = null;
+let optionalBuildings = [];
 
 function parseLevelKey(levelKey) {
   const key = String(levelKey || "");
@@ -87,6 +88,161 @@ function formatLevelLabel(levelKey) {
   if (fcMatch) return `FC ${fcMatch[1]}`;
 
   return key;
+}
+
+function saveTargetBuildingState() {
+  const building = document.getElementById("targetBuilding").value;
+  const current = document.getElementById("currentLevel").value;
+  const target = document.getElementById("targetLevel").value;
+  localStorage.setItem("wosCalc_building", building);
+  localStorage.setItem("wosCalc_currentLevel", current);
+  localStorage.setItem("wosCalc_targetLevel", target);
+}
+
+function loadTargetBuildingState() {
+  const savedBuilding = localStorage.getItem("wosCalc_building");
+  const savedCurrent = localStorage.getItem("wosCalc_currentLevel");
+  const savedTarget = localStorage.getItem("wosCalc_targetLevel");
+  return { savedBuilding, savedCurrent, savedTarget };
+}
+
+function saveOptionalBuildings() {
+  localStorage.setItem("wosCalc_optionalBuildings", JSON.stringify(optionalBuildings));
+}
+
+function loadOptionalBuildings() {
+  const saved = localStorage.getItem("wosCalc_optionalBuildings");
+  if (saved) {
+    try {
+      optionalBuildings = JSON.parse(saved);
+    } catch (e) {
+      optionalBuildings = [];
+    }
+  }
+  renderOptionalBuildings();
+}
+
+function getAllBuildingOptionsHTML(selectedValue) {
+  const buildingSelect = document.getElementById("targetBuilding");
+  if (!buildingSelect) return "";
+  return Array.from(buildingSelect.options)
+    .map(opt => `<option value="${opt.value}"${opt.value === selectedValue ? " selected" : ""}>${opt.text}</option>`)
+    .join("");
+}
+
+function renderOptionalBuildings() {
+  const container = document.getElementById("optionalBuildingsContainer");
+  if (optionalBuildings.length === 0) {
+    container.innerHTML = "";
+    return;
+  }
+
+  let html = "";
+  optionalBuildings.forEach((item, index) => {
+    const buildingLevels = getBuildingLevelOrder(item.building);
+    const buildingOptions = getAllBuildingOptionsHTML(item.building);
+    const currentOptions = buildingLevels
+      .map(lvl => `<option value="${lvl}"${lvl === item.currentLevel ? " selected" : ""}>${formatLevelLabel(lvl)}</option>`)
+      .join("");
+    const targetOptions = buildingLevels
+      .map(lvl => `<option value="${lvl}"${lvl === item.targetLevel ? " selected" : ""}>${formatLevelLabel(lvl)}</option>`)
+      .join("");
+
+    html += `
+      <div style="margin-bottom: 12px; padding: 10px; background: #f9f9f9; border-radius: 4px;">
+        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 8px;">
+          <div style="flex: 1 1 200px; min-width: 160px;">
+            <label for="optionalBuilding_${index}">Building</label>
+            <select id="optionalBuilding_${index}" class="optionalBuildingSelect" data-index="${index}" style="width: 100%;">
+              ${buildingOptions}
+            </select>
+          </div>
+          <button type="button" class="removeOptionalBtn" data-index="${index}" style="background-color: #ff6b6b; color: white; padding: 10px 14px; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;">Remove</button>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+          <div style="flex: 1 1 150px; min-width: 130px;">
+            <label for="optionalCurrent_${index}">Current Level</label>
+            <select id="optionalCurrent_${index}" class="optionalCurrentLevel" data-index="${index}">
+              ${currentOptions}
+            </select>
+          </div>
+          <div style="flex: 1 1 150px; min-width: 130px;">
+            <label for="optionalTarget_${index}">Target Level</label>
+            <select id="optionalTarget_${index}" class="optionalTargetLevel" data-index="${index}">
+              ${targetOptions}
+            </select>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  // Attach event listeners to remove buttons
+  document.querySelectorAll(".removeOptionalBtn").forEach(btn => {
+    btn.addEventListener("click", function() {
+      const idx = parseInt(this.getAttribute("data-index"));
+      optionalBuildings.splice(idx, 1);
+      saveOptionalBuildings();
+      renderOptionalBuildings();
+    });
+  });
+
+  document.querySelectorAll(".optionalBuildingSelect").forEach(sel => {
+    sel.addEventListener("change", function() {
+      const idx = parseInt(this.getAttribute("data-index"));
+      const selectedBuilding = this.value;
+      optionalBuildings[idx].building = selectedBuilding;
+      const levels = getBuildingLevelOrder(selectedBuilding);
+      optionalBuildings[idx].currentLevel = levels[0] || "1";
+      optionalBuildings[idx].targetLevel = levels[Math.min(1, levels.length - 1)] || "1";
+      saveOptionalBuildings();
+      renderOptionalBuildings();
+    });
+  });
+
+  // Attach event listeners to level selects
+  document.querySelectorAll(".optionalCurrentLevel").forEach(sel => {
+    sel.addEventListener("change", function() {
+      const idx = parseInt(this.getAttribute("data-index"));
+      optionalBuildings[idx].currentLevel = this.value;
+      saveOptionalBuildings();
+    });
+  });
+
+  document.querySelectorAll(".optionalTargetLevel").forEach(sel => {
+    sel.addEventListener("change", function() {
+      const idx = parseInt(this.getAttribute("data-index"));
+      optionalBuildings[idx].targetLevel = this.value;
+      saveOptionalBuildings();
+    });
+  });
+}
+
+function addOptionalBuilding() {
+  const selectedBuilding = document.getElementById("targetBuilding")?.value || "furnace";
+  const levels = getBuildingLevelOrder(selectedBuilding);
+  if (levels.length < 2) {
+    alert("Cannot add optional building: no level data available");
+    return;
+  }
+  optionalBuildings.push({
+    building: selectedBuilding,
+    currentLevel: levels[0],
+    targetLevel: levels[1]
+  });
+  saveOptionalBuildings();
+  renderOptionalBuildings();
+}
+
+function setAllPrerequisiteCurrentLevels(levelKey) {
+  const currentSelectors = document.querySelectorAll("#prerequisitesContainer select[id$='CurrentLevel']");
+  currentSelectors.forEach(sel => {
+    if ([...sel.options].some(option => option.value === levelKey)) {
+      sel.value = levelKey;
+    }
+  });
 }
 
 function setSelectOptions(selectEl, optionValues, selectedValue) {
@@ -199,7 +355,16 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
   if (PREREQUISITES && PREREQUISITES[selectedBuilding]) {
     const prereqMap = getAggregatedPrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
 
-    let prereqsHTML = "";
+    let prereqsHTML = `
+      <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+        <div style="flex: 1 1 220px; min-width: 140px;">
+          <label for="prereqBatchCurrent">Set all current levels</label>
+          <select id="prereqBatchCurrent"></select>
+        </div>
+        <button id="setAllPrereqCurrentBtn" type="button" style="background-color: #4a90e2; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer;">Set All</button>
+      </div>
+    `;
+
     for (const [buildingName, requiredLevel] of prereqMap.entries()) {
       const hasCostData = !!(BUILDING_COSTS && BUILDING_COSTS[buildingName]);
       const buildingLabel = buildingName.replace("_", " ").toUpperCase();
@@ -254,6 +419,21 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
     }
 
     prereqsContainer.innerHTML = prereqsHTML;
+
+    const prereqBatchCurrent = document.getElementById("prereqBatchCurrent");
+    if (prereqBatchCurrent) {
+      const options = getBuildingLevelOrder(selectedBuilding);
+      setSelectOptions(prereqBatchCurrent, options, currentLevelKey);
+    }
+
+    const setAllButton = document.getElementById("setAllPrereqCurrentBtn");
+    if (setAllButton) {
+      setAllButton.addEventListener("click", function() {
+        const selectedValue = document.getElementById("prereqBatchCurrent").value;
+        setAllPrerequisiteCurrentLevels(selectedValue);
+      });
+    }
+
     prereqsFieldset.style.display = "block";
   } else {
     prereqsContainer.innerHTML = "";
@@ -274,12 +454,33 @@ async function loadData() {
 
     console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES });
 
-    // Trigger prerequisites display for the default selected building
-    const selectedBuilding = document.getElementById("targetBuilding").value;
+    // Restore saved building and level state, or use defaults
+    const { savedBuilding, savedCurrent, savedTarget } = loadTargetBuildingState();
+    const targetBuildingSelect = document.getElementById("targetBuilding");
+    
+    if (savedBuilding && [...targetBuildingSelect.options].map(o => o.value).includes(savedBuilding)) {
+      targetBuildingSelect.value = savedBuilding;
+    }
+    
+    const selectedBuilding = targetBuildingSelect.value;
     updateMainLevelSelectors(selectedBuilding);
-    const currentLevelKey = document.getElementById("currentLevel").value;
-    const targetLevelKey = document.getElementById("targetLevel").value;
+    
+    const currentLevelSelect = document.getElementById("currentLevel");
+    const targetLevelSelect = document.getElementById("targetLevel");
+    
+    if (savedCurrent && [...currentLevelSelect.options].map(o => o.value).includes(savedCurrent)) {
+      currentLevelSelect.value = savedCurrent;
+    }
+    if (savedTarget && [...targetLevelSelect.options].map(o => o.value).includes(savedTarget)) {
+      targetLevelSelect.value = savedTarget;
+    }
+    
+    const currentLevelKey = currentLevelSelect.value;
+    const targetLevelKey = targetLevelSelect.value;
     updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
+    
+    // Load optional buildings after data is available
+    loadOptionalBuildings();
   } catch (error) {
     console.error("Error loading data:", error);
     alert("Error loading calculator data. Please refresh the page.");
@@ -292,6 +493,7 @@ document.getElementById("targetBuilding").addEventListener("change", function() 
   const currentLevelKey = document.getElementById("currentLevel").value;
   const targetLevelKey = document.getElementById("targetLevel").value;
   updatePrerequisites(this.value, currentLevelKey, targetLevelKey);
+  saveTargetBuildingState();
 });
 
 // When current level changes, update prerequisite levels
@@ -306,6 +508,7 @@ document.getElementById("currentLevel").addEventListener("change", function() {
     targetLevelSelect.value = currentLevelKey;
   }
   updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelSelect.value);
+  saveTargetBuildingState();
 });
 
 // When target level changes, update prerequisite levels
@@ -319,6 +522,12 @@ document.getElementById("targetLevel").addEventListener("change", function() {
     this.value = currentLevelKey;
   }
   updatePrerequisites(selectedBuilding, currentLevelKey, this.value);
+  saveTargetBuildingState();
+});
+
+// Add optional building
+document.getElementById("addBuildingBtn").addEventListener("click", function() {
+  addOptionalBuilding();
 });
 
 // Calculate total costs for target building + all prerequisites
@@ -382,6 +591,21 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       currentLevel: prereqCurrentLevel,
       targetLevel: safePrereqTarget
     });
+  }
+
+  // Add optional buildings to calculation
+  for (const optionalItem of optionalBuildings) {
+    const optBuildingLevels = getBuildingLevelOrder(optionalItem.building);
+    const optCurIdx = optBuildingLevels.indexOf(optionalItem.currentLevel);
+    const optTgtIdx = optBuildingLevels.indexOf(optionalItem.targetLevel);
+    
+    if (optCurIdx >= 0 && optTgtIdx >= 0 && optCurIdx < optTgtIdx) {
+      buildingsToCalc.push({
+        building: optionalItem.building,
+        currentLevel: optionalItem.currentLevel,
+        targetLevel: optionalItem.targetLevel
+      });
+    }
   }
 
   // Calculate total cost across all buildings

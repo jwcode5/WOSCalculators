@@ -45,16 +45,16 @@
     <fieldset>
       <legend>Your Resources</legend>
       <label for="ownedMeat">Meat</label>
-      <input id="ownedMeat" type="text" value="0" inputmode="decimal" placeholder="e.g. 953.14M" />
+      <input id="ownedMeat" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
       <label for="ownedWood">Wood</label>
-      <input id="ownedWood" type="text" value="0" inputmode="decimal" placeholder="e.g. 953.14M" />
+      <input id="ownedWood" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
       <label for="ownedCoal">Coal</label>
-      <input id="ownedCoal" type="text" value="0" inputmode="decimal" placeholder="e.g. 953.14M" />
+      <input id="ownedCoal" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
       <label for="ownedIron">Iron</label>
-      <input id="ownedIron" type="text" value="0" inputmode="decimal" placeholder="e.g. 953.14M" />
+      <input id="ownedIron" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
       <label for="generalSpeedups">General Speedups (minutes)</label>
       <input id="generalSpeedups" type="number" min="0" value="0" />
@@ -80,10 +80,11 @@
 
       <label for="hyenaBuffPct">Builder's Aide (Hyena) Buff</label>
       <select id="hyenaBuffPct">
+        <option value="" selected>None (0%)</option>
         <option value="5">5%</option>
         <option value="7">7%</option>
         <option value="9">9%</option>
-        <option value="12" selected>12%</option>
+        <option value="12">12%</option>
         <option value="15">15%</option>
       </select>
 
@@ -95,6 +96,13 @@
     <fieldset id="prerequisitesSection" style="display: none;">
       <legend>Required Buildings</legend>
       <div id="prerequisitesContainer"></div>
+    </fieldset>
+
+    <!-- Optional Additional Buildings Section -->
+    <fieldset id="optionalBuildingsSection">
+      <legend>Optional Additional Buildings</legend>
+      <div id="optionalBuildingsContainer"></div>
+      <button id="addBuildingBtn" type="button">+ Add Building</button>
     </fieldset>
 
     <button id="calculateBtn" type="button">Calculate</button>
