@@ -2,7 +2,7 @@
   "name": "WOS Calculator",
   "short_name": "WOS Calc",
   "description": "Whiteout Survival upgrade calculator with prerequisites",
-  "start_url": "/",
+  "start_url": "/WOSCalculators/",
   "scope": "/WOSCalculators/",
   "display": "standalone",
   "background_color": "#090f1f",
