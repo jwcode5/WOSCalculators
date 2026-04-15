@@ -122,6 +122,23 @@ function loadOptionalBuildings() {
   renderOptionalBuildings();
 }
 
+function saveThemePreference(theme) {
+  localStorage.setItem("wosCalc_theme", theme);
+}
+
+function loadThemePreference() {
+  return localStorage.getItem("wosCalc_theme") || "wos";
+}
+
+function applyTheme(theme) {
+  const safeTheme = theme === "dark" ? "dark" : "wos";
+  document.body.dataset.theme = safeTheme;
+  const button = document.getElementById("themeToggleBtn");
+  if (button) {
+    button.textContent = safeTheme === "dark" ? "Light Mode" : "Dark Mode";
+  }
+}
+
 function savePrerequisiteState(buildingName, state) {
   const existing = {};
   const raw = localStorage.getItem("wosCalc_prereqState");
@@ -174,7 +191,7 @@ function renderOptionalBuildings() {
       .join("");
 
     html += `
-      <div style="margin-bottom: 12px; padding: 10px; background: #f9f9f9; border-radius: 4px;">
+      <div class="card-panel" style="margin-bottom: 12px;">
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 8px;">
           <div style="flex: 1 1 200px; min-width: 160px;">
             <label for="optionalBuilding_${index}">Building</label>
@@ -440,7 +457,7 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
         `;
       } else {
         prereqsHTML += `
-          <div style="margin-bottom: 10px; padding: 8px; background: #f7f7f7; border-radius: 6px;">
+          <div class="card-panel" style="margin-bottom: 10px; padding: 10px;">
             <strong>${buildingLabel}</strong><br>
             <div style="margin-top: 6px;">Required Level: ${requiredLevel}</div>
           </div>
@@ -542,6 +559,7 @@ async function loadData() {
     
     // Load optional buildings after data is available
     loadOptionalBuildings();
+    applyTheme(loadThemePreference());
   } catch (error) {
     console.error("Error loading data:", error);
     alert("Error loading calculator data. Please refresh the page.");
@@ -587,6 +605,15 @@ document.getElementById("targetLevel").addEventListener("change", function() {
 });
 
 // Add optional building
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", function() {
+    const currentTheme = document.body.dataset.theme || "wos";
+    const nextTheme = currentTheme === "dark" ? "wos" : "dark";
+    applyTheme(nextTheme);
+    saveThemePreference(nextTheme);
+  });
+}
 document.getElementById("addBuildingBtn").addEventListener("click", function() {
   addOptionalBuilding();
 });
@@ -727,7 +754,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     // Display results for this building
     const buildingDisplay = building.replace("_", " ").toUpperCase();
     resultsHTML += `
-      <div style="margin-top: 15px; padding: 10px; border-left: 3px solid #ccc;">
+      <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
         <strong>${buildingDisplay}</strong> (${curLvl} → ${tgtLvl})<br>
         Meat: ${buildingMeat.toLocaleString()} | 
         Wood: ${buildingWood.toLocaleString()} | 
@@ -755,7 +782,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 
   // Add grand total
   resultsHTML += `
-    <div style="margin-top: 15px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;">
+    <div class="card-panel" style="margin-top: 15px;">
       <strong>GRAND TOTAL</strong><br>
       Meat: ${totalMeat.toLocaleString()} | 
       Wood: ${totalWood.toLocaleString()} | 
