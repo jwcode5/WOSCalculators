@@ -1,6 +1,6 @@
 {
   "name": "WOS Calculator",
-  "short_name": "WOS Calc",
+  "short_name": "WOS Calc v2",
   "description": "Whiteout Survival upgrade calculator with prerequisites",
   "start_url": "/",
   "display": "standalone",

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wos-calculator-v4';
+const CACHE_NAME = 'wos-calculator-v5';
 const urlsToCache = [
   '/',
   '/index.html',
