@@ -1,13 +1,31 @@
-// ============================================
-// Lesson 4: Multi-Building Calculator
-// ============================================
+// ============================================================
+// WOS Calculator — Main Script
+// Handles building cost calculation, account management,
+// resource planning, bear hunt mail rewards, and persistence.
+// ============================================================
 
-let BUILDING_COSTS = null;
-let PREREQUISITES = null;
-let optionalBuildings = [];
-let bearHuntMails = [];
-let accounts = [];
-let activeAccountId = null;
+
+// ============================================================
+// GLOBAL STATE
+// These variables are declared at the top so every function
+// in the file can read and update them. "null" means "not
+// loaded yet"; arrays start empty and get filled on page load.
+// ============================================================
+
+let BUILDING_COSTS = null;      // Loaded from data/buildings.json
+let PREREQUISITES = null;       // Loaded from data/prerequisites.json
+let optionalBuildings = [];     // Extra buildings the user added manually
+let bearHuntMails = [];         // Bear Hunt Mail reward rows
+let accounts = [];              // All saved accounts (Option B blob model)
+let activeAccountId = null;     // ID of the currently selected account
+
+// ============================================================
+// CONSTANTS — SUPPLY FIELD IDs
+// A list of every HTML input/select/checkbox id that belongs
+// to the "Your Resources" and "Buffs" sections. Used to loop
+// over all fields when saving or loading state, instead of
+// typing each one individually every time.
+// ============================================================
 
 const SUPPLY_FIELD_IDS = [
   "ownedMeat",
@@ -32,13 +50,36 @@ const SUPPLY_FIELD_IDS = [
   "customChestL3UnsecuredCount"
 ];
 
+// ============================================================
+// CONSTANTS — CUSTOM CHEST VALUES
+// How many resources each level of custom chest provides.
+// Keyed by chest level (1, 2, 3) for easy lookup by level number.
+// ============================================================
+
 const CUSTOM_CHEST_VALUES = {
   1: { meat: 10000, wood: 10000, coal: 2000, iron: 500 },
   2: { meat: 100000, wood: 100000, coal: 20000, iron: 5000 },
   3: { meat: 1000000, wood: 1000000, coal: 200000, iron: 50000 }
 };
 
+// ============================================================
+// CONSTANTS — BASIC RESOURCES
+// The four main resources. Kept as an array so we can loop
+// over them instead of writing meat/wood/coal/iron repeatedly.
+// ============================================================
+
 const BASIC_RESOURCES = ["meat", "wood", "coal", "iron"];
+
+// ============================================================
+// CONSTANTS — BEAR HUNT TIERS
+// Each object represents one damage tier in the Bear Hunt event.
+// label        : display name shown in the dropdown (K/M/B format)
+// essenceStones: how many essence stones the mail rewards
+// luckyHeroGearChest: lucky hero gear chest count
+// xp10 / xp100 : enhancement XP component counts (10xp or 100xp each)
+// allianceToken: alliance token reward
+// meat/wood/coal/iron: raw resource reward amounts
+// ============================================================
 
 const BEAR_HUNT_TIERS = [
   { label: "1 – 2.5K",              essenceStones: 1,  luckyHeroGearChest: 1, xp10: 2,  xp100: 0, allianceToken: 5500,   meat: 495500,   wood: 495500,   coal: 99000,   iron: 25000   },
@@ -68,14 +109,22 @@ const BEAR_HUNT_TIERS = [
   { label: "38.4B+",                 essenceStones: 18, luckyHeroGearChest: 3, xp10: 0,  xp100: 6, allianceToken: 100000, meat: 41400000, wood: 41400000, coal: 8200000, iron: 2000000 }
 ];
 
-// ============================================
-// Account Management
-// ============================================
+// ============================================================
+// ACCOUNT MANAGEMENT
+// All data is stored per-account in a single localStorage key
+// ("wosCalc_accounts") as a JSON array of account objects.
+// This is "Option B" — one blob per account — which makes it
+// easy to switch between accounts and extend in the future.
+// ============================================================
 
+// Creates a unique ID for a new account using the current
+// timestamp plus a short random string to avoid collisions.
 function generateAccountId() {
   return "acct_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
 }
 
+// Returns a brand-new account object with default values.
+// All fields match what the page uses so nothing is undefined.
 function createDefaultAccount(name) {
   return {
     id: generateAccountId(),
@@ -90,10 +139,16 @@ function createDefaultAccount(name) {
   };
 }
 
+// Returns the account object for the currently active account.
+// Falls back to the first account if activeAccountId is stale.
 function getActiveAccount() {
   return accounts.find(a => a.id === activeAccountId) || accounts[0] || null;
 }
 
+// Merges a partial object into the active account and saves
+// the whole accounts array to localStorage. "partial" is just
+// the fields you want to update — other fields stay the same.
+// Object.assign copies all properties from partial onto the account.
 function updateActiveAccount(partial) {
   const idx = accounts.findIndex(a => a.id === activeAccountId);
   if (idx < 0) return;
@@ -101,6 +156,11 @@ function updateActiveAccount(partial) {
   localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
 }
 
+// Called once on page load. Reads any existing accounts from
+// localStorage, or creates a fresh default account if none exist.
+// Also handles one-time migration: if the old flat keys exist
+// (from before multi-account was added) they get moved into
+// the default account and then deleted so they don't get re-used.
 function initAccounts() {
   const savedAccountsRaw = localStorage.getItem("wosCalc_accounts");
   const savedActiveId = localStorage.getItem("wosCalc_activeAccountId");
@@ -137,6 +197,8 @@ function initAccounts() {
   }
 }
 
+// Creates a new account with the given name, pushes it onto
+// the accounts array, saves, and returns the new account object.
 function addAccount(name) {
   const newAccount = createDefaultAccount(name);
   accounts.push(newAccount);
@@ -144,8 +206,12 @@ function addAccount(name) {
   return newAccount;
 }
 
+// Removes the account with the given id. Refuses if it's the
+// only account. If the deleted account was active, switches to
+// the first remaining account and updates localStorage.
 function deleteAccount(id) {
   if (accounts.length <= 1) return false;
+  // Array.filter returns a new array excluding the matching item
   accounts = accounts.filter(a => a.id !== id);
   localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
   if (activeAccountId === id) {
@@ -155,23 +221,34 @@ function deleteAccount(id) {
   return true;
 }
 
+// Updates the name of a specific account and saves.
+// The .trim() removes leading/trailing whitespace from user input.
 function renameAccount(id, newName) {
   const account = accounts.find(a => a.id === id);
   if (!account) return;
-  account.name = newName.trim() || account.name;
+  account.name = newName.trim() || account.name; // Keep old name if new name is blank
   localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
 }
 
+// Reads the current state of all form fields and saves them
+// into the active account object. Called before switching
+// accounts so nothing is lost.
 function captureCurrentStateToAccount() {
+  // The ?. is "optional chaining" — returns undefined instead of
+  // throwing an error if the element doesn't exist yet
   const building = document.getElementById("targetBuilding")?.value;
   const currentLevel = document.getElementById("currentLevel")?.value;
   const targetLevel = document.getElementById("targetLevel")?.value;
+  // Build a plain object with every supply field's current value
   const supplies = {};
   SUPPLY_FIELD_IDS.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
+    // Checkboxes store true/false; everything else stores the string value
     supplies[id] = el.type === "checkbox" ? !!el.checked : el.value;
   });
+  // The spread [...array] creates a shallow copy so we're not storing
+  // a reference to the live array (which could change later)
   updateActiveAccount({
     building,
     currentLevel,
@@ -182,16 +259,25 @@ function captureCurrentStateToAccount() {
   });
 }
 
+// Switches to a different account:
+// 1. Save current state into the old account
+// 2. Update the active ID
+// 3. Load all state from the new account
 function switchAccount(id) {
-  if (id === activeAccountId) return;
+  if (id === activeAccountId) return; // Already on this account, nothing to do
   captureCurrentStateToAccount();
   activeAccountId = id;
   localStorage.setItem("wosCalc_activeAccountId", id);
   loadAllStateFromAccount();
 }
 
+// Reads the active account's saved state and populates all
+// form fields, dropdowns, optional buildings, and bear hunt rows.
+// This is the "restore everything" function used on page load
+// and whenever you switch accounts.
 function loadAllStateFromAccount() {
   const account = getActiveAccount();
+  // Don't try to restore if data isn't loaded yet
   if (!account || !BUILDING_COSTS) return;
 
   const targetBuildingSelect = document.getElementById("targetBuilding");
@@ -235,42 +321,62 @@ function loadAllStateFromAccount() {
   renderAccountSelector();
 }
 
+// Updates the account dropdown to reflect the current accounts
+// list, and disables the delete button if only one account remains.
 function renderAccountSelector() {
   const select = document.getElementById("accountSelect");
   if (!select) return;
+  // Build the <option> tags from the accounts array
   select.innerHTML = accounts
     .map(a => `<option value="${a.id}"${a.id === activeAccountId ? " selected" : ""}>${a.name}</option>`)
     .join("");
   const deleteBtn = document.getElementById("deleteAccountBtn");
-  if (deleteBtn) deleteBtn.disabled = accounts.length <= 1;
+  if (deleteBtn) deleteBtn.disabled = accounts.length <= 1; // Prevent deleting the last account
 }
 
+
+// ============================================================
+// LEVEL KEY PARSING & SORTING
+// Building levels use string keys like "25", "30-1", "FC1",
+// "FC1-2". These functions parse those strings into sortable
+// objects so we can put levels in the right order.
+// ============================================================
+
+// Parses a level key string into a structured object with
+// a "group" number (for ordering regular vs FC levels) and
+// major/minor numbers for sorting within a group.
 function parseLevelKey(levelKey) {
   const key = String(levelKey || "");
 
+  // Plain integer: "1", "25", "30" → group 1
   if (/^\d+$/.test(key)) {
     return { group: 1, major: Number(key), minor: 0, raw: key };
   }
 
+  // Pre-FC sub-step: "30-1", "30-2" → group 2
   const preFcMatch = key.match(/^(\d+)-(\d+)$/);
   if (preFcMatch) {
     return { group: 2, major: Number(preFcMatch[1]), minor: Number(preFcMatch[2]), raw: key };
   }
 
+  // FC sub-step: "FC1-1", "FC2-3" → group 3
   const fcStepMatch = key.match(/^FC(\d+)-(\d+)$/i);
   if (fcStepMatch) {
-    // Keep FC base tier before its sub-steps, then advance to next FC tier.
     return { group: 3, major: Number(fcStepMatch[1]), minor: Number(fcStepMatch[2]), raw: key };
   }
 
+  // FC milestone: "FC1", "FC2" → group 3, minor 0
   const fcMatch = key.match(/^FC(\d+)$/i);
   if (fcMatch) {
     return { group: 3, major: Number(fcMatch[1]), minor: 0, raw: key };
   }
 
+  // Unknown format — sort last
   return { group: 9, major: Number.MAX_SAFE_INTEGER, minor: 0, raw: key };
 }
 
+// Comparator function used with .sort() to order level keys.
+// Returns negative if a < b, 0 if equal, positive if a > b.
 function compareLevelKeys(a, b) {
   const pa = parseLevelKey(a);
   const pb = parseLevelKey(b);
@@ -280,11 +386,18 @@ function compareLevelKeys(a, b) {
   return pa.raw.localeCompare(pb.raw);
 }
 
+// Returns all level keys for a building in correct game order.
+// Object.keys() gives us the keys in insertion order, but we
+// sort them with compareLevelKeys to guarantee correct sequence.
 function getBuildingLevelOrder(buildingName) {
   if (!BUILDING_COSTS || !BUILDING_COSTS[buildingName]) return [];
   return Object.keys(BUILDING_COSTS[buildingName]).sort(compareLevelKeys);
 }
 
+// Returns the array of level keys the player needs to pass
+// through to go from currentLevelKey to targetLevelKey.
+// e.g. current=5, target=8 → ["6","7","8"]
+// .slice(start, end) extracts a portion of the array.
 function getUpgradePathKeys(buildingName, currentLevelKey, targetLevelKey) {
   const levels = getBuildingLevelOrder(buildingName);
   if (!levels.length) return [];
@@ -295,9 +408,14 @@ function getUpgradePathKeys(buildingName, currentLevelKey, targetLevelKey) {
   const targetIdx = levels.indexOf(tgtKey);
   if (targetIdx < 0 || currentIdx >= targetIdx) return [];
 
+  // slice from one after current up to and including target
   return levels.slice(currentIdx + 1, targetIdx + 1);
 }
 
+// Given two level keys for the same building, returns whichever
+// is higher (further along in the level order). Used when
+// multiple upgrade paths require the same prerequisite building
+// at potentially different levels — we want the highest one.
 function getHigherRequiredLevel(buildingName, left, right) {
   if (!left) return right;
   if (!right) return left;
@@ -309,6 +427,7 @@ function getHigherRequiredLevel(buildingName, left, right) {
     if (li >= 0 && ri >= 0) return ri > li ? String(right) : String(left);
   }
 
+  // Fallback: compare as plain numbers if not found in the level array
   const leftNumeric = Number(String(left));
   const rightNumeric = Number(String(right));
   if (!Number.isNaN(leftNumeric) && !Number.isNaN(rightNumeric)) {
@@ -318,6 +437,8 @@ function getHigherRequiredLevel(buildingName, left, right) {
   return String(right);
 }
 
+// Converts an internal level key like "FC1-2" into a human-
+// friendly label like "FC 1-2" for display in dropdowns.
 function formatLevelLabel(levelKey) {
   const key = String(levelKey || "");
   const fcStepMatch = key.match(/^FC(\d+)-(\d+)$/i);
@@ -326,13 +447,25 @@ function formatLevelLabel(levelKey) {
   const fcMatch = key.match(/^FC(\d+)$/i);
   if (fcMatch) return `FC ${fcMatch[1]}`;
 
-  return key;
+  return key; // Plain numbers like "25" pass through unchanged
 }
 
+// ============================================================
+// SAVE / LOAD — ACCOUNT-BACKED WRAPPERS
+// All saving is now done by writing to the active account blob.
+// These wrapper functions keep the same names as the old flat
+// localStorage functions so the rest of the code didn't need
+// to change when we added multi-account support.
+// ============================================================
+
+// Saving the target building just snapshots all form state
+// into the current account.
 function saveTargetBuildingState() {
   captureCurrentStateToAccount();
 }
 
+// Returns the saved building/level from the active account
+// in the same shape the old code expected.
 function loadTargetBuildingState() {
   const account = getActiveAccount();
   return {
@@ -342,16 +475,20 @@ function loadTargetBuildingState() {
   };
 }
 
+// Saving optional buildings snapshots all form state.
 function saveOptionalBuildings() {
   captureCurrentStateToAccount();
 }
 
+// Reads optional buildings from the active account and
+// re-renders the list on the page.
 function loadOptionalBuildings() {
   const account = getActiveAccount();
   optionalBuildings = Array.isArray(account?.optionalBuildings) ? [...account.optionalBuildings] : [];
   renderOptionalBuildings();
 }
 
+// Theme is global (not per-account) so it still uses its own key.
 function saveThemePreference(theme) {
   localStorage.setItem("wosCalc_theme", theme);
 }
@@ -360,10 +497,13 @@ function loadThemePreference() {
   return localStorage.getItem("wosCalc_theme") || "wos";
 }
 
+// Saving supplies snapshots all form state.
 function saveSuppliesState() {
   captureCurrentStateToAccount();
 }
 
+// Reads supply field values from the active account and
+// populates every form field listed in SUPPLY_FIELD_IDS.
 function loadSuppliesState() {
   const account = getActiveAccount();
   const supplies = account?.supplies || {};
@@ -378,6 +518,10 @@ function loadSuppliesState() {
   });
 }
 
+// Attaches input/change listeners to every supply field so
+// that any edit automatically saves to the active account.
+// We use "input" for text/number fields (fires on every keystroke)
+// and "change" for selects and checkboxes (fires on selection).
 function attachSupplyPersistenceListeners() {
   SUPPLY_FIELD_IDS.forEach(id => {
     const el = document.getElementById(id);
@@ -387,6 +531,12 @@ function attachSupplyPersistenceListeners() {
   });
 }
 
+// ============================================================
+// CUSTOM CHEST UI
+// ============================================================
+
+// Shows or hides the custom chest input section based on
+// whether the "Use Custom Resource Chests" checkbox is checked.
 function updateCustomChestVisibility() {
   const toggle = document.getElementById("useCustomChests");
   const section = document.getElementById("customChestSection");
@@ -394,6 +544,8 @@ function updateCustomChestVisibility() {
   section.style.display = toggle.checked ? "block" : "none";
 }
 
+// Reads all six chest count inputs (L1/L2/L3 × secured/unsecured)
+// and returns them as a nested object for use in the chest planner.
 function getCustomChestCounts() {
   const l1Secured = Math.max(0, parseInt(document.getElementById("customChestL1SecuredCount")?.value || "0", 10) || 0);
   const l1Unsecured = Math.max(0, parseInt(document.getElementById("customChestL1UnsecuredCount")?.value || "0", 10) || 0);
@@ -409,7 +561,22 @@ function getCustomChestCounts() {
   };
 }
 
+// Greedy algorithm that figures out the best chests to open
+// to cover the given resource deficits.
+//
+// Strategy:
+//   - Always use unsecured chests before secured ones (same level)
+//   - Work from highest level (L3) down to lowest (L1)
+//   - At each level, find whichever resource has the largest
+//     remaining deficit relative to that chest's value, and
+//     assign chests to it first
+//
+// Returns allocations (how many of each chest per resource),
+// provided (total resources each type contributed),
+// remainingDeficits (anything still uncovered), and
+// countsLeft (leftover chests not needed).
 function recommendCustomChestUsage(deficits, availableCounts) {
+  // Work on a copy so we don't modify the original deficit object
   const remainingDeficits = {
     meat: Math.max(0, deficits.meat || 0),
     wood: Math.max(0, deficits.wood || 0),
@@ -417,6 +584,7 @@ function recommendCustomChestUsage(deficits, availableCounts) {
     iron: Math.max(0, deficits.iron || 0)
   };
 
+  // Track how many of each chest level we assigned to each resource
   const allocations = {
     meat: { 1: 0, 2: 0, 3: 0 },
     wood: { 1: 0, 2: 0, 3: 0 },
@@ -425,6 +593,7 @@ function recommendCustomChestUsage(deficits, availableCounts) {
   };
 
   const provided = { meat: 0, wood: 0, coal: 0, iron: 0 };
+  // Working copy of available chest counts
   const countsLeft = {
     1: {
       unsecured: availableCounts[1]?.unsecured || 0,
@@ -440,6 +609,7 @@ function recommendCustomChestUsage(deficits, availableCounts) {
     }
   };
 
+  // Helper: drain 'amount' chests from a level, unsecured first
   const consumeChests = (level, amount) => {
     const unsecuredUsed = Math.min(countsLeft[level].unsecured, amount);
     countsLeft[level].unsecured -= unsecuredUsed;
@@ -449,11 +619,15 @@ function recommendCustomChestUsage(deficits, availableCounts) {
     return unsecuredUsed + securedUsed;
   };
 
+  // Process L3 first (most value per chest), then L2, then L1
   [3, 2, 1].forEach(level => {
+    // Keep assigning chests as long as any are available at this level
     while (countsLeft[level].unsecured + countsLeft[level].secured > 0) {
       let pickResource = null;
       let maxNeedRatio = 0;
 
+      // Find whichever resource has the biggest need relative to
+      // what one chest provides (higher ratio = more urgent)
       BASIC_RESOURCES.forEach(resource => {
         const need = remainingDeficits[resource];
         if (need <= 0) return;
@@ -464,6 +638,7 @@ function recommendCustomChestUsage(deficits, availableCounts) {
         }
       });
 
+      // If no resource has a remaining deficit, stop assigning chests at this level
       if (!pickResource) break;
 
       const chestValue = CUSTOM_CHEST_VALUES[level][pickResource];
@@ -484,6 +659,12 @@ function recommendCustomChestUsage(deficits, availableCounts) {
   return { allocations, provided, remainingDeficits, countsLeft };
 }
 
+// ============================================================
+// THEME
+// ============================================================
+
+// Applies a theme by setting the data-theme attribute on
+// <body>, which CSS uses to switch variable values.
 function applyTheme(theme) {
   const safeTheme = theme === "dark" ? "dark" : "wos";
   document.body.dataset.theme = safeTheme;
@@ -493,6 +674,15 @@ function applyTheme(theme) {
   }
 }
 
+// ============================================================
+// PREREQUISITE STATE — SAVE / LOAD
+// The prerequisite section lets you set current and target
+// levels for each required building. Those selections are saved
+// per-building inside the active account's prereqState object.
+// ============================================================
+
+// Saves the prerequisite current/target selections for one
+// building into the active account.
 function savePrerequisiteState(buildingName, state) {
   const account = getActiveAccount();
   if (!account) return;
@@ -501,12 +691,21 @@ function savePrerequisiteState(buildingName, state) {
   updateActiveAccount({ prereqState: account.prereqState });
 }
 
+// Returns the saved prerequisite state for one building,
+// or an empty object if nothing has been saved yet.
 function loadPrerequisiteState(buildingName) {
   const account = getActiveAccount();
   const prereqState = account?.prereqState || {};
   return prereqState[buildingName] || {};
 }
 
+// ============================================================
+// OPTIONAL BUILDINGS — RENDER & MANAGE
+// ============================================================
+
+// Builds the HTML option list for the building dropdown,
+// marking the given value as selected. Used when rendering
+// each optional building row.
 function getAllBuildingOptionsHTML(selectedValue) {
   const buildingSelect = document.getElementById("targetBuilding");
   if (!buildingSelect) return "";
@@ -515,6 +714,11 @@ function getAllBuildingOptionsHTML(selectedValue) {
     .join("");
 }
 
+// Rebuilds the entire optional buildings section from the
+// optionalBuildings array. Uses template literals (backtick
+// strings) to generate HTML, then sets it all at once with
+// innerHTML. After setting innerHTML, event listeners must be
+// re-attached because the old DOM nodes were replaced.
 function renderOptionalBuildings() {
   const container = document.getElementById("optionalBuildingsContainer");
   if (optionalBuildings.length === 0) {
@@ -564,7 +768,7 @@ function renderOptionalBuildings() {
 
   container.innerHTML = html;
 
-  // Attach event listeners to remove buttons
+  // Re-attach remove button listeners
   document.querySelectorAll(".removeOptionalBtn").forEach(btn => {
     btn.addEventListener("click", function() {
       const idx = parseInt(this.getAttribute("data-index"));
@@ -574,6 +778,8 @@ function renderOptionalBuildings() {
     });
   });
 
+  // Re-attach building dropdown listeners — when the building changes,
+  // reset levels to the first available ones for that building
   document.querySelectorAll(".optionalBuildingSelect").forEach(sel => {
     sel.addEventListener("change", function() {
       const idx = parseInt(this.getAttribute("data-index"));
@@ -587,7 +793,7 @@ function renderOptionalBuildings() {
     });
   });
 
-  // Attach event listeners to level selects
+  // Re-attach current/target level listeners
   document.querySelectorAll(".optionalCurrentLevel").forEach(sel => {
     sel.addEventListener("change", function() {
       const idx = parseInt(this.getAttribute("data-index"));
@@ -605,6 +811,8 @@ function renderOptionalBuildings() {
   });
 }
 
+// Adds a new optional building row defaulting to the currently
+// selected target building with its first two levels.
 function addOptionalBuilding() {
   const selectedBuilding = document.getElementById("targetBuilding")?.value || "furnace";
   const levels = getBuildingLevelOrder(selectedBuilding);
@@ -621,16 +829,25 @@ function addOptionalBuilding() {
   renderOptionalBuildings();
 }
 
+// ============================================================
+// BEAR HUNT MAIL — SAVE / LOAD / RENDER
+// ============================================================
+
+// Saving bear hunt mails snapshots all form state.
 function saveBearHuntMails() {
   captureCurrentStateToAccount();
 }
 
+// Reads bear hunt rows from the active account and re-renders.
 function loadBearHuntMails() {
   const account = getActiveAccount();
   bearHuntMails = Array.isArray(account?.bearHuntMails) ? [...account.bearHuntMails] : [];
   renderBearHuntMails();
 }
 
+// Rebuilds the bear hunt mail rows from the bearHuntMails array.
+// Same pattern as renderOptionalBuildings — generate HTML,
+// set innerHTML, then re-attach event listeners.
 function renderBearHuntMails() {
   const container = document.getElementById("bearHuntMailsContainer");
   if (!container) return;
@@ -666,6 +883,7 @@ function renderBearHuntMails() {
 
   container.innerHTML = html;
 
+  // Re-attach remove, tier change, and count change listeners
   document.querySelectorAll(".removeBearHuntBtn").forEach(btn => {
     btn.addEventListener("click", function() {
       const idx = parseInt(this.getAttribute("data-index"));
@@ -692,12 +910,16 @@ function renderBearHuntMails() {
   });
 }
 
+// Adds a new bear hunt row defaulting to tier 0 (lowest), count 1.
 function addBearHuntMail() {
   bearHuntMails.push({ tierIndex: 0, count: 1 });
   saveBearHuntMails();
   renderBearHuntMails();
 }
 
+// Sums up all the resource rewards across every bear hunt mail row.
+// Returns a single totals object so the calculate handler can
+// add these amounts to the effective backpack in one step.
 function getBearHuntResourceTotals() {
   const totals = { meat: 0, wood: 0, coal: 0, iron: 0, essenceStones: 0, luckyHeroGearChest: 0, xp10: 0, xp100: 0, allianceToken: 0 };
   for (const mail of bearHuntMails) {
@@ -717,15 +939,25 @@ function getBearHuntResourceTotals() {
   return totals;
 }
 
+// ============================================================
+// PREREQUISITE PANEL HELPERS
+// ============================================================
+
+// Sets every prerequisite "Current Level" dropdown to the
+// given levelKey (if that level exists in the dropdown).
+// Used by the "Set All" batch button.
 function setAllPrerequisiteCurrentLevels(levelKey) {
   const currentSelectors = document.querySelectorAll("#prerequisitesContainer select[id$='CurrentLevel']");
   currentSelectors.forEach(sel => {
+    // Check if the desired level exists as an option before setting it
     if ([...sel.options].some(option => option.value === levelKey)) {
       sel.value = levelKey;
     }
   });
 }
 
+// Populates a <select> element with options from an array,
+// preserving the previously selected value if possible.
 function setSelectOptions(selectEl, optionValues, selectedValue) {
   const normalized = optionValues.map(v => String(v));
   selectEl.innerHTML = normalized
@@ -736,25 +968,37 @@ function setSelectOptions(selectEl, optionValues, selectedValue) {
   if (preferred && normalized.includes(preferred)) {
     selectEl.value = preferred;
   } else if (normalized.length) {
-    selectEl.value = normalized[0];
+    selectEl.value = normalized[0]; // Default to first option
   }
 }
 
+// ============================================================
+// FORMATTING HELPERS
+// ============================================================
+
+// Converts a raw number of seconds into a human-readable
+// duration string like "2d 4h 15m 30s".
+// The modulo operator (%) gives us the remainder after dividing,
+// so e.g. (totalSeconds % 86400) gives seconds within the current day.
 function formatDuration(totalSeconds) {
   const seconds = Math.max(0, Math.floor(totalSeconds || 0));
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
+  const days    = Math.floor(seconds / 86400);
+  const hours   = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+  const secs    = seconds % 60;
 
   const parts = [];
-  if (days) parts.push(`${days}d`);
-  if (hours) parts.push(`${hours}h`);
+  if (days)    parts.push(`${days}d`);
+  if (hours)   parts.push(`${hours}h`);
   if (minutes) parts.push(`${minutes}m`);
-  if (secs || !parts.length) parts.push(`${secs}s`);
+  if (secs || !parts.length) parts.push(`${secs}s`); // Always show at least "0s"
   return parts.join(" ");
 }
 
+// Parses a resource amount string like "953.14M", "2.5K", or
+// "1.2B" into a plain integer. Also accepts raw numbers.
+// The regex matches an optional decimal number followed by
+// an optional K/M/B suffix. Returns 0 for anything invalid.
 function parseResourceAmount(rawInput) {
   const text = String(rawInput || "").trim().replace(/,/g, "").toUpperCase();
   if (!text) return 0;
@@ -766,10 +1010,20 @@ function parseResourceAmount(rawInput) {
   if (Number.isNaN(value) || value < 0) return 0;
 
   const suffix = match[2] || "";
+  // B = billion, M = million, K = thousand
   const multiplier = suffix === "B" ? 1000000000 : (suffix === "M" ? 1000000 : (suffix === "K" ? 1000 : 1));
   return Math.round(value * multiplier);
 }
 
+// ============================================================
+// PREREQUISITE CALCULATION
+// Looks at every level in the upgrade path and collects all
+// required buildings, keeping the highest required level for
+// each one in case different upgrade steps need different levels.
+// ============================================================
+
+// Returns a Map of { buildingName → highestRequiredLevel }
+// for all prerequisites needed across the full upgrade path.
 function getAggregatedPrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) {
   const result = new Map();
   if (!PREREQUISITES || !PREREQUISITES[selectedBuilding]) return result;
@@ -777,6 +1031,7 @@ function getAggregatedPrerequisites(selectedBuilding, currentLevelKey, targetLev
   const ruleSet = PREREQUISITES[selectedBuilding];
   const upgradeKeys = getUpgradePathKeys(selectedBuilding, currentLevelKey, targetLevelKey);
 
+  // Loop every level in the upgrade path and collect its requirements
   for (const levelKey of upgradeKeys) {
     const levelReqs = (ruleSet.fcLevels && ruleSet.fcLevels[levelKey])
       || (ruleSet.levels && ruleSet.levels[levelKey])
@@ -792,7 +1047,8 @@ function getAggregatedPrerequisites(selectedBuilding, currentLevelKey, targetLev
 
   if (result.size) return result;
 
-  // New schema: prerequisites by target level.
+  // If no per-level rules matched, try the legacy schema (a single list
+  // where required level = target level + an offset)
   if (ruleSet.levels || ruleSet.fcLevels) return result;
 
   // Legacy schema: single list with target-level offsets.
@@ -810,6 +1066,14 @@ function getAggregatedPrerequisites(selectedBuilding, currentLevelKey, targetLev
   return result;
 }
 
+// ============================================================
+// FIRE CRYSTAL VISIBILITY
+// Shows the Fire Crystal / Refined Fire Crystal input fields
+// only when the selected upgrade path actually needs them.
+// ============================================================
+
+// Returns true if any level in the upgrade path requires
+// fire crystals or refined fire crystals.
 function requiresFireCrystalSupplies(selectedBuilding, currentLevelKey, targetLevelKey) {
   if (!BUILDING_COSTS || !BUILDING_COSTS[selectedBuilding]) return false;
   const upgradePath = getUpgradePathKeys(selectedBuilding, currentLevelKey, targetLevelKey);
@@ -819,6 +1083,7 @@ function requiresFireCrystalSupplies(selectedBuilding, currentLevelKey, targetLe
   });
 }
 
+// Shows or hides the FC supplies section based on the result above.
 function updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey) {
   const section = document.getElementById("fcSuppliesSection");
   if (!section) return;
@@ -826,6 +1091,15 @@ function updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, 
   section.style.display = shouldShow ? "block" : "none";
 }
 
+// ============================================================
+// LEVEL SELECTOR UPDATES
+// Keeps the current/target level dropdowns in sync with
+// whichever building is selected.
+// ============================================================
+
+// Rebuilds both level dropdowns for the selected building,
+// trying to preserve the previously selected values.
+// If the target ends up below the current level, it's clamped up.
 function updateMainLevelSelectors(selectedBuilding) {
   const currentLevelSelect = document.getElementById("currentLevel");
   const targetLevelSelect = document.getElementById("targetLevel");
@@ -843,6 +1117,13 @@ function updateMainLevelSelectors(selectedBuilding) {
     targetLevelSelect.value = currentLevelSelect.value;
   }
 }
+
+// ============================================================
+// PREREQUISITES PANEL — RENDER
+// Builds the "Required Buildings" section dynamically based on
+// what getAggregatedPrerequisites() returns for the current
+// building and level selection.
+// ============================================================
 
 // Show/hide prerequisites for a given building and target level
 function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) {
@@ -969,10 +1250,19 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
 
     prereqsFieldset.style.display = "block";
   } else {
+    // No prerequisites for this building — hide the section
     prereqsContainer.innerHTML = "";
     prereqsFieldset.style.display = "none";
   }
 }
+
+// ============================================================
+// DATA LOADING
+// Fetches buildings.json and prerequisites.json, then
+// initializes accounts and restores all saved state.
+// "async" lets us use "await" to wait for the fetch to finish
+// before continuing — cleaner than nesting callbacks.
+// ============================================================
 
 // Load both buildings and prerequisites data on page open
 async function loadData() {
@@ -1000,7 +1290,14 @@ async function loadData() {
   }
 }
 
-// When target building dropdown changes, update prerequisites
+// ============================================================
+// EVENT LISTENERS — BUILDING SELECTION DROPDOWNS
+// These run immediately when the page loads (not inside a
+// function) so they're always attached.
+// ============================================================
+
+// When the target building changes, rebuild level dropdowns,
+// prerequisites panel, and FC visibility, then save.
 document.getElementById("targetBuilding").addEventListener("change", function() {
   updateMainLevelSelectors(this.value);
   const currentLevelKey = document.getElementById("currentLevel").value;
@@ -1010,7 +1307,7 @@ document.getElementById("targetBuilding").addEventListener("change", function() 
   saveTargetBuildingState();
 });
 
-// When current level changes, update prerequisite levels
+// When current level changes, clamp target if needed, refresh prerequisites.
 document.getElementById("currentLevel").addEventListener("change", function() {
   const selectedBuilding = document.getElementById("targetBuilding").value;
   const currentLevelKey = this.value;
@@ -1019,14 +1316,14 @@ document.getElementById("currentLevel").addEventListener("change", function() {
   const currentIdx = orderedLevels.indexOf(currentLevelKey);
   const targetIdx = orderedLevels.indexOf(targetLevelSelect.value);
   if (targetIdx < currentIdx) {
-    targetLevelSelect.value = currentLevelKey;
+    targetLevelSelect.value = currentLevelKey; // Push target up to match current
   }
   updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelSelect.value);
   updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelSelect.value);
   saveTargetBuildingState();
 });
 
-// When target level changes, update prerequisite levels
+// When target level changes, clamp if below current, refresh prerequisites.
 document.getElementById("targetLevel").addEventListener("change", function() {
   const selectedBuilding = document.getElementById("targetBuilding").value;
   const currentLevelKey = document.getElementById("currentLevel").value;
@@ -1041,9 +1338,15 @@ document.getElementById("targetLevel").addEventListener("change", function() {
   saveTargetBuildingState();
 });
 
+// Attach save-on-change listeners to all supply/buff fields
 attachSupplyPersistenceListeners();
 
-// Account bar event listeners
+
+// ============================================================
+// EVENT LISTENERS — ACCOUNT BAR
+// ============================================================
+
+// Account dropdown: switch to the selected account
 const accountSelect = document.getElementById("accountSelect");
 if (accountSelect) {
   accountSelect.addEventListener("change", function() {
@@ -1051,16 +1354,20 @@ if (accountSelect) {
   });
 }
 
+// Add Account button: prompt for a name, create, and switch
 const addAccountBtn = document.getElementById("addAccountBtn");
 if (addAccountBtn) {
   addAccountBtn.addEventListener("click", function() {
+    // prompt() shows a native browser dialog and returns the typed string,
+    // or null if the user clicked Cancel
     const name = prompt("Account name:", `Account ${accounts.length + 1}`);
-    if (name === null) return;
+    if (name === null) return; // User cancelled
     const newAccount = addAccount(name.trim() || `Account ${accounts.length}`);
     switchAccount(newAccount.id);
   });
 }
 
+// Rename button: prompt for a new name and update the dropdown
 const renameAccountBtn = document.getElementById("renameAccountBtn");
 if (renameAccountBtn) {
   renameAccountBtn.addEventListener("click", function() {
@@ -1073,6 +1380,7 @@ if (renameAccountBtn) {
   });
 }
 
+// Delete button: confirm then delete, and reload from the new active account
 const deleteAccountBtn = document.getElementById("deleteAccountBtn");
 if (deleteAccountBtn) {
   deleteAccountBtn.addEventListener("click", function() {
@@ -1085,6 +1393,11 @@ if (deleteAccountBtn) {
   });
 }
 
+// ============================================================
+// EVENT LISTENERS — MISC UI
+// ============================================================
+
+// "Use Custom Chests" checkbox: show/hide the chest inputs and save
 const useCustomChestsToggle = document.getElementById("useCustomChests");
 if (useCustomChestsToggle) {
   useCustomChestsToggle.addEventListener("change", function() {
@@ -1093,7 +1406,7 @@ if (useCustomChestsToggle) {
   });
 }
 
-// Add optional building
+// Theme toggle button: flip between wos and dark themes
 const themeToggleBtn = document.getElementById("themeToggleBtn");
 if (themeToggleBtn) {
   themeToggleBtn.addEventListener("click", function() {
@@ -1103,6 +1416,7 @@ if (themeToggleBtn) {
     saveThemePreference(nextTheme);
   });
 }
+// "Add Building" button
 document.getElementById("addBuildingBtn").addEventListener("click", function() {
   addOptionalBuilding();
 });
@@ -1114,9 +1428,21 @@ if (addBearHuntMailBtn) {
   });
 }
 
-// Calculate total costs for target building + all prerequisites
+// ============================================================
+// CALCULATE BUTTON
+// This is the main calculation handler. It:
+//   1. Reads all form inputs
+//   2. Builds a list of every building to calculate (target +
+//      prerequisites + optional)
+//   3. Sums up total resource/time costs
+//   4. Computes remaining resources after all upgrades
+//   5. Applies construction speed buffs and speedup items
+//   6. Optionally recommends custom chest usage
+//   7. Outputs the full results as HTML
+// ============================================================
+
 document.getElementById("calculateBtn").addEventListener("click", function() {
-  // Validate data is loaded
+  // Guard: bail out if data hasn't loaded yet
   if (!BUILDING_COSTS || !PREREQUISITES) {
     alert("Data is still loading. Please wait and try again.");
     return;
@@ -1126,7 +1452,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const currentLevel = document.getElementById("currentLevel").value;
   const targetLevel = document.getElementById("targetLevel").value;
 
-  // Validate input
+  // Validate that current ≤ target
   const selectedBuildingLevels = getBuildingLevelOrder(targetBuilding);
   const currentIdx = selectedBuildingLevels.indexOf(currentLevel);
   const targetIdx = selectedBuildingLevels.indexOf(targetLevel);
@@ -1136,12 +1462,15 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   }
 
   // Get backpack resources
+  // --- Read backpack resources ---
+  // parseResourceAmount handles "953.14M", "2.5K", plain numbers, etc.
   const woodBackpack = parseResourceAmount(document.getElementById("ownedWood").value);
   const meatBackpack = parseResourceAmount(document.getElementById("ownedMeat").value);
   const coalBackpack = parseResourceAmount(document.getElementById("ownedCoal").value);
   const ironBackpack = parseResourceAmount(document.getElementById("ownedIron").value);
 
-  // Bear Hunt Mail resources are added to the effective backpack
+  // Bear Hunt Mail resources are added to the effective backpack so they
+  // count toward covering upgrade costs
   const bearHuntTotals = getBearHuntResourceTotals();
   const effectiveMeatBackpack = meatBackpack + bearHuntTotals.meat;
   const effectiveWoodBackpack = woodBackpack + bearHuntTotals.wood;
@@ -1150,7 +1479,8 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 
   const fireCrystalsBackpack = parseResourceAmount(document.getElementById("ownedFireCrystals").value);
   const refinedFireCrystalsBackpack = parseResourceAmount(document.getElementById("ownedRefinedFireCrystals").value);
-  const generalSpeedupsMinutes = parseInt(document.getElementById("generalSpeedups").value) || 0;
+  // --- Read speedup and buff inputs ---
+  const generalSpeedupsMinutes      = parseInt(document.getElementById("generalSpeedups").value) || 0;
   const constructionSpeedupsMinutes = parseInt(document.getElementById("constructionSpeedups").value) || 0;
   const constructionSpeedPct = parseFloat(document.getElementById("constructionSpeedPct").value) || 0;
   const hyenaBuffPct = parseFloat(document.getElementById("hyenaBuffPct").value) || 0;
@@ -1158,9 +1488,11 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const castleBuffPct = document.getElementById("castleBuffEnabled").checked ? 10 : 0;
   const positionBuffPct = parseFloat(document.getElementById("positionBuffPct").value) || 0;
 
-  // Collect all buildings to calculate (target + prerequisites)
+  // --- Build list of buildings to calculate ---
+  // Start with the main target building
   const buildingsToCalc = [{ building: targetBuilding, currentLevel, targetLevel }];
 
+  // Add all prerequisites
   const prereqMap = getAggregatedPrerequisites(targetBuilding, currentLevel, targetLevel);
   for (const [buildingName, requiredLevel] of prereqMap.entries()) {
     if (!BUILDING_COSTS[buildingName]) continue;
@@ -1174,6 +1506,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       ? String(input.value)
       : (prereqLevels.includes(requiredLevelKey) ? requiredLevelKey : prereqLevels[prereqLevels.length - 1]);
 
+    // Make sure target isn't below current for prerequisites too
     const prereqCurrentIdx = prereqLevels.indexOf(prereqCurrentLevel);
     const prereqTargetIdx = prereqLevels.indexOf(prereqTargetLevel);
     const safePrereqTarget = (prereqTargetIdx >= prereqCurrentIdx && prereqTargetIdx >= 0)
@@ -1187,7 +1520,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     });
   }
 
-  // Add optional buildings to calculation
+  // Add optional buildings (only if target is actually above current)
   for (const optionalItem of optionalBuildings) {
     const optBuildingLevels = getBuildingLevelOrder(optionalItem.building);
     const optCurIdx = optBuildingLevels.indexOf(optionalItem.currentLevel);
@@ -1203,6 +1536,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   }
 
   // Calculate total cost across all buildings
+  // --- Sum costs across all buildings ---
   let totalWood = 0, totalMeat = 0, totalCoal = 0, totalIron = 0;
   let totalFireCrystals = 0, totalRefinedFireCrystals = 0;
   let totalSeconds = 0;
@@ -1215,7 +1549,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 
     if (!BUILDING_COSTS[building]) continue;
 
-    // Sum costs from the next level after current through target.
+    // Walk every level in this building's upgrade path and add its costs
     const upgradePath = getUpgradePathKeys(building, curLvl, tgtLvl);
     for (const level of upgradePath) {
       const levelData = BUILDING_COSTS[building][level];
@@ -1237,8 +1571,9 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     totalFireCrystals += buildingFireCrystals;
     totalRefinedFireCrystals += buildingRefinedFireCrystals;
 
+    // Look up optional stat changes (rally, troop deployment, storage)
     const currentData = BUILDING_COSTS[building][curLvl] || {};
-    const targetData = BUILDING_COSTS[building][tgtLvl] || {};
+    const targetData  = BUILDING_COSTS[building][tgtLvl] || {};
     const rallyFrom = currentData.rallyCapacity;
     const rallyTo = targetData.rallyCapacity;
     const deployFrom = currentData.troopDeploymentCapacity;
@@ -1281,23 +1616,32 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     `;
   }
 
-  // Calculate remaining resources after upgrade (using effective backpack which includes bear hunt mails)
+  // --- Compute remaining resources and time ---
+  // "Effective" backpack already includes bear hunt mail resources
   const woodRemaining = effectiveWoodBackpack - totalWood;
   const meatRemaining = effectiveMeatBackpack - totalMeat;
   const coalRemaining = effectiveCoalBackpack - totalCoal;
   const ironRemaining = effectiveIronBackpack - totalIron;
   const fireCrystalsRemaining = fireCrystalsBackpack - totalFireCrystals;
   const refinedFireCrystalsRemaining = refinedFireCrystalsBackpack - totalRefinedFireCrystals;
+
+  // Construction speed buffs are additive (all added together first)
   const additiveSpeedPct = Math.max(0, constructionSpeedPct + hyenaBuffPct + castleBuffPct + positionBuffPct);
+  // Dividing base time by (1 + speed%) gives the reduced time
   const additiveAdjustedSeconds = Math.floor(totalSeconds / (1 + (additiveSpeedPct / 100)));
   const additiveTimeSavedSeconds = Math.max(0, totalSeconds - additiveAdjustedSeconds);
+
+  // Double Time is multiplicative (applied on top of additive buffs)
   const clampedDoubleTimePct = Math.max(0, Math.min(100, doubleTimePct));
   const doubleTimeAdjustedSeconds = Math.floor(additiveAdjustedSeconds * (1 - (clampedDoubleTimePct / 100)));
   const doubleTimeSavedSeconds = Math.max(0, additiveAdjustedSeconds - doubleTimeAdjustedSeconds);
+
+  // Speedups are subtracted from remaining time (converted from minutes to seconds)
   const totalSpeedupSeconds = (generalSpeedupsMinutes + constructionSpeedupsMinutes) * 60;
   const remainingTimeSeconds = Math.max(0, doubleTimeAdjustedSeconds - totalSpeedupSeconds);
   const speedupSurplusSeconds = Math.max(0, totalSpeedupSeconds - doubleTimeAdjustedSeconds);
 
+  // How much of each resource is still needed after accounting for the effective backpack
   const basicDeficits = {
     meat: Math.max(0, totalMeat - effectiveMeatBackpack),
     wood: Math.max(0, totalWood - effectiveWoodBackpack),
@@ -1363,7 +1707,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     BASIC_RESOURCES.forEach(resource => {
       const alloc = chestPlan.allocations[resource];
       const usedCount = alloc[1] + alloc[2] + alloc[3];
-      if (usedCount === 0) return;
+      if (usedCount === 0) return; // Skip resources that needed no chests
 
       const resourceLabel = resource.charAt(0).toUpperCase() + resource.slice(1);
       chestLines.push(
@@ -1396,13 +1740,22 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     `;
   }
 
+  // Inject all the generated HTML into the results section
   document.getElementById("result").innerHTML = resultsHTML;
 });
 
-// Load data on page load
+
+// ============================================================
+// STARTUP
+// ============================================================
+
+// Kick off the data load as soon as the script runs.
+// Because loadData is async, the rest of the page stays
+// interactive while it fetches the JSON files.
 loadData();
 
-// Register service worker for PWA
+// Register the service worker for PWA (installable app) support.
+// The service worker caches files so the app works offline.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
@@ -1414,7 +1767,8 @@ if ('serviceWorker' in navigator) {
       });
   });
 
-  // Auto reload on service worker update
+  // When the service worker updates (new version deployed), reload the
+  // page automatically so the user always gets the latest version.
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     window.location.reload();
   });
