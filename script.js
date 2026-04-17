@@ -2156,10 +2156,24 @@ function showUpdateToast(registration) {
 // Register the service worker for PWA (installable app) support.
 // The service worker caches files so the app works offline.
 if ('serviceWorker' in navigator) {
+  const SW_VERSION = '11';
+
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js')
+    const swUrl = `service-worker.js?v=${SW_VERSION}`;
+    navigator.serviceWorker.register(swUrl, { scope: './', updateViaCache: 'none' })
       .then(registration => {
         console.log('Service Worker registered:', registration);
+
+        // Remove stale registrations that can keep old cached assets active.
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(reg => {
+            const isCurrentScope = reg.scope === registration.scope;
+            const isCurrentScript = reg.active && reg.active.scriptURL.includes(`v=${SW_VERSION}`);
+            if (!isCurrentScope || !isCurrentScript) {
+              reg.unregister();
+            }
+          });
+        });
 
         // Trigger an immediate update check so newly deployed files are
         // discovered quickly on mobile/installed clients.
