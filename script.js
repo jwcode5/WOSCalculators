@@ -6,6 +6,8 @@ let BUILDING_COSTS = null;
 let PREREQUISITES = null;
 let optionalBuildings = [];
 let bearHuntMails = [];
+let accounts = [];
+let activeAccountId = null;
 
 const SUPPLY_FIELD_IDS = [
   "ownedMeat",
@@ -65,6 +67,183 @@ const BEAR_HUNT_TIERS = [
   { label: "19.2B – 38.4B",         essenceStones: 17, luckyHeroGearChest: 3, xp10: 0,  xp100: 5, allianceToken: 95000,  meat: 39400000, wood: 39400000, coal: 7800000, iron: 1900000 },
   { label: "38.4B+",                 essenceStones: 18, luckyHeroGearChest: 3, xp10: 0,  xp100: 6, allianceToken: 100000, meat: 41400000, wood: 41400000, coal: 8200000, iron: 2000000 }
 ];
+
+// ============================================
+// Account Management
+// ============================================
+
+function generateAccountId() {
+  return "acct_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
+}
+
+function createDefaultAccount(name) {
+  return {
+    id: generateAccountId(),
+    name: name || "Account 1",
+    building: "furnace",
+    currentLevel: null,
+    targetLevel: null,
+    supplies: {},
+    optionalBuildings: [],
+    bearHuntMails: [],
+    prereqState: {}
+  };
+}
+
+function getActiveAccount() {
+  return accounts.find(a => a.id === activeAccountId) || accounts[0] || null;
+}
+
+function updateActiveAccount(partial) {
+  const idx = accounts.findIndex(a => a.id === activeAccountId);
+  if (idx < 0) return;
+  Object.assign(accounts[idx], partial);
+  localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
+}
+
+function initAccounts() {
+  const savedAccountsRaw = localStorage.getItem("wosCalc_accounts");
+  const savedActiveId = localStorage.getItem("wosCalc_activeAccountId");
+
+  if (savedAccountsRaw) {
+    try { accounts = JSON.parse(savedAccountsRaw); } catch (e) { accounts = []; }
+  }
+
+  if (!Array.isArray(accounts) || accounts.length === 0) {
+    const defaultAccount = createDefaultAccount("Account 1");
+    // Migrate any existing flat localStorage keys into the default account
+    const oldBuilding = localStorage.getItem("wosCalc_building");
+    if (oldBuilding) {
+      defaultAccount.building = oldBuilding;
+      defaultAccount.currentLevel = localStorage.getItem("wosCalc_currentLevel");
+      defaultAccount.targetLevel = localStorage.getItem("wosCalc_targetLevel");
+      try { defaultAccount.optionalBuildings = JSON.parse(localStorage.getItem("wosCalc_optionalBuildings") || "[]"); } catch (e) {}
+      try { defaultAccount.supplies = JSON.parse(localStorage.getItem("wosCalc_supplies") || "{}"); } catch (e) {}
+      try { defaultAccount.bearHuntMails = JSON.parse(localStorage.getItem("wosCalc_bearHuntMails") || "[]"); } catch (e) {}
+      try { defaultAccount.prereqState = JSON.parse(localStorage.getItem("wosCalc_prereqState") || "{}"); } catch (e) {}
+      ["wosCalc_building", "wosCalc_currentLevel", "wosCalc_targetLevel",
+       "wosCalc_optionalBuildings", "wosCalc_supplies", "wosCalc_bearHuntMails",
+       "wosCalc_prereqState"].forEach(k => localStorage.removeItem(k));
+    }
+    accounts = [defaultAccount];
+    localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
+  }
+
+  if (savedActiveId && accounts.find(a => a.id === savedActiveId)) {
+    activeAccountId = savedActiveId;
+  } else {
+    activeAccountId = accounts[0].id;
+    localStorage.setItem("wosCalc_activeAccountId", activeAccountId);
+  }
+}
+
+function addAccount(name) {
+  const newAccount = createDefaultAccount(name);
+  accounts.push(newAccount);
+  localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
+  return newAccount;
+}
+
+function deleteAccount(id) {
+  if (accounts.length <= 1) return false;
+  accounts = accounts.filter(a => a.id !== id);
+  localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
+  if (activeAccountId === id) {
+    activeAccountId = accounts[0].id;
+    localStorage.setItem("wosCalc_activeAccountId", activeAccountId);
+  }
+  return true;
+}
+
+function renameAccount(id, newName) {
+  const account = accounts.find(a => a.id === id);
+  if (!account) return;
+  account.name = newName.trim() || account.name;
+  localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
+}
+
+function captureCurrentStateToAccount() {
+  const building = document.getElementById("targetBuilding")?.value;
+  const currentLevel = document.getElementById("currentLevel")?.value;
+  const targetLevel = document.getElementById("targetLevel")?.value;
+  const supplies = {};
+  SUPPLY_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    supplies[id] = el.type === "checkbox" ? !!el.checked : el.value;
+  });
+  updateActiveAccount({
+    building,
+    currentLevel,
+    targetLevel,
+    supplies,
+    optionalBuildings: [...optionalBuildings],
+    bearHuntMails: [...bearHuntMails]
+  });
+}
+
+function switchAccount(id) {
+  if (id === activeAccountId) return;
+  captureCurrentStateToAccount();
+  activeAccountId = id;
+  localStorage.setItem("wosCalc_activeAccountId", id);
+  loadAllStateFromAccount();
+}
+
+function loadAllStateFromAccount() {
+  const account = getActiveAccount();
+  if (!account || !BUILDING_COSTS) return;
+
+  const targetBuildingSelect = document.getElementById("targetBuilding");
+  if (account.building && [...targetBuildingSelect.options].map(o => o.value).includes(account.building)) {
+    targetBuildingSelect.value = account.building;
+  }
+  const selectedBuilding = targetBuildingSelect.value;
+  updateMainLevelSelectors(selectedBuilding);
+
+  const currentLevelSelect = document.getElementById("currentLevel");
+  const targetLevelSelect = document.getElementById("targetLevel");
+  if (account.currentLevel && [...currentLevelSelect.options].map(o => o.value).includes(account.currentLevel)) {
+    currentLevelSelect.value = account.currentLevel;
+  }
+  if (account.targetLevel && [...targetLevelSelect.options].map(o => o.value).includes(account.targetLevel)) {
+    targetLevelSelect.value = account.targetLevel;
+  }
+
+  const currentLevelKey = currentLevelSelect.value;
+  const targetLevelKey = targetLevelSelect.value;
+  updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
+  updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey);
+
+  optionalBuildings = Array.isArray(account.optionalBuildings) ? [...account.optionalBuildings] : [];
+  renderOptionalBuildings();
+
+  bearHuntMails = Array.isArray(account.bearHuntMails) ? [...account.bearHuntMails] : [];
+  renderBearHuntMails();
+
+  const supplies = account.supplies || {};
+  SUPPLY_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !(id in supplies)) return;
+    if (el.type === "checkbox") {
+      el.checked = !!supplies[id];
+    } else {
+      el.value = supplies[id];
+    }
+  });
+  updateCustomChestVisibility();
+  renderAccountSelector();
+}
+
+function renderAccountSelector() {
+  const select = document.getElementById("accountSelect");
+  if (!select) return;
+  select.innerHTML = accounts
+    .map(a => `<option value="${a.id}"${a.id === activeAccountId ? " selected" : ""}>${a.name}</option>`)
+    .join("");
+  const deleteBtn = document.getElementById("deleteAccountBtn");
+  if (deleteBtn) deleteBtn.disabled = accounts.length <= 1;
+}
 
 function parseLevelKey(levelKey) {
   const key = String(levelKey || "");
@@ -151,34 +330,25 @@ function formatLevelLabel(levelKey) {
 }
 
 function saveTargetBuildingState() {
-  const building = document.getElementById("targetBuilding").value;
-  const current = document.getElementById("currentLevel").value;
-  const target = document.getElementById("targetLevel").value;
-  localStorage.setItem("wosCalc_building", building);
-  localStorage.setItem("wosCalc_currentLevel", current);
-  localStorage.setItem("wosCalc_targetLevel", target);
+  captureCurrentStateToAccount();
 }
 
 function loadTargetBuildingState() {
-  const savedBuilding = localStorage.getItem("wosCalc_building");
-  const savedCurrent = localStorage.getItem("wosCalc_currentLevel");
-  const savedTarget = localStorage.getItem("wosCalc_targetLevel");
-  return { savedBuilding, savedCurrent, savedTarget };
+  const account = getActiveAccount();
+  return {
+    savedBuilding: account?.building || null,
+    savedCurrent: account?.currentLevel || null,
+    savedTarget: account?.targetLevel || null
+  };
 }
 
 function saveOptionalBuildings() {
-  localStorage.setItem("wosCalc_optionalBuildings", JSON.stringify(optionalBuildings));
+  captureCurrentStateToAccount();
 }
 
 function loadOptionalBuildings() {
-  const saved = localStorage.getItem("wosCalc_optionalBuildings");
-  if (saved) {
-    try {
-      optionalBuildings = JSON.parse(saved);
-    } catch (e) {
-      optionalBuildings = [];
-    }
-  }
+  const account = getActiveAccount();
+  optionalBuildings = Array.isArray(account?.optionalBuildings) ? [...account.optionalBuildings] : [];
   renderOptionalBuildings();
 }
 
@@ -191,33 +361,21 @@ function loadThemePreference() {
 }
 
 function saveSuppliesState() {
-  const state = {};
-  SUPPLY_FIELD_IDS.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    state[id] = el.type === "checkbox" ? !!el.checked : el.value;
-  });
-  localStorage.setItem("wosCalc_supplies", JSON.stringify(state));
+  captureCurrentStateToAccount();
 }
 
 function loadSuppliesState() {
-  const raw = localStorage.getItem("wosCalc_supplies");
-  if (!raw) return;
-
-  try {
-    const parsed = JSON.parse(raw);
-    SUPPLY_FIELD_IDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el || !(id in parsed)) return;
-      if (el.type === "checkbox") {
-        el.checked = !!parsed[id];
-      } else {
-        el.value = parsed[id];
-      }
-    });
-  } catch (e) {
-    // ignore corrupt storage data
-  }
+  const account = getActiveAccount();
+  const supplies = account?.supplies || {};
+  SUPPLY_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || !(id in supplies)) return;
+    if (el.type === "checkbox") {
+      el.checked = !!supplies[id];
+    } else {
+      el.value = supplies[id];
+    }
+  });
 }
 
 function attachSupplyPersistenceListeners() {
@@ -336,28 +494,17 @@ function applyTheme(theme) {
 }
 
 function savePrerequisiteState(buildingName, state) {
-  const existing = {};
-  const raw = localStorage.getItem("wosCalc_prereqState");
-  if (raw) {
-    try {
-      Object.assign(existing, JSON.parse(raw));
-    } catch (e) {
-      // ignore corrupt data
-    }
-  }
-  existing[buildingName] = state;
-  localStorage.setItem("wosCalc_prereqState", JSON.stringify(existing));
+  const account = getActiveAccount();
+  if (!account) return;
+  if (!account.prereqState) account.prereqState = {};
+  account.prereqState[buildingName] = state;
+  updateActiveAccount({ prereqState: account.prereqState });
 }
 
 function loadPrerequisiteState(buildingName) {
-  const raw = localStorage.getItem("wosCalc_prereqState");
-  if (!raw) return {};
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed && parsed[buildingName] ? parsed[buildingName] : {};
-  } catch (e) {
-    return {};
-  }
+  const account = getActiveAccount();
+  const prereqState = account?.prereqState || {};
+  return prereqState[buildingName] || {};
 }
 
 function getAllBuildingOptionsHTML(selectedValue) {
@@ -475,18 +622,12 @@ function addOptionalBuilding() {
 }
 
 function saveBearHuntMails() {
-  localStorage.setItem("wosCalc_bearHuntMails", JSON.stringify(bearHuntMails));
+  captureCurrentStateToAccount();
 }
 
 function loadBearHuntMails() {
-  const saved = localStorage.getItem("wosCalc_bearHuntMails");
-  if (saved) {
-    try {
-      bearHuntMails = JSON.parse(saved);
-    } catch (e) {
-      bearHuntMails = [];
-    }
-  }
+  const account = getActiveAccount();
+  bearHuntMails = Array.isArray(account?.bearHuntMails) ? [...account.bearHuntMails] : [];
   renderBearHuntMails();
 }
 
@@ -846,37 +987,12 @@ async function loadData() {
 
     console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES });
 
-    // Restore saved building and level state, or use defaults
-    const { savedBuilding, savedCurrent, savedTarget } = loadTargetBuildingState();
-    const targetBuildingSelect = document.getElementById("targetBuilding");
-    
-    if (savedBuilding && [...targetBuildingSelect.options].map(o => o.value).includes(savedBuilding)) {
-      targetBuildingSelect.value = savedBuilding;
-    }
-    
-    const selectedBuilding = targetBuildingSelect.value;
-    updateMainLevelSelectors(selectedBuilding);
-    
-    const currentLevelSelect = document.getElementById("currentLevel");
-    const targetLevelSelect = document.getElementById("targetLevel");
-    
-    if (savedCurrent && [...currentLevelSelect.options].map(o => o.value).includes(savedCurrent)) {
-      currentLevelSelect.value = savedCurrent;
-    }
-    if (savedTarget && [...targetLevelSelect.options].map(o => o.value).includes(savedTarget)) {
-      targetLevelSelect.value = savedTarget;
-    }
-    
-    const currentLevelKey = currentLevelSelect.value;
-    const targetLevelKey = targetLevelSelect.value;
-    updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
-    updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey);
-    
-    // Load optional buildings after data is available
-    loadOptionalBuildings();
-    loadBearHuntMails();
-    loadSuppliesState();
-    updateCustomChestVisibility();
+    // Initialize accounts (migrates legacy flat keys on first run)
+    initAccounts();
+
+    // Load all state from the active account
+    loadAllStateFromAccount();
+
     applyTheme(loadThemePreference());
   } catch (error) {
     console.error("Error loading data:", error);
@@ -926,6 +1042,48 @@ document.getElementById("targetLevel").addEventListener("change", function() {
 });
 
 attachSupplyPersistenceListeners();
+
+// Account bar event listeners
+const accountSelect = document.getElementById("accountSelect");
+if (accountSelect) {
+  accountSelect.addEventListener("change", function() {
+    switchAccount(this.value);
+  });
+}
+
+const addAccountBtn = document.getElementById("addAccountBtn");
+if (addAccountBtn) {
+  addAccountBtn.addEventListener("click", function() {
+    const name = prompt("Account name:", `Account ${accounts.length + 1}`);
+    if (name === null) return;
+    const newAccount = addAccount(name.trim() || `Account ${accounts.length}`);
+    switchAccount(newAccount.id);
+  });
+}
+
+const renameAccountBtn = document.getElementById("renameAccountBtn");
+if (renameAccountBtn) {
+  renameAccountBtn.addEventListener("click", function() {
+    const account = getActiveAccount();
+    if (!account) return;
+    const newName = prompt("Rename account:", account.name);
+    if (newName === null) return;
+    renameAccount(account.id, newName);
+    renderAccountSelector();
+  });
+}
+
+const deleteAccountBtn = document.getElementById("deleteAccountBtn");
+if (deleteAccountBtn) {
+  deleteAccountBtn.addEventListener("click", function() {
+    const account = getActiveAccount();
+    if (!account) return;
+    if (accounts.length <= 1) { alert("Cannot delete the only account."); return; }
+    if (!confirm(`Delete "${account.name}"? This cannot be undone.`)) return;
+    deleteAccount(account.id);
+    loadAllStateFromAccount();
+  });
+}
 
 const useCustomChestsToggle = document.getElementById("useCustomChests");
 if (useCustomChestsToggle) {

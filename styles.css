@@ -98,6 +98,67 @@ body[data-theme="dark"] select {
   background: rgba(255, 255, 255, 0.18);
 }
 
+.account-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.account-select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.account-btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.account-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.account-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.account-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.account-btn-add {
+  background: rgba(77, 143, 254, 0.25);
+  border-color: rgba(77, 143, 254, 0.4);
+}
+
+.account-btn-add:hover {
+  background: rgba(77, 143, 254, 0.4) !important;
+}
+
+.account-btn-delete {
+  background: rgba(255, 107, 107, 0.2);
+  border-color: rgba(255, 107, 107, 0.35);
+}
+
+.account-btn-delete:hover:not(:disabled) {
+  background: rgba(255, 107, 107, 0.35) !important;
+}
+
 fieldset {
   margin: 0 0 16px;
   padding: 16px;
