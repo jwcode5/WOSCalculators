@@ -2155,9 +2155,13 @@ function showUpdateToast(registration) {
 // The service worker caches files so the app works offline.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
+    navigator.serviceWorker.register('service-worker.js')
       .then(registration => {
         console.log('Service Worker registered:', registration);
+
+        // Trigger an immediate update check so newly deployed files are
+        // discovered quickly on mobile/installed clients.
+        registration.update();
 
         if (registration.waiting) {
           showUpdateToast(registration);
@@ -2177,6 +2181,13 @@ if ('serviceWorker' in navigator) {
       .catch(error => {
         console.log('Service Worker registration failed:', error);
       });
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    navigator.serviceWorker.getRegistration().then(registration => {
+      if (registration) registration.update();
+    });
   });
 
   // When the service worker updates (new version deployed), reload the
