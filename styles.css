@@ -368,3 +368,32 @@ button:hover {
     margin-top: 8px;
   }
 }
+
+@media (max-width: 380px) {
+  .account-btn-group {
+    flex-direction: column;
+  }
+
+  .account-btn {
+    width: 100%;
+  }
+
+  label {
+    font-size: 13px;
+  }
+
+  select {
+    padding-right: 30px;
+    background-position: calc(100% - 16px) calc(50% - 4px), calc(100% - 10px) calc(50% - 4px);
+  }
+}
+
+@media (max-width: 360px) {
+  #customChestSection > div > div,
+  #optionalBuildingsContainer .card-panel > div > div,
+  #bearHuntMailsContainer .card-panel > div > div,
+  #prerequisitesContainer > div > div {
+    min-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+}
