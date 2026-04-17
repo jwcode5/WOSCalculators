@@ -817,8 +817,20 @@ function renderOptionalBuildings() {
   document.querySelectorAll(".optionalCurrentLevel").forEach(sel => {
     sel.addEventListener("change", function() {
       const idx = parseInt(this.getAttribute("data-index"));
-      optionalBuildings[idx].currentLevel = this.value;
-      optionalBuildings[idx].targetLevel = getNextBuildingLevel(optionalBuildings[idx].building, this.value);
+      const item = optionalBuildings[idx];
+      item.currentLevel = this.value;
+
+      const levels = getBuildingLevelOrder(item.building);
+      const currentIndex = levels.indexOf(item.currentLevel);
+      const targetIndex = levels.indexOf(item.targetLevel);
+
+      // Only auto-correct the target when it would otherwise end up
+      // below the current level. If the user is lowering current to fix
+      // a mistake, keep their existing target choice intact.
+      if (targetIndex < 0 || (currentIndex >= 0 && targetIndex < currentIndex)) {
+        item.targetLevel = getNextBuildingLevel(item.building, item.currentLevel);
+      }
+
       saveOptionalBuildings();
       renderOptionalBuildings();
     });
