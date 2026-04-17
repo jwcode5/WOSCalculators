@@ -6,6 +6,22 @@ let BUILDING_COSTS = null;
 let PREREQUISITES = null;
 let optionalBuildings = [];
 
+const SUPPLY_FIELD_IDS = [
+  "ownedMeat",
+  "ownedWood",
+  "ownedCoal",
+  "ownedIron",
+  "generalSpeedups",
+  "constructionSpeedups",
+  "constructionSpeedPct",
+  "hyenaBuffPct",
+  "positionBuffPct",
+  "doubleTimeEnabled",
+  "castleBuffEnabled",
+  "ownedFireCrystals",
+  "ownedRefinedFireCrystals"
+];
+
 function parseLevelKey(levelKey) {
   const key = String(levelKey || "");
 
@@ -128,6 +144,45 @@ function saveThemePreference(theme) {
 
 function loadThemePreference() {
   return localStorage.getItem("wosCalc_theme") || "wos";
+}
+
+function saveSuppliesState() {
+  const state = {};
+  SUPPLY_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    state[id] = el.type === "checkbox" ? !!el.checked : el.value;
+  });
+  localStorage.setItem("wosCalc_supplies", JSON.stringify(state));
+}
+
+function loadSuppliesState() {
+  const raw = localStorage.getItem("wosCalc_supplies");
+  if (!raw) return;
+
+  try {
+    const parsed = JSON.parse(raw);
+    SUPPLY_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el || !(id in parsed)) return;
+      if (el.type === "checkbox") {
+        el.checked = !!parsed[id];
+      } else {
+        el.value = parsed[id];
+      }
+    });
+  } catch (e) {
+    // ignore corrupt storage data
+  }
+}
+
+function attachSupplyPersistenceListeners() {
+  SUPPLY_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const eventName = el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input";
+    el.addEventListener(eventName, saveSuppliesState);
+  });
 }
 
 function applyTheme(theme) {
@@ -371,6 +426,22 @@ function getAggregatedPrerequisites(selectedBuilding, currentLevelKey, targetLev
   return result;
 }
 
+function requiresFireCrystalSupplies(selectedBuilding, currentLevelKey, targetLevelKey) {
+  if (!BUILDING_COSTS || !BUILDING_COSTS[selectedBuilding]) return false;
+  const upgradePath = getUpgradePathKeys(selectedBuilding, currentLevelKey, targetLevelKey);
+  return upgradePath.some(levelKey => {
+    const levelData = BUILDING_COSTS[selectedBuilding][levelKey] || {};
+    return (levelData.fireCrystals || 0) > 0 || (levelData.refinedFireCrystals || 0) > 0;
+  });
+}
+
+function updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey) {
+  const section = document.getElementById("fcSuppliesSection");
+  if (!section) return;
+  const shouldShow = requiresFireCrystalSupplies(selectedBuilding, currentLevelKey, targetLevelKey);
+  section.style.display = shouldShow ? "block" : "none";
+}
+
 function updateMainLevelSelectors(selectedBuilding) {
   const currentLevelSelect = document.getElementById("currentLevel");
   const targetLevelSelect = document.getElementById("targetLevel");
@@ -556,9 +627,11 @@ async function loadData() {
     const currentLevelKey = currentLevelSelect.value;
     const targetLevelKey = targetLevelSelect.value;
     updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
+    updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey);
     
     // Load optional buildings after data is available
     loadOptionalBuildings();
+    loadSuppliesState();
     applyTheme(loadThemePreference());
   } catch (error) {
     console.error("Error loading data:", error);
@@ -572,6 +645,7 @@ document.getElementById("targetBuilding").addEventListener("change", function() 
   const currentLevelKey = document.getElementById("currentLevel").value;
   const targetLevelKey = document.getElementById("targetLevel").value;
   updatePrerequisites(this.value, currentLevelKey, targetLevelKey);
+  updateFireCrystalSuppliesVisibility(this.value, currentLevelKey, targetLevelKey);
   saveTargetBuildingState();
 });
 
@@ -587,6 +661,7 @@ document.getElementById("currentLevel").addEventListener("change", function() {
     targetLevelSelect.value = currentLevelKey;
   }
   updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelSelect.value);
+  updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelSelect.value);
   saveTargetBuildingState();
 });
 
@@ -601,8 +676,11 @@ document.getElementById("targetLevel").addEventListener("change", function() {
     this.value = currentLevelKey;
   }
   updatePrerequisites(selectedBuilding, currentLevelKey, this.value);
+  updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, this.value);
   saveTargetBuildingState();
 });
+
+attachSupplyPersistenceListeners();
 
 // Add optional building
 const themeToggleBtn = document.getElementById("themeToggleBtn");
@@ -644,6 +722,8 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const meatBackpack = parseResourceAmount(document.getElementById("ownedMeat").value);
   const coalBackpack = parseResourceAmount(document.getElementById("ownedCoal").value);
   const ironBackpack = parseResourceAmount(document.getElementById("ownedIron").value);
+  const fireCrystalsBackpack = parseResourceAmount(document.getElementById("ownedFireCrystals").value);
+  const refinedFireCrystalsBackpack = parseResourceAmount(document.getElementById("ownedRefinedFireCrystals").value);
   const generalSpeedupsMinutes = parseInt(document.getElementById("generalSpeedups").value) || 0;
   const constructionSpeedupsMinutes = parseInt(document.getElementById("constructionSpeedups").value) || 0;
   const constructionSpeedPct = parseFloat(document.getElementById("constructionSpeedPct").value) || 0;
@@ -698,12 +778,14 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 
   // Calculate total cost across all buildings
   let totalWood = 0, totalMeat = 0, totalCoal = 0, totalIron = 0;
+  let totalFireCrystals = 0, totalRefinedFireCrystals = 0;
   let totalSeconds = 0;
   let resultsHTML = "";
 
   for (const item of buildingsToCalc) {
     const { building, currentLevel: curLvl, targetLevel: tgtLvl } = item;
     let buildingWood = 0, buildingMeat = 0, buildingCoal = 0, buildingIron = 0;
+    let buildingFireCrystals = 0, buildingRefinedFireCrystals = 0;
 
     if (!BUILDING_COSTS[building]) continue;
 
@@ -717,6 +799,8 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       buildingMeat += levelData.meat || 0;
       buildingCoal += levelData.coal || 0;
       buildingIron += levelData.iron || 0;
+      buildingFireCrystals += levelData.fireCrystals || 0;
+      buildingRefinedFireCrystals += levelData.refinedFireCrystals || 0;
       totalSeconds += levelData.seconds || 0;
     }
 
@@ -724,6 +808,8 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     totalMeat += buildingMeat;
     totalCoal += buildingCoal;
     totalIron += buildingIron;
+    totalFireCrystals += buildingFireCrystals;
+    totalRefinedFireCrystals += buildingRefinedFireCrystals;
 
     const currentData = BUILDING_COSTS[building][curLvl] || {};
     const targetData = BUILDING_COSTS[building][tgtLvl] || {};
@@ -750,6 +836,9 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     const extraStatsHtml = extraStatLines.length
       ? `<br>${extraStatLines.join("<br>")}`
       : "";
+    const crystalCostsHtml = (buildingFireCrystals > 0 || buildingRefinedFireCrystals > 0)
+      ? `<br>Fire Crystals: ${buildingFireCrystals.toLocaleString()} | Refined Fire Crystals: ${buildingRefinedFireCrystals.toLocaleString()}`
+      : "";
 
     // Display results for this building
     const buildingDisplay = building.replace("_", " ").toUpperCase();
@@ -760,6 +849,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
         Wood: ${buildingWood.toLocaleString()} | 
         Coal: ${buildingCoal.toLocaleString()} | 
         Iron: ${buildingIron.toLocaleString()}
+        ${crystalCostsHtml}
         ${extraStatsHtml}
       </div>
     `;
@@ -770,6 +860,8 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const meatRemaining = meatBackpack - totalMeat;
   const coalRemaining = coalBackpack - totalCoal;
   const ironRemaining = ironBackpack - totalIron;
+  const fireCrystalsRemaining = fireCrystalsBackpack - totalFireCrystals;
+  const refinedFireCrystalsRemaining = refinedFireCrystalsBackpack - totalRefinedFireCrystals;
   const additiveSpeedPct = Math.max(0, constructionSpeedPct + hyenaBuffPct + castleBuffPct + positionBuffPct);
   const additiveAdjustedSeconds = Math.floor(totalSeconds / (1 + (additiveSpeedPct / 100)));
   const additiveTimeSavedSeconds = Math.max(0, totalSeconds - additiveAdjustedSeconds);
@@ -788,6 +880,8 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       Wood: ${totalWood.toLocaleString()} | 
       Coal: ${totalCoal.toLocaleString()} | 
       Iron: ${totalIron.toLocaleString()}<br>
+      Fire Crystals: ${totalFireCrystals.toLocaleString()} | 
+      Refined Fire Crystals: ${totalRefinedFireCrystals.toLocaleString()}<br>
       Total Upgrade Time (Base): ${formatDuration(totalSeconds)}<br>
       Additive Speed (${additiveSpeedPct.toFixed(1)}%): ${formatDuration(additiveAdjustedSeconds)} (${formatDuration(additiveTimeSavedSeconds)} saved)<br>
       Double Time (${clampedDoubleTimePct.toFixed(1)}%): ${formatDuration(doubleTimeAdjustedSeconds)} (${formatDuration(doubleTimeSavedSeconds)} saved)
@@ -798,6 +892,8 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       Wood: ${woodRemaining.toLocaleString()} | 
       Coal: ${coalRemaining.toLocaleString()} | 
       Iron: ${ironRemaining.toLocaleString()}<br>
+      Fire Crystals: ${fireCrystalsRemaining.toLocaleString()} | 
+      Refined Fire Crystals: ${refinedFireCrystalsRemaining.toLocaleString()}<br>
       Remaining Time After Speedups: ${formatDuration(remainingTimeSeconds)}
       ${speedupSurplusSeconds > 0 ? `<br>Speedup Surplus: ${formatDuration(speedupSurplusSeconds)}` : ""}
     </div>
