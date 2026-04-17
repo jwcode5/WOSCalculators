@@ -437,6 +437,15 @@ function getHigherRequiredLevel(buildingName, left, right) {
   return String(right);
 }
 
+// Returns the next known level for a building. If the given level is
+// already the highest one, return that same level as a safe clamp.
+function getNextBuildingLevel(buildingName, currentLevel) {
+  const levels = getBuildingLevelOrder(buildingName);
+  const currentIndex = levels.indexOf(String(currentLevel));
+  if (currentIndex < 0) return levels[0] || "1";
+  return levels[Math.min(currentIndex + 1, levels.length - 1)] || String(currentLevel);
+}
+
 // Converts an internal level key like "FC1-2" into a human-
 // friendly label like "FC 1-2" for display in dropdowns.
 function formatLevelLabel(levelKey) {
@@ -561,15 +570,15 @@ function getCustomChestCounts() {
   };
 }
 
-// Greedy algorithm that figures out the best chests to open
-// to cover the given resource deficits.
+// Balanced chest algorithm that spreads usage across resources
+// based on how much of each original deficit is still uncovered.
 //
 // Strategy:
 //   - Always use unsecured chests before secured ones (same level)
 //   - Work from highest level (L3) down to lowest (L1)
-//   - At each level, find whichever resource has the largest
-//     remaining deficit relative to that chest's value, and
-//     assign chests to it first
+//   - Assign one chest at a time so different resources can interleave
+//   - Prefer the resource with the lowest completion percentage,
+//     which keeps the recommendation visually more balanced
 //
 // Returns allocations (how many of each chest per resource),
 // provided (total resources each type contributed),
@@ -583,6 +592,10 @@ function recommendCustomChestUsage(deficits, availableCounts) {
     coal: Math.max(0, deficits.coal || 0),
     iron: Math.max(0, deficits.iron || 0)
   };
+
+  // Keep the starting values so we can compare percentage covered,
+  // not just raw numbers. That avoids dumping all chests into one resource first.
+  const startingDeficits = { ...remainingDeficits };
 
   // Track how many of each chest level we assigned to each resource
   const allocations = {
@@ -609,14 +622,17 @@ function recommendCustomChestUsage(deficits, availableCounts) {
     }
   };
 
-  // Helper: drain 'amount' chests from a level, unsecured first
-  const consumeChests = (level, amount) => {
-    const unsecuredUsed = Math.min(countsLeft[level].unsecured, amount);
-    countsLeft[level].unsecured -= unsecuredUsed;
-    const remaining = amount - unsecuredUsed;
-    const securedUsed = Math.min(countsLeft[level].secured, remaining);
-    countsLeft[level].secured -= securedUsed;
-    return unsecuredUsed + securedUsed;
+  // Helper: drain one chest from a level, unsecured first
+  const consumeChest = (level) => {
+    if (countsLeft[level].unsecured > 0) {
+      countsLeft[level].unsecured -= 1;
+      return 1;
+    }
+    if (countsLeft[level].secured > 0) {
+      countsLeft[level].secured -= 1;
+      return 1;
+    }
+    return 0;
   };
 
   // Process L3 first (most value per chest), then L2, then L1
@@ -624,16 +640,24 @@ function recommendCustomChestUsage(deficits, availableCounts) {
     // Keep assigning chests as long as any are available at this level
     while (countsLeft[level].unsecured + countsLeft[level].secured > 0) {
       let pickResource = null;
-      let maxNeedRatio = 0;
+      let highestUncoveredShare = -1;
+      let highestChestNeed = -1;
 
-      // Find whichever resource has the biggest need relative to
-      // what one chest provides (higher ratio = more urgent)
+      // Find whichever resource has the biggest share of its original
+      // deficit still uncovered. Use chest-need as a tie-breaker.
       BASIC_RESOURCES.forEach(resource => {
         const need = remainingDeficits[resource];
         if (need <= 0) return;
-        const ratio = need / CUSTOM_CHEST_VALUES[level][resource];
-        if (ratio > maxNeedRatio) {
-          maxNeedRatio = ratio;
+        const uncoveredShare = startingDeficits[resource] > 0
+          ? need / startingDeficits[resource]
+          : 0;
+        const chestNeed = need / CUSTOM_CHEST_VALUES[level][resource];
+        if (
+          uncoveredShare > highestUncoveredShare ||
+          (uncoveredShare === highestUncoveredShare && chestNeed > highestChestNeed)
+        ) {
+          highestUncoveredShare = uncoveredShare;
+          highestChestNeed = chestNeed;
           pickResource = resource;
         }
       });
@@ -641,14 +665,10 @@ function recommendCustomChestUsage(deficits, availableCounts) {
       // If no resource has a remaining deficit, stop assigning chests at this level
       if (!pickResource) break;
 
-      const chestValue = CUSTOM_CHEST_VALUES[level][pickResource];
-      const neededForResource = Math.ceil(remainingDeficits[pickResource] / chestValue);
-      const levelAvailable = countsLeft[level].unsecured + countsLeft[level].secured;
-      const toUse = Math.max(1, Math.min(levelAvailable, neededForResource));
-      const consumed = consumeChests(level, toUse);
-
+      const consumed = consumeChest(level);
       if (consumed <= 0) break;
 
+      const chestValue = CUSTOM_CHEST_VALUES[level][pickResource];
       allocations[pickResource][level] += consumed;
       const gained = consumed * chestValue;
       provided[pickResource] += gained;
@@ -787,7 +807,7 @@ function renderOptionalBuildings() {
       optionalBuildings[idx].building = selectedBuilding;
       const levels = getBuildingLevelOrder(selectedBuilding);
       optionalBuildings[idx].currentLevel = levels[0] || "1";
-      optionalBuildings[idx].targetLevel = levels[Math.min(1, levels.length - 1)] || "1";
+      optionalBuildings[idx].targetLevel = getNextBuildingLevel(selectedBuilding, optionalBuildings[idx].currentLevel);
       saveOptionalBuildings();
       renderOptionalBuildings();
     });
@@ -798,7 +818,9 @@ function renderOptionalBuildings() {
     sel.addEventListener("change", function() {
       const idx = parseInt(this.getAttribute("data-index"));
       optionalBuildings[idx].currentLevel = this.value;
+      optionalBuildings[idx].targetLevel = getNextBuildingLevel(optionalBuildings[idx].building, this.value);
       saveOptionalBuildings();
+      renderOptionalBuildings();
     });
   });
 
@@ -823,7 +845,7 @@ function addOptionalBuilding() {
   optionalBuildings.push({
     building: selectedBuilding,
     currentLevel: levels[0],
-    targetLevel: levels[1]
+    targetLevel: getNextBuildingLevel(selectedBuilding, levels[0])
   });
   saveOptionalBuildings();
   renderOptionalBuildings();
