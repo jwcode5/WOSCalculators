@@ -18,6 +18,14 @@ let optionalBuildings = [];     // Extra buildings the user added manually
 let bearHuntMails = [];         // Bear Hunt Mail reward rows
 let accounts = [];              // All saved accounts (Option B blob model)
 let activeAccountId = null;     // ID of the currently selected account
+let activeCalculator = localStorage.getItem("wosCalc_activeCalculator") || "upgrade";
+
+const CALCULATOR_KEYS = {
+  UPGRADE: "upgrade",
+  CHIEF_GEAR: "chiefGear",
+  CHIEF_CHARM: "chiefCharm",
+  WHAT_IF: "whatIf"
+};
 
 // ============================================================
 // CONSTANTS — SUPPLY FIELD IDs
@@ -123,12 +131,8 @@ function generateAccountId() {
   return "acct_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
 }
 
-// Returns a brand-new account object with default values.
-// All fields match what the page uses so nothing is undefined.
-function createDefaultAccount(name) {
+function createDefaultUpgradeState() {
   return {
-    id: generateAccountId(),
-    name: name || "Account 1",
     building: "furnace",
     currentLevel: null,
     targetLevel: null,
@@ -136,6 +140,76 @@ function createDefaultAccount(name) {
     optionalBuildings: [],
     bearHuntMails: [],
     prereqState: {}
+  };
+}
+
+// Ensures each account has calculator namespaces. Also migrates
+// legacy top-level upgrade fields into calculators.upgrade.
+function ensureAccountCalculatorShape(account) {
+  if (!account || typeof account !== "object") return createDefaultAccount("Account");
+
+  const legacyUpgrade = {
+    building: account.building,
+    currentLevel: account.currentLevel,
+    targetLevel: account.targetLevel,
+    supplies: account.supplies,
+    optionalBuildings: account.optionalBuildings,
+    bearHuntMails: account.bearHuntMails,
+    prereqState: account.prereqState
+  };
+
+  const calculators = (account.calculators && typeof account.calculators === "object") ? account.calculators : {};
+  const existingUpgrade = (calculators.upgrade && typeof calculators.upgrade === "object") ? calculators.upgrade : {};
+
+  const mergedUpgrade = {
+    ...createDefaultUpgradeState(),
+    ...legacyUpgrade,
+    ...existingUpgrade,
+    supplies: {
+      ...(createDefaultUpgradeState().supplies || {}),
+      ...(legacyUpgrade.supplies || {}),
+      ...(existingUpgrade.supplies || {})
+    },
+    optionalBuildings: Array.isArray(existingUpgrade.optionalBuildings)
+      ? [...existingUpgrade.optionalBuildings]
+      : (Array.isArray(legacyUpgrade.optionalBuildings) ? [...legacyUpgrade.optionalBuildings] : []),
+    bearHuntMails: Array.isArray(existingUpgrade.bearHuntMails)
+      ? [...existingUpgrade.bearHuntMails]
+      : (Array.isArray(legacyUpgrade.bearHuntMails) ? [...legacyUpgrade.bearHuntMails] : []),
+    prereqState: {
+      ...(legacyUpgrade.prereqState || {}),
+      ...(existingUpgrade.prereqState || {})
+    }
+  };
+
+  calculators.upgrade = mergedUpgrade;
+  calculators.chiefGear = (calculators.chiefGear && typeof calculators.chiefGear === "object") ? calculators.chiefGear : {};
+  calculators.chiefCharm = (calculators.chiefCharm && typeof calculators.chiefCharm === "object") ? calculators.chiefCharm : {};
+  calculators.whatIf = (calculators.whatIf && typeof calculators.whatIf === "object") ? calculators.whatIf : {};
+
+  account.calculators = calculators;
+  return account;
+}
+
+function getUpgradeStateFromAccount(account) {
+  if (!account) return createDefaultUpgradeState();
+  ensureAccountCalculatorShape(account);
+  return account.calculators.upgrade || createDefaultUpgradeState();
+}
+
+// Returns a brand-new account object with default values.
+// All fields match what the page uses so nothing is undefined.
+function createDefaultAccount(name) {
+  const upgradeDefaults = createDefaultUpgradeState();
+  return {
+    id: generateAccountId(),
+    name: name || "Account 1",
+    calculators: {
+      upgrade: { ...upgradeDefaults },
+      chiefGear: {},
+      chiefCharm: {},
+      whatIf: {}
+    }
   };
 }
 
@@ -169,18 +243,27 @@ function initAccounts() {
     try { accounts = JSON.parse(savedAccountsRaw); } catch (e) { accounts = []; }
   }
 
+  if (Array.isArray(accounts)) {
+    accounts = accounts.map(acc => ensureAccountCalculatorShape(acc));
+    if (accounts.length) {
+      localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
+    }
+  }
+
   if (!Array.isArray(accounts) || accounts.length === 0) {
     const defaultAccount = createDefaultAccount("Account 1");
     // Migrate any existing flat localStorage keys into the default account
     const oldBuilding = localStorage.getItem("wosCalc_building");
     if (oldBuilding) {
-      defaultAccount.building = oldBuilding;
-      defaultAccount.currentLevel = localStorage.getItem("wosCalc_currentLevel");
-      defaultAccount.targetLevel = localStorage.getItem("wosCalc_targetLevel");
-      try { defaultAccount.optionalBuildings = JSON.parse(localStorage.getItem("wosCalc_optionalBuildings") || "[]"); } catch (e) {}
-      try { defaultAccount.supplies = JSON.parse(localStorage.getItem("wosCalc_supplies") || "{}"); } catch (e) {}
-      try { defaultAccount.bearHuntMails = JSON.parse(localStorage.getItem("wosCalc_bearHuntMails") || "[]"); } catch (e) {}
-      try { defaultAccount.prereqState = JSON.parse(localStorage.getItem("wosCalc_prereqState") || "{}"); } catch (e) {}
+      const migratedUpgrade = { ...createDefaultUpgradeState() };
+      migratedUpgrade.building = oldBuilding;
+      migratedUpgrade.currentLevel = localStorage.getItem("wosCalc_currentLevel");
+      migratedUpgrade.targetLevel = localStorage.getItem("wosCalc_targetLevel");
+      try { migratedUpgrade.optionalBuildings = JSON.parse(localStorage.getItem("wosCalc_optionalBuildings") || "[]"); } catch (e) {}
+      try { migratedUpgrade.supplies = JSON.parse(localStorage.getItem("wosCalc_supplies") || "{}"); } catch (e) {}
+      try { migratedUpgrade.bearHuntMails = JSON.parse(localStorage.getItem("wosCalc_bearHuntMails") || "[]"); } catch (e) {}
+      try { migratedUpgrade.prereqState = JSON.parse(localStorage.getItem("wosCalc_prereqState") || "{}"); } catch (e) {}
+      defaultAccount.calculators.upgrade = migratedUpgrade;
       ["wosCalc_building", "wosCalc_currentLevel", "wosCalc_targetLevel",
        "wosCalc_optionalBuildings", "wosCalc_supplies", "wosCalc_bearHuntMails",
        "wosCalc_prereqState"].forEach(k => localStorage.removeItem(k));
@@ -249,13 +332,21 @@ function captureCurrentStateToAccount() {
   });
   // The spread [...array] creates a shallow copy so we're not storing
   // a reference to the live array (which could change later)
+  const account = getActiveAccount();
+  const existingUpgrade = getUpgradeStateFromAccount(account);
   updateActiveAccount({
-    building,
-    currentLevel,
-    targetLevel,
-    supplies,
-    optionalBuildings: [...optionalBuildings],
-    bearHuntMails: [...bearHuntMails]
+    calculators: {
+      ...(account?.calculators || {}),
+      upgrade: {
+        ...existingUpgrade,
+        building,
+        currentLevel,
+        targetLevel,
+        supplies,
+        optionalBuildings: [...optionalBuildings],
+        bearHuntMails: [...bearHuntMails]
+      }
+    }
   });
 }
 
@@ -265,10 +356,17 @@ function captureCurrentStateToAccount() {
 // 3. Load all state from the new account
 function switchAccount(id) {
   if (id === activeAccountId) return; // Already on this account, nothing to do
-  captureCurrentStateToAccount();
+  if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
+    captureCurrentStateToAccount();
+  }
   activeAccountId = id;
   localStorage.setItem("wosCalc_activeAccountId", id);
-  loadAllStateFromAccount();
+  if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
+    loadAllStateFromAccount();
+  } else {
+    renderAccountSelector();
+    renderComingSoonPanel(activeCalculator);
+  }
 }
 
 // Reads the active account's saved state and populates all
@@ -277,23 +375,24 @@ function switchAccount(id) {
 // and whenever you switch accounts.
 function loadAllStateFromAccount() {
   const account = getActiveAccount();
+  const upgradeState = getUpgradeStateFromAccount(account);
   // Don't try to restore if data isn't loaded yet
   if (!account || !BUILDING_COSTS) return;
 
   const targetBuildingSelect = document.getElementById("targetBuilding");
-  if (account.building && [...targetBuildingSelect.options].map(o => o.value).includes(account.building)) {
-    targetBuildingSelect.value = account.building;
+  if (upgradeState.building && [...targetBuildingSelect.options].map(o => o.value).includes(upgradeState.building)) {
+    targetBuildingSelect.value = upgradeState.building;
   }
   const selectedBuilding = targetBuildingSelect.value;
   updateMainLevelSelectors(selectedBuilding);
 
   const currentLevelSelect = document.getElementById("currentLevel");
   const targetLevelSelect = document.getElementById("targetLevel");
-  if (account.currentLevel && [...currentLevelSelect.options].map(o => o.value).includes(account.currentLevel)) {
-    currentLevelSelect.value = account.currentLevel;
+  if (upgradeState.currentLevel && [...currentLevelSelect.options].map(o => o.value).includes(upgradeState.currentLevel)) {
+    currentLevelSelect.value = upgradeState.currentLevel;
   }
-  if (account.targetLevel && [...targetLevelSelect.options].map(o => o.value).includes(account.targetLevel)) {
-    targetLevelSelect.value = account.targetLevel;
+  if (upgradeState.targetLevel && [...targetLevelSelect.options].map(o => o.value).includes(upgradeState.targetLevel)) {
+    targetLevelSelect.value = upgradeState.targetLevel;
   }
 
   const currentLevelKey = currentLevelSelect.value;
@@ -301,13 +400,13 @@ function loadAllStateFromAccount() {
   updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
   updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey);
 
-  optionalBuildings = Array.isArray(account.optionalBuildings) ? [...account.optionalBuildings] : [];
+  optionalBuildings = Array.isArray(upgradeState.optionalBuildings) ? [...upgradeState.optionalBuildings] : [];
   renderOptionalBuildings();
 
-  bearHuntMails = Array.isArray(account.bearHuntMails) ? [...account.bearHuntMails] : [];
+  bearHuntMails = Array.isArray(upgradeState.bearHuntMails) ? [...upgradeState.bearHuntMails] : [];
   renderBearHuntMails();
 
-  const supplies = account.supplies || {};
+  const supplies = upgradeState.supplies || {};
   SUPPLY_FIELD_IDS.forEach(id => {
     const el = document.getElementById(id);
     if (!el || !(id in supplies)) return;
@@ -340,6 +439,78 @@ function renderAccountSelector() {
 
   const deleteBtn = document.getElementById("deleteAccountBtn");
   if (deleteBtn) deleteBtn.disabled = accounts.length <= 1; // Prevent deleting the last account
+}
+
+function renderComingSoonPanel(calculatorKey) {
+  const titleEl = document.getElementById("comingSoonTitle");
+  const messageEl = document.getElementById("comingSoonMessage");
+  const accountNameEl = document.getElementById("comingSoonAccountName");
+  const account = getActiveAccount();
+  const accountName = account?.name || "this account";
+
+  const friendlyNameMap = {
+    [CALCULATOR_KEYS.CHIEF_GEAR]: "Chief Gear Calculator",
+    [CALCULATOR_KEYS.CHIEF_CHARM]: "Chief Charm Calculator",
+    [CALCULATOR_KEYS.WHAT_IF]: "What If Calculator"
+  };
+
+  const calculatorName = friendlyNameMap[calculatorKey] || "Calculator";
+  if (titleEl) titleEl.textContent = `${calculatorName} - Coming Soon`;
+  if (accountNameEl) accountNameEl.textContent = accountName;
+  if (messageEl) {
+    messageEl.textContent = `Account data is already structured for ${accountName}. When ${calculatorName} goes live, its values will be saved under this same account and will switch with your account selector.`;
+  }
+}
+
+function ensureCalculatorBucketForActiveAccount(calculatorKey) {
+  const account = getActiveAccount();
+  if (!account || calculatorKey === CALCULATOR_KEYS.UPGRADE) return;
+
+  const nowIso = new Date().toISOString();
+  const calculators = { ...(account.calculators || {}) };
+  const existingBucket = (calculators[calculatorKey] && typeof calculators[calculatorKey] === "object")
+    ? calculators[calculatorKey]
+    : {};
+
+  calculators[calculatorKey] = {
+    initializedAt: existingBucket.initializedAt || nowIso,
+    lastVisitedAt: nowIso,
+    ...existingBucket
+  };
+
+  updateActiveAccount({ calculators });
+}
+
+function setActiveCalculator(calculatorKey) {
+  const safeKey = Object.values(CALCULATOR_KEYS).includes(calculatorKey)
+    ? calculatorKey
+    : CALCULATOR_KEYS.UPGRADE;
+
+  if (activeCalculator === CALCULATOR_KEYS.UPGRADE && safeKey !== CALCULATOR_KEYS.UPGRADE) {
+    captureCurrentStateToAccount();
+  }
+
+  activeCalculator = safeKey;
+  localStorage.setItem("wosCalc_activeCalculator", activeCalculator);
+
+  ensureCalculatorBucketForActiveAccount(activeCalculator);
+
+  document.querySelectorAll(".calculator-tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.calculator === activeCalculator);
+  });
+
+  const upgradePanel = document.getElementById("upgradeCalculatorPanel");
+  const comingSoonPanel = document.getElementById("comingSoonPanel");
+
+  if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
+    if (upgradePanel) upgradePanel.style.display = "block";
+    if (comingSoonPanel) comingSoonPanel.style.display = "none";
+    loadAllStateFromAccount();
+  } else {
+    if (upgradePanel) upgradePanel.style.display = "none";
+    if (comingSoonPanel) comingSoonPanel.style.display = "block";
+    renderComingSoonPanel(activeCalculator);
+  }
 }
 
 
@@ -485,10 +656,11 @@ function saveTargetBuildingState() {
 // in the same shape the old code expected.
 function loadTargetBuildingState() {
   const account = getActiveAccount();
+  const upgradeState = getUpgradeStateFromAccount(account);
   return {
-    savedBuilding: account?.building || null,
-    savedCurrent: account?.currentLevel || null,
-    savedTarget: account?.targetLevel || null
+    savedBuilding: upgradeState?.building || null,
+    savedCurrent: upgradeState?.currentLevel || null,
+    savedTarget: upgradeState?.targetLevel || null
   };
 }
 
@@ -501,7 +673,8 @@ function saveOptionalBuildings() {
 // re-renders the list on the page.
 function loadOptionalBuildings() {
   const account = getActiveAccount();
-  optionalBuildings = Array.isArray(account?.optionalBuildings) ? [...account.optionalBuildings] : [];
+  const upgradeState = getUpgradeStateFromAccount(account);
+  optionalBuildings = Array.isArray(upgradeState?.optionalBuildings) ? [...upgradeState.optionalBuildings] : [];
   renderOptionalBuildings();
 }
 
@@ -523,7 +696,8 @@ function saveSuppliesState() {
 // populates every form field listed in SUPPLY_FIELD_IDS.
 function loadSuppliesState() {
   const account = getActiveAccount();
-  const supplies = account?.supplies || {};
+  const upgradeState = getUpgradeStateFromAccount(account);
+  const supplies = upgradeState?.supplies || {};
   SUPPLY_FIELD_IDS.forEach(id => {
     const el = document.getElementById(id);
     if (!el || !(id in supplies)) return;
@@ -714,16 +888,28 @@ function applyTheme(theme) {
 function savePrerequisiteState(buildingName, state) {
   const account = getActiveAccount();
   if (!account) return;
-  if (!account.prereqState) account.prereqState = {};
-  account.prereqState[buildingName] = state;
-  updateActiveAccount({ prereqState: account.prereqState });
+  const existingUpgrade = getUpgradeStateFromAccount(account);
+  const nextPrereqState = {
+    ...(existingUpgrade.prereqState || {}),
+    [buildingName]: state
+  };
+  updateActiveAccount({
+    calculators: {
+      ...(account.calculators || {}),
+      upgrade: {
+        ...existingUpgrade,
+        prereqState: nextPrereqState
+      }
+    }
+  });
 }
 
 // Returns the saved prerequisite state for one building,
 // or an empty object if nothing has been saved yet.
 function loadPrerequisiteState(buildingName) {
   const account = getActiveAccount();
-  const prereqState = account?.prereqState || {};
+  const upgradeState = getUpgradeStateFromAccount(account);
+  const prereqState = upgradeState?.prereqState || {};
   return prereqState[buildingName] || {};
 }
 
@@ -893,7 +1079,8 @@ function saveBearHuntMails() {
 // Reads bear hunt rows from the active account and re-renders.
 function loadBearHuntMails() {
   const account = getActiveAccount();
-  bearHuntMails = Array.isArray(account?.bearHuntMails) ? [...account.bearHuntMails] : [];
+  const upgradeState = getUpgradeStateFromAccount(account);
+  bearHuntMails = Array.isArray(upgradeState?.bearHuntMails) ? [...upgradeState.bearHuntMails] : [];
   renderBearHuntMails();
 }
 
@@ -1449,6 +1636,8 @@ async function loadData() {
     // Load all state from the active account
     loadAllStateFromAccount();
 
+    setActiveCalculator(activeCalculator);
+
     applyTheme(loadThemePreference());
   } catch (error) {
     console.error("Error loading data:", error);
@@ -1562,6 +1751,14 @@ if (deleteAccountBtn) {
 // ============================================================
 // EVENT LISTENERS — MISC UI
 // ============================================================
+
+document.querySelectorAll(".calculator-tab").forEach(tab => {
+  tab.addEventListener("click", function() {
+    const nextCalculator = this.dataset.calculator;
+    if (!nextCalculator) return;
+    setActiveCalculator(nextCalculator);
+  });
+});
 
 // "Use Custom Chests" checkbox: show/hide the chest inputs and save
 const useCustomChestsToggle = document.getElementById("useCustomChests");

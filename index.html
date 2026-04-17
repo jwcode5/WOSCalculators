@@ -33,6 +33,28 @@
       </div>
     </div>
 
+    <nav class="calculator-tabs" aria-label="Calculator tabs">
+      <button type="button" class="calculator-tab" data-calculator="upgrade">Upgrade</button>
+      <button type="button" class="calculator-tab" data-calculator="chiefGear">Chief Gear</button>
+      <button type="button" class="calculator-tab" data-calculator="chiefCharm">Chief Charm</button>
+      <button type="button" class="calculator-tab" data-calculator="whatIf">What If</button>
+    </nav>
+
+    <div class="site-links" aria-label="Site links">
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+
+    <section id="comingSoonPanel" class="coming-soon-panel" style="display: none;">
+      <h2 id="comingSoonTitle">Coming Soon</h2>
+      <p class="coming-soon-account">Active account: <strong id="comingSoonAccountName"></strong></p>
+      <p id="comingSoonMessage"></p>
+      <p>This calculator tab is visible now as a placeholder so users can see what is planned next.</p>
+      <p>Once this calculator is live, this message can be removed and replaced with the full tool.</p>
+    </section>
+
+    <div id="upgradeCalculatorPanel">
+
     <!-- Primary "what am I upgrading?" inputs -->
     <fieldset>
       <legend>Target Building</legend>
@@ -188,6 +210,7 @@
 
     <!-- script.js replaces this placeholder with generated result cards -->
     <section id="result" class="result">Loading building data...</section>
+    </div>
   </main>
 </body>
 </html>
