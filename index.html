@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Basic document metadata and asset loading -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#071533" />
@@ -10,6 +11,10 @@
   <script src="script.js" defer></script>
 </head>
 <body>
+  <!--
+    The page is organized into fieldsets so related controls stay grouped.
+    script.js reads these ids directly, so the id values are part of the app's API.
+  -->
   <main class="container">
     <div class="top-row">
       <div>
@@ -18,7 +23,7 @@
       <button id="themeToggleBtn" type="button" class="theme-toggle">Dark Mode</button>
     </div>
 
-    <!-- Account Bar -->
+    <!-- Account switching controls for the multi-account save system -->
     <div class="account-bar">
       <select id="accountSelect" class="account-select"></select>
       <div class="account-btn-group">
@@ -28,7 +33,7 @@
       </div>
     </div>
 
-    <!-- Target Building Selection -->
+    <!-- Primary "what am I upgrading?" inputs -->
     <fieldset>
       <legend>Target Building</legend>
       <label for="targetBuilding">Building</label>
@@ -57,7 +62,7 @@
       </div>
     </fieldset>
 
-    <!-- Backpack Resources -->
+    <!-- Resources and speedups currently owned by the player -->
     <fieldset>
       <legend>Your Resources</legend>
       <label for="ownedMeat">Meat</label>
@@ -72,6 +77,7 @@
       <label for="ownedIron">Iron</label>
       <input id="ownedIron" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
+      <!-- Fire Crystal inputs stay hidden until an FC-tier upgrade is selected -->
       <div id="fcSuppliesSection" style="display: none; margin-top: 12px;">
         <label for="ownedFireCrystals">Fire Crystals</label>
         <input id="ownedFireCrystals" type="text" value="0" inputmode="text" placeholder="e.g. 1200" />
@@ -85,6 +91,7 @@
         Use Custom Resource Chests
       </label>
 
+      <!-- Extra chest inputs only appear when the user enables chest planning -->
       <div id="customChestSection" style="display: none; margin-top: 12px;">
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 10px;">
           <div style="flex: 1 1 180px; min-width: 160px;">
@@ -127,6 +134,7 @@
       <input id="constructionSpeedups" type="number" min="0" value="0" />
     </fieldset>
 
+    <!-- Percentage-based buffs that reduce total construction time -->
     <fieldset>
       <legend>Construction Buffs (%)</legend>
       <label for="doubleTimeEnabled" class="checkbox-row">
@@ -156,20 +164,20 @@
       <input id="positionBuffPct" type="number" min="0" step="0.1" value="0" />
     </fieldset>
 
-    <!-- Prerequisites Section -->
+    <!-- Filled dynamically with prerequisite buildings for the chosen target -->
     <fieldset id="prerequisitesSection" style="display: none;">
       <legend>Required Buildings</legend>
       <div id="prerequisitesContainer"></div>
     </fieldset>
 
-    <!-- Optional Additional Buildings Section -->
+    <!-- Extra buildings the user wants to include in the same calculation -->
     <fieldset id="optionalBuildingsSection">
       <legend>Optional Additional Buildings</legend>
       <div id="optionalBuildingsContainer"></div>
       <button id="addBuildingBtn" type="button">+ Add Building</button>
     </fieldset>
 
-    <!-- Bear Hunt Mails Section -->
+    <!-- Bear Hunt mail rewards that can be counted as available resources -->
     <fieldset>
       <legend>Bear Hunt Mail</legend>
       <div id="bearHuntMailsContainer"></div>
@@ -178,6 +186,7 @@
 
     <button id="calculateBtn" type="button">Calculate</button>
 
+    <!-- script.js replaces this placeholder with generated result cards -->
     <section id="result" class="result">Loading building data...</section>
   </main>
 </body>

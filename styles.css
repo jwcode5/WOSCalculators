@@ -1,4 +1,8 @@
-﻿:root {
+﻿/*
+  Theme tokens live here so the rest of the stylesheet can reference
+  reusable variables instead of repeating raw colors everywhere.
+*/
+:root {
   --bg: #071533;
   --surface: rgba(12, 34, 80, 0.92);
   --surface-alt: rgba(19, 47, 97, 0.94);
@@ -25,6 +29,7 @@ body {
   min-height: 100vh;
 }
 
+/* Alternate palette used when script.js sets data-theme="dark" on <body> */
 body[data-theme="dark"] {
   --bg: #090f1f;
   --surface: #111827;
@@ -44,15 +49,18 @@ body[data-theme="dark"] {
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
+/* The default WOS theme keeps the branded page background */
 body[data-theme="wos"] {
   background: radial-gradient(circle at top, #1d4d9d 0%, #0b2558 45%, #071533 100%);
 }
 
+/* Some browsers treat <select> colors differently, so these rules force consistency */
 body[data-theme="dark"] select {
   background-color: var(--input-bg) !important;
   color: var(--text) !important;
 }
 
+/* The main app card that centers the calculator on the page */
 .container {
   max-width: 560px;
   margin: 30px auto;
@@ -63,6 +71,7 @@ body[data-theme="dark"] select {
   box-shadow: var(--shadow);
 }
 
+/* Header row keeps the title and theme toggle aligned side by side */
 .top-row {
   display: flex;
   align-items: flex-start;
@@ -82,6 +91,7 @@ body[data-theme="dark"] select {
   color: var(--muted);
 }
 
+/* Reusable button styling for the theme switcher */
 .theme-toggle {
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -98,6 +108,7 @@ body[data-theme="dark"] select {
   background: rgba(255, 255, 255, 0.18);
 }
 
+/* Account controls stack vertically so the selector stays full width */
 .account-bar {
   display: flex;
   flex-direction: column;
@@ -120,6 +131,7 @@ body[data-theme="dark"] select {
   gap: 8px;
 }
 
+/* Shared styling for the account action buttons */
 .account-btn {
   padding: 8px 12px;
   border: 1px solid var(--border);
@@ -159,6 +171,7 @@ body[data-theme="dark"] select {
   background: rgba(255, 107, 107, 0.35) !important;
 }
 
+/* Fieldsets act like visual sections for the form */
 fieldset {
   margin: 0 0 16px;
   padding: 16px;
@@ -189,6 +202,7 @@ label {
   color: var(--text);
 }
 
+/* Shared control styling keeps inputs, selects, and buttons visually consistent */
 input,
 select,
 button {
@@ -203,6 +217,7 @@ button {
   border-radius: 12px;
 }
 
+/* Custom arrow styling avoids the default browser select appearance */
 select {
   color: var(--text) !important;
   background: var(--input-bg) !important;
@@ -239,6 +254,7 @@ body:not([data-theme="dark"]) select {
   color: var(--text) !important;
 }
 
+/* Checkbox inputs are intentionally exempt from full-width control styling */
 input[type="checkbox"] {
   width: auto;
   min-height: auto;
@@ -264,6 +280,7 @@ button:hover {
   opacity: 0.95;
 }
 
+/* Primary call-to-action buttons share the accent gradient */
 #addBuildingBtn,
 #calculateBtn {
   background: linear-gradient(135deg, var(--accent), var(--button));
@@ -275,6 +292,7 @@ button:hover {
   font-weight: 700;
 }
 
+/* Result cards are injected by script.js after a calculation runs */
 .card-panel {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -299,6 +317,7 @@ button:hover {
   margin-top: 10px;
 }
 
+/* Small-screen adjustments keep the layout usable on phones */
 @media (max-width: 640px) {
   .container {
     margin: 14px;
