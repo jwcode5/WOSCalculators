@@ -458,9 +458,7 @@ function renderComingSoonPanel(calculatorKey) {
   if (titleEl) titleEl.textContent = `${calculatorName} - Coming Soon`;
   if (accountNameEl) accountNameEl.textContent = accountName;
   if (messageEl) {
-    const baseMessage = `Account data is already structured for ${accountName}. When ${calculatorName} goes live, its values will be saved under this same account and will switch with your account selector.`;
-    const testSuffix = calculatorKey === CALCULATOR_KEYS.WHAT_IF ? " this is a test" : "";
-    messageEl.textContent = `${baseMessage}${testSuffix}`;
+    messageEl.textContent = `Account data is already structured for ${accountName}. When ${calculatorName} goes live, its values will be saved under this same account and will switch with your account selector.`;
   }
 }
 
