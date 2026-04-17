@@ -44,6 +44,7 @@ const SUPPLY_FIELD_IDS = [
   "constructionSpeedups",
   "constructionSpeedPct",
   "hyenaBuffPct",
+  "zinmanBastionistPct",
   "positionBuffPct",
   "doubleTimeEnabled",
   "castleBuffEnabled",
@@ -1853,9 +1854,12 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const constructionSpeedupsMinutes = parseInt(document.getElementById("constructionSpeedups").value) || 0;
   const constructionSpeedPct = parseFloat(document.getElementById("constructionSpeedPct").value) || 0;
   const hyenaBuffPct = parseFloat(document.getElementById("hyenaBuffPct").value) || 0;
+  const zinmanResourceDiscountPct = parseFloat(document.getElementById("zinmanBastionistPct").value) || 0;
   const doubleTimePct = document.getElementById("doubleTimeEnabled").checked ? 20 : 0;
   const castleBuffPct = document.getElementById("castleBuffEnabled").checked ? 10 : 0;
   const positionBuffPct = parseFloat(document.getElementById("positionBuffPct").value) || 0;
+  const clampedZinmanResourceDiscountPct = Math.max(0, Math.min(100, zinmanResourceDiscountPct));
+  const zinmanResourceMultiplier = 1 - (clampedZinmanResourceDiscountPct / 100);
 
   // --- Build list of buildings to calculate ---
   // Start with the main target building
@@ -1906,6 +1910,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 
   // Calculate total cost across all buildings
   // --- Sum costs across all buildings ---
+  let baseTotalWood = 0, baseTotalMeat = 0, baseTotalCoal = 0, baseTotalIron = 0;
   let totalWood = 0, totalMeat = 0, totalCoal = 0, totalIron = 0;
   let totalFireCrystals = 0, totalRefinedFireCrystals = 0;
   let totalSeconds = 0;
@@ -1913,6 +1918,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 
   for (const item of buildingsToCalc) {
     const { building, currentLevel: curLvl, targetLevel: tgtLvl } = item;
+    let baseBuildingWood = 0, baseBuildingMeat = 0, baseBuildingCoal = 0, baseBuildingIron = 0;
     let buildingWood = 0, buildingMeat = 0, buildingCoal = 0, buildingIron = 0;
     let buildingFireCrystals = 0, buildingRefinedFireCrystals = 0;
 
@@ -1924,15 +1930,35 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       const levelData = BUILDING_COSTS[building][level];
       if (!levelData) continue;
 
-      buildingWood += levelData.wood || 0;
-      buildingMeat += levelData.meat || 0;
-      buildingCoal += levelData.coal || 0;
-      buildingIron += levelData.iron || 0;
-      buildingFireCrystals += levelData.fireCrystals || 0;
-      buildingRefinedFireCrystals += levelData.refinedFireCrystals || 0;
+      const levelWood = levelData.wood || 0;
+      const levelMeat = levelData.meat || 0;
+      const levelCoal = levelData.coal || 0;
+      const levelIron = levelData.iron || 0;
+      const levelFireCrystals = levelData.fireCrystals || 0;
+      const levelRefinedFireCrystals = levelData.refinedFireCrystals || 0;
+
+      baseBuildingWood += levelWood;
+      baseBuildingMeat += levelMeat;
+      baseBuildingCoal += levelCoal;
+      baseBuildingIron += levelIron;
+      buildingWood += levelWood;
+      buildingMeat += levelMeat;
+      buildingCoal += levelCoal;
+      buildingIron += levelIron;
+      buildingFireCrystals += levelFireCrystals;
+      buildingRefinedFireCrystals += levelRefinedFireCrystals;
       totalSeconds += levelData.seconds || 0;
     }
 
+    buildingWood = Math.floor(buildingWood * zinmanResourceMultiplier);
+    buildingMeat = Math.floor(buildingMeat * zinmanResourceMultiplier);
+    buildingCoal = Math.floor(buildingCoal * zinmanResourceMultiplier);
+    buildingIron = Math.floor(buildingIron * zinmanResourceMultiplier);
+
+    baseTotalWood += baseBuildingWood;
+    baseTotalMeat += baseBuildingMeat;
+    baseTotalCoal += baseBuildingCoal;
+    baseTotalIron += baseBuildingIron;
     totalWood += buildingWood;
     totalMeat += buildingMeat;
     totalCoal += buildingCoal;
@@ -2052,8 +2078,8 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       Wood: ${totalWood.toLocaleString()} | 
       Coal: ${totalCoal.toLocaleString()} | 
       Iron: ${totalIron.toLocaleString()}<br>
-      Fire Crystals: ${totalFireCrystals.toLocaleString()} | 
-      Refined Fire Crystals: ${totalRefinedFireCrystals.toLocaleString()}<br>
+      ${totalFireCrystals > 0 || totalRefinedFireCrystals > 0 ? `Fire Crystals: ${totalFireCrystals.toLocaleString()} | Refined Fire Crystals: ${totalRefinedFireCrystals.toLocaleString()}<br>` : ""}
+      ${clampedZinmanResourceDiscountPct > 0 ? `Base Cost Before Zinman Discount — Meat: ${baseTotalMeat.toLocaleString()} | Wood: ${baseTotalWood.toLocaleString()} | Coal: ${baseTotalCoal.toLocaleString()} | Iron: ${baseTotalIron.toLocaleString()}<br>` : ""}
       Total Upgrade Time (Base): ${formatDuration(totalSeconds)}<br>
       Additive Speed (${additiveSpeedPct.toFixed(1)}%): ${formatDuration(additiveAdjustedSeconds)} (${formatDuration(additiveTimeSavedSeconds)} saved)<br>
       Double Time (${clampedDoubleTimePct.toFixed(1)}%): ${formatDuration(doubleTimeAdjustedSeconds)} (${formatDuration(doubleTimeSavedSeconds)} saved)
@@ -2064,8 +2090,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       Wood: ${woodRemaining.toLocaleString()} | 
       Coal: ${coalRemaining.toLocaleString()} | 
       Iron: ${ironRemaining.toLocaleString()}<br>
-      Fire Crystals: ${fireCrystalsRemaining.toLocaleString()} | 
-      Refined Fire Crystals: ${refinedFireCrystalsRemaining.toLocaleString()}<br>
+      ${totalFireCrystals > 0 || totalRefinedFireCrystals > 0 ? `Fire Crystals: ${fireCrystalsRemaining.toLocaleString()} | Refined Fire Crystals: ${refinedFireCrystalsRemaining.toLocaleString()}<br>` : ""}
       Remaining Time After Speedups: ${formatDuration(remainingTimeSeconds)}
       ${speedupSurplusSeconds > 0 ? `<br>Speedup Surplus: ${formatDuration(speedupSurplusSeconds)}` : ""}
     </div>
