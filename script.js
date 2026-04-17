@@ -326,10 +326,18 @@ function loadAllStateFromAccount() {
 function renderAccountSelector() {
   const select = document.getElementById("accountSelect");
   if (!select) return;
-  // Build the <option> tags from the accounts array
-  select.innerHTML = accounts
-    .map(a => `<option value="${a.id}"${a.id === activeAccountId ? " selected" : ""}>${a.name}</option>`)
-    .join("");
+
+  // Build option nodes directly instead of interpolating account names into
+  // HTML strings. That keeps user-provided names as plain text.
+  select.innerHTML = "";
+  accounts.forEach(account => {
+    const option = document.createElement("option");
+    option.value = account.id;
+    option.textContent = account.name;
+    option.selected = account.id === activeAccountId;
+    select.appendChild(option);
+  });
+
   const deleteBtn = document.getElementById("deleteAccountBtn");
   if (deleteBtn) deleteBtn.disabled = accounts.length <= 1; // Prevent deleting the last account
 }
@@ -766,7 +774,7 @@ function renderOptionalBuildings() {
               ${buildingOptions}
             </select>
           </div>
-          <button type="button" class="removeOptionalBtn" data-index="${index}" style="background-color: #ff6b6b; color: white; padding: 10px 14px; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;">Remove</button>
+          <button type="button" class="removeOptionalBtn inlineActionBtn inlineActionBtnDanger" data-index="${index}">Remove</button>
         </div>
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 1 1 150px; min-width: 130px;">
@@ -902,8 +910,13 @@ function renderBearHuntMails() {
 
   let html = "";
   bearHuntMails.forEach((mail, index) => {
+    const safeTierIndex = Number.isInteger(Number(mail.tierIndex))
+      ? Math.max(0, Math.min(BEAR_HUNT_TIERS.length - 1, Number(mail.tierIndex)))
+      : 0;
+    const parsedMailCount = parseInt(String(mail.count ?? "1"), 10);
+    const safeMailCount = Number.isNaN(parsedMailCount) ? 1 : Math.max(0, parsedMailCount);
     const tierOptions = BEAR_HUNT_TIERS
-      .map((tier, i) => `<option value="${i}"${i === mail.tierIndex ? " selected" : ""}>${tier.label}</option>`)
+      .map((tier, i) => `<option value="${i}"${i === safeTierIndex ? " selected" : ""}>${tier.label}</option>`)
       .join("");
 
     html += `
@@ -917,9 +930,9 @@ function renderBearHuntMails() {
           </div>
           <div style="flex: 1 1 100px; min-width: 80px;">
             <label for="bearHuntCount_${index}">Mail</label>
-            <input id="bearHuntCount_${index}" type="number" min="0" value="${mail.count || 1}" class="bearHuntCountInput" data-index="${index}" style="width: 100%;" />
+            <input id="bearHuntCount_${index}" type="number" min="0" value="${safeMailCount}" class="bearHuntCountInput" data-index="${index}" style="width: 100%;" />
           </div>
-          <button type="button" class="removeBearHuntBtn" data-index="${index}" style="background-color: #ff6b6b; color: white; padding: 10px 14px; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;">Remove</button>
+          <button type="button" class="removeBearHuntBtn inlineActionBtn inlineActionBtnDanger" data-index="${index}">Remove</button>
         </div>
       </div>
     `;
@@ -1267,7 +1280,7 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
           <label for="prereqBatchCurrent">Set all current levels</label>
           <select id="prereqBatchCurrent"></select>
         </div>
-        <button id="setAllPrereqCurrentBtn" type="button" style="background-color: #4a90e2; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer;">Set All</button>
+        <button id="setAllPrereqCurrentBtn" type="button" class="inlineActionBtn inlineActionBtnPrimary">Set All</button>
       </div>
     `;
 

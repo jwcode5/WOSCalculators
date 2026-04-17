@@ -280,6 +280,25 @@ button:hover {
   opacity: 0.95;
 }
 
+.inlineActionBtn {
+  width: auto;
+  flex: 0 0 auto;
+  margin-top: 0;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: none !important;
+  color: #ffffff;
+}
+
+.inlineActionBtnPrimary {
+  background: #4a90e2 !important;
+}
+
+.inlineActionBtnDanger {
+  background: #ff6b6b !important;
+}
+
 /* Primary call-to-action buttons share the accent gradient */
 #addBuildingBtn,
 #calculateBtn {
@@ -341,5 +360,11 @@ button:hover {
   button {
     font-size: 15px;
     min-height: 44px;
+  }
+
+  .inlineActionBtn {
+    width: 100%;
+    flex: 1 1 100%;
+    margin-top: 8px;
   }
 }
