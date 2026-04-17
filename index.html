@@ -70,6 +70,46 @@
         <input id="ownedRefinedFireCrystals" type="text" value="0" inputmode="text" placeholder="e.g. 450" />
       </div>
 
+      <label for="useCustomChests" class="checkbox-row" style="margin-top: 12px;">
+        <input id="useCustomChests" type="checkbox" />
+        Use Custom Resource Chests
+      </label>
+
+      <div id="customChestSection" style="display: none; margin-top: 12px;">
+        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 10px;">
+          <div style="flex: 1 1 180px; min-width: 160px;">
+            <label for="customChestL1UnsecuredCount">Level 1 Unsecured</label>
+            <input id="customChestL1UnsecuredCount" type="number" min="0" value="0" />
+          </div>
+          <div style="flex: 1 1 180px; min-width: 160px;">
+            <label for="customChestL1SecuredCount">Level 1 Secured</label>
+            <input id="customChestL1SecuredCount" type="number" min="0" value="0" />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 10px;">
+          <div style="flex: 1 1 180px; min-width: 160px;">
+            <label for="customChestL2UnsecuredCount">Level 2 Unsecured</label>
+            <input id="customChestL2UnsecuredCount" type="number" min="0" value="0" />
+          </div>
+          <div style="flex: 1 1 180px; min-width: 160px;">
+            <label for="customChestL2SecuredCount">Level 2 Secured</label>
+            <input id="customChestL2SecuredCount" type="number" min="0" value="0" />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+          <div style="flex: 1 1 180px; min-width: 160px;">
+            <label for="customChestL3UnsecuredCount">Level 3 Unsecured</label>
+            <input id="customChestL3UnsecuredCount" type="number" min="0" value="0" />
+          </div>
+          <div style="flex: 1 1 180px; min-width: 160px;">
+            <label for="customChestL3SecuredCount">Level 3 Secured</label>
+            <input id="customChestL3SecuredCount" type="number" min="0" value="0" />
+          </div>
+        </div>
+      </div>
+
       <label for="generalSpeedups">General Speedups (minutes)</label>
       <input id="generalSpeedups" type="number" min="0" value="0" />
 

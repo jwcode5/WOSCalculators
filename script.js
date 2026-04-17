@@ -19,8 +19,23 @@ const SUPPLY_FIELD_IDS = [
   "doubleTimeEnabled",
   "castleBuffEnabled",
   "ownedFireCrystals",
-  "ownedRefinedFireCrystals"
+  "ownedRefinedFireCrystals",
+  "useCustomChests",
+  "customChestL1SecuredCount",
+  "customChestL1UnsecuredCount",
+  "customChestL2SecuredCount",
+  "customChestL2UnsecuredCount",
+  "customChestL3SecuredCount",
+  "customChestL3UnsecuredCount"
 ];
+
+const CUSTOM_CHEST_VALUES = {
+  1: { meat: 10000, wood: 10000, coal: 2000, iron: 500 },
+  2: { meat: 100000, wood: 100000, coal: 20000, iron: 5000 },
+  3: { meat: 1000000, wood: 1000000, coal: 200000, iron: 50000 }
+};
+
+const BASIC_RESOURCES = ["meat", "wood", "coal", "iron"];
 
 function parseLevelKey(levelKey) {
   const key = String(levelKey || "");
@@ -183,6 +198,103 @@ function attachSupplyPersistenceListeners() {
     const eventName = el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input";
     el.addEventListener(eventName, saveSuppliesState);
   });
+}
+
+function updateCustomChestVisibility() {
+  const toggle = document.getElementById("useCustomChests");
+  const section = document.getElementById("customChestSection");
+  if (!toggle || !section) return;
+  section.style.display = toggle.checked ? "block" : "none";
+}
+
+function getCustomChestCounts() {
+  const l1Secured = Math.max(0, parseInt(document.getElementById("customChestL1SecuredCount")?.value || "0", 10) || 0);
+  const l1Unsecured = Math.max(0, parseInt(document.getElementById("customChestL1UnsecuredCount")?.value || "0", 10) || 0);
+  const l2Secured = Math.max(0, parseInt(document.getElementById("customChestL2SecuredCount")?.value || "0", 10) || 0);
+  const l2Unsecured = Math.max(0, parseInt(document.getElementById("customChestL2UnsecuredCount")?.value || "0", 10) || 0);
+  const l3Secured = Math.max(0, parseInt(document.getElementById("customChestL3SecuredCount")?.value || "0", 10) || 0);
+  const l3Unsecured = Math.max(0, parseInt(document.getElementById("customChestL3UnsecuredCount")?.value || "0", 10) || 0);
+
+  return {
+    1: { unsecured: l1Unsecured, secured: l1Secured },
+    2: { unsecured: l2Unsecured, secured: l2Secured },
+    3: { unsecured: l3Unsecured, secured: l3Secured }
+  };
+}
+
+function recommendCustomChestUsage(deficits, availableCounts) {
+  const remainingDeficits = {
+    meat: Math.max(0, deficits.meat || 0),
+    wood: Math.max(0, deficits.wood || 0),
+    coal: Math.max(0, deficits.coal || 0),
+    iron: Math.max(0, deficits.iron || 0)
+  };
+
+  const allocations = {
+    meat: { 1: 0, 2: 0, 3: 0 },
+    wood: { 1: 0, 2: 0, 3: 0 },
+    coal: { 1: 0, 2: 0, 3: 0 },
+    iron: { 1: 0, 2: 0, 3: 0 }
+  };
+
+  const provided = { meat: 0, wood: 0, coal: 0, iron: 0 };
+  const countsLeft = {
+    1: {
+      unsecured: availableCounts[1]?.unsecured || 0,
+      secured: availableCounts[1]?.secured || 0
+    },
+    2: {
+      unsecured: availableCounts[2]?.unsecured || 0,
+      secured: availableCounts[2]?.secured || 0
+    },
+    3: {
+      unsecured: availableCounts[3]?.unsecured || 0,
+      secured: availableCounts[3]?.secured || 0
+    }
+  };
+
+  const consumeChests = (level, amount) => {
+    const unsecuredUsed = Math.min(countsLeft[level].unsecured, amount);
+    countsLeft[level].unsecured -= unsecuredUsed;
+    const remaining = amount - unsecuredUsed;
+    const securedUsed = Math.min(countsLeft[level].secured, remaining);
+    countsLeft[level].secured -= securedUsed;
+    return unsecuredUsed + securedUsed;
+  };
+
+  [3, 2, 1].forEach(level => {
+    while (countsLeft[level].unsecured + countsLeft[level].secured > 0) {
+      let pickResource = null;
+      let maxNeedRatio = 0;
+
+      BASIC_RESOURCES.forEach(resource => {
+        const need = remainingDeficits[resource];
+        if (need <= 0) return;
+        const ratio = need / CUSTOM_CHEST_VALUES[level][resource];
+        if (ratio > maxNeedRatio) {
+          maxNeedRatio = ratio;
+          pickResource = resource;
+        }
+      });
+
+      if (!pickResource) break;
+
+      const chestValue = CUSTOM_CHEST_VALUES[level][pickResource];
+      const neededForResource = Math.ceil(remainingDeficits[pickResource] / chestValue);
+      const levelAvailable = countsLeft[level].unsecured + countsLeft[level].secured;
+      const toUse = Math.max(1, Math.min(levelAvailable, neededForResource));
+      const consumed = consumeChests(level, toUse);
+
+      if (consumed <= 0) break;
+
+      allocations[pickResource][level] += consumed;
+      const gained = consumed * chestValue;
+      provided[pickResource] += gained;
+      remainingDeficits[pickResource] = Math.max(0, remainingDeficits[pickResource] - gained);
+    }
+  });
+
+  return { allocations, provided, remainingDeficits, countsLeft };
 }
 
 function applyTheme(theme) {
@@ -632,6 +744,7 @@ async function loadData() {
     // Load optional buildings after data is available
     loadOptionalBuildings();
     loadSuppliesState();
+    updateCustomChestVisibility();
     applyTheme(loadThemePreference());
   } catch (error) {
     console.error("Error loading data:", error);
@@ -681,6 +794,14 @@ document.getElementById("targetLevel").addEventListener("change", function() {
 });
 
 attachSupplyPersistenceListeners();
+
+const useCustomChestsToggle = document.getElementById("useCustomChests");
+if (useCustomChestsToggle) {
+  useCustomChestsToggle.addEventListener("change", function() {
+    updateCustomChestVisibility();
+    saveSuppliesState();
+  });
+}
 
 // Add optional building
 const themeToggleBtn = document.getElementById("themeToggleBtn");
@@ -872,6 +993,26 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const remainingTimeSeconds = Math.max(0, doubleTimeAdjustedSeconds - totalSpeedupSeconds);
   const speedupSurplusSeconds = Math.max(0, totalSpeedupSeconds - doubleTimeAdjustedSeconds);
 
+  const basicDeficits = {
+    meat: Math.max(0, totalMeat - meatBackpack),
+    wood: Math.max(0, totalWood - woodBackpack),
+    coal: Math.max(0, totalCoal - coalBackpack),
+    iron: Math.max(0, totalIron - ironBackpack)
+  };
+
+  const useCustomChests = !!document.getElementById("useCustomChests")?.checked;
+  const chestCounts = getCustomChestCounts();
+  const chestPlan = useCustomChests
+    ? recommendCustomChestUsage(basicDeficits, chestCounts)
+    : null;
+
+  const postChestRemaining = {
+    meat: meatRemaining + (chestPlan ? chestPlan.provided.meat : 0),
+    wood: woodRemaining + (chestPlan ? chestPlan.provided.wood : 0),
+    coal: coalRemaining + (chestPlan ? chestPlan.provided.coal : 0),
+    iron: ironRemaining + (chestPlan ? chestPlan.provided.iron : 0)
+  };
+
   // Add grand total
   resultsHTML += `
     <div class="card-panel" style="margin-top: 15px;">
@@ -898,6 +1039,44 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       ${speedupSurplusSeconds > 0 ? `<br>Speedup Surplus: ${formatDuration(speedupSurplusSeconds)}` : ""}
     </div>
   `;
+
+  if (chestPlan) {
+    const chestLines = [];
+    BASIC_RESOURCES.forEach(resource => {
+      const alloc = chestPlan.allocations[resource];
+      const usedCount = alloc[1] + alloc[2] + alloc[3];
+      if (usedCount === 0) return;
+
+      const resourceLabel = resource.charAt(0).toUpperCase() + resource.slice(1);
+      chestLines.push(
+        `${resourceLabel}: L3 x${alloc[3]}, L2 x${alloc[2]}, L1 x${alloc[1]} ` +
+        `(provided ${chestPlan.provided[resource].toLocaleString()}, uncovered deficit ${chestPlan.remainingDeficits[resource].toLocaleString()})`
+      );
+    });
+
+    const totalL1 = chestCounts[1].unsecured + chestCounts[1].secured;
+    const totalL2 = chestCounts[2].unsecured + chestCounts[2].secured;
+    const totalL3 = chestCounts[3].unsecured + chestCounts[3].secured;
+    const leftL1 = chestPlan.countsLeft[1].unsecured + chestPlan.countsLeft[1].secured;
+    const leftL2 = chestPlan.countsLeft[2].unsecured + chestPlan.countsLeft[2].secured;
+    const leftL3 = chestPlan.countsLeft[3].unsecured + chestPlan.countsLeft[3].secured;
+    const usedL1 = totalL1 - leftL1;
+    const usedL2 = totalL2 - leftL2;
+    const usedL3 = totalL3 - leftL3;
+
+    resultsHTML += `
+      <div class="card-panel" style="margin-top: 15px;">
+        <strong>CUSTOM CHEST RECOMMENDATION</strong><br>
+        ${chestLines.length ? chestLines.join("<br>") : "No chest usage needed for current deficits."}<br><br>
+        Chests Used: L3 ${usedL3}/${totalL3} | L2 ${usedL2}/${totalL2} | L1 ${usedL1}/${totalL1}<br>
+        <strong>After Recommended Chest Use</strong><br>
+        Meat: ${postChestRemaining.meat.toLocaleString()} |
+        Wood: ${postChestRemaining.wood.toLocaleString()} |
+        Coal: ${postChestRemaining.coal.toLocaleString()} |
+        Iron: ${postChestRemaining.iron.toLocaleString()}
+      </div>
+    `;
+  }
 
   document.getElementById("result").innerHTML = resultsHTML;
 });
