@@ -2123,6 +2123,34 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 // interactive while it fetches the JSON files.
 loadData();
 
+function showUpdateToast(registration) {
+  const existingToast = document.getElementById("swUpdateToast");
+  if (existingToast) return;
+
+  const toast = document.createElement("div");
+  toast.id = "swUpdateToast";
+  toast.className = "update-toast";
+  toast.setAttribute("role", "status");
+  toast.innerHTML = `
+    <span>A new version is ready.</span>
+    <button id="swUpdateBtn" type="button">Refresh</button>
+  `;
+
+  document.body.appendChild(toast);
+
+  const refreshBtn = document.getElementById("swUpdateBtn");
+  if (!refreshBtn) return;
+
+  refreshBtn.addEventListener("click", () => {
+    const waitingWorker = registration && registration.waiting;
+    if (waitingWorker) {
+      waitingWorker.postMessage({ type: "SKIP_WAITING" });
+      return;
+    }
+    window.location.reload();
+  });
+}
+
 // Register the service worker for PWA (installable app) support.
 // The service worker caches files so the app works offline.
 if ('serviceWorker' in navigator) {
@@ -2130,6 +2158,21 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
       .then(registration => {
         console.log('Service Worker registered:', registration);
+
+        if (registration.waiting) {
+          showUpdateToast(registration);
+        }
+
+        registration.addEventListener('updatefound', () => {
+          const installingWorker = registration.installing;
+          if (!installingWorker) return;
+
+          installingWorker.addEventListener('statechange', () => {
+            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateToast(registration);
+            }
+          });
+        });
       })
       .catch(error => {
         console.log('Service Worker registration failed:', error);

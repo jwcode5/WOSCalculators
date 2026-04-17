@@ -1,5 +1,5 @@
 // Increment this cache name whenever cached files change so old caches are replaced.
-const CACHE_NAME = 'wos-calculator-v8';
+const CACHE_NAME = 'wos-calculator-v9';
 
 // These are the app shell files needed for offline use.
 const urlsToCache = [
@@ -15,21 +15,49 @@ const urlsToCache = [
 
 // Pre-cache core files during installation so the app can start offline.
 self.addEventListener('install', event => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Serve cached files first, then fall back to the network for anything uncached.
+// Allow the page to request immediate activation of a waiting worker.
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Use network-first for app-shell assets so CSS/JS updates are picked up quickly,
+// with cache fallback for offline reliability.
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+
+  const requestUrl = new URL(event.request.url);
+  const isSameOrigin = requestUrl.origin === self.location.origin;
+  const isAppShellAsset = isSameOrigin && (
+    requestUrl.pathname === '/' ||
+    requestUrl.pathname.endsWith('.html') ||
+    requestUrl.pathname.endsWith('.css') ||
+    requestUrl.pathname.endsWith('.js') ||
+    requestUrl.pathname.endsWith('.json')
+  );
+
+  if (isAppShellAsset) {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      })
+    caches.match(event.request).then(response => response || fetch(event.request))
   );
 });
 
