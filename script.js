@@ -839,8 +839,18 @@ function renderOptionalBuildings() {
   document.querySelectorAll(".optionalTargetLevel").forEach(sel => {
     sel.addEventListener("change", function() {
       const idx = parseInt(this.getAttribute("data-index"));
-      optionalBuildings[idx].targetLevel = this.value;
+      const item = optionalBuildings[idx];
+      item.targetLevel = this.value;
+
+      const levels = getBuildingLevelOrder(item.building);
+      const currentIndex = levels.indexOf(item.currentLevel);
+      const targetIndex = levels.indexOf(item.targetLevel);
+      if (currentIndex >= 0 && targetIndex >= 0 && targetIndex < currentIndex) {
+        item.targetLevel = item.currentLevel;
+      }
+
       saveOptionalBuildings();
+      renderOptionalBuildings();
     });
   });
 }
@@ -1047,6 +1057,90 @@ function parseResourceAmount(rawInput) {
   // B = billion, M = million, K = thousand
   const multiplier = suffix === "B" ? 1000000000 : (suffix === "M" ? 1000000 : (suffix === "K" ? 1000 : 1));
   return Math.round(value * multiplier);
+}
+
+// Validation helper for the same resource format accepted by
+// parseResourceAmount. Empty input is allowed and treated as zero.
+function isValidResourceAmountInput(rawInput) {
+  const text = String(rawInput || "").trim().replace(/,/g, "").toUpperCase();
+  if (!text) return true;
+  return /^([0-9]*\.?[0-9]+)\s*([KMB])?$/.test(text);
+}
+
+// Validation helper for plain number inputs. This catches negative
+// or malformed text that some browsers still allow in number fields.
+function isValidNonNegativeNumberInput(rawInput, allowDecimal = false) {
+  const text = String(rawInput || "").trim();
+  if (!text) return true;
+  const pattern = allowDecimal ? /^(?:\d+|\d*\.\d+)$/ : /^\d+$/;
+  return pattern.test(text);
+}
+
+// Focused validation pass for the main calculation action.
+function getCalculationValidationError() {
+  const resourceFields = [
+    ["ownedMeat", "Meat"],
+    ["ownedWood", "Wood"],
+    ["ownedCoal", "Coal"],
+    ["ownedIron", "Iron"],
+    ["ownedFireCrystals", "Fire Crystals"],
+    ["ownedRefinedFireCrystals", "Refined Fire Crystals"]
+  ];
+
+  for (const [id, label] of resourceFields) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (!isValidResourceAmountInput(el.value)) {
+      return `${label} must be a non-negative number. You can use plain numbers or K/M/B suffixes.`;
+    }
+  }
+
+  const numberFields = [
+    ["generalSpeedups", "General Speedups", false],
+    ["constructionSpeedups", "Construction Speedups", false],
+    ["constructionSpeedPct", "Construction Speed", true],
+    ["positionBuffPct", "Position Buff", true],
+    ["customChestL1SecuredCount", "Level 1 secured custom chests", false],
+    ["customChestL1UnsecuredCount", "Level 1 unsecured custom chests", false],
+    ["customChestL2SecuredCount", "Level 2 secured custom chests", false],
+    ["customChestL2UnsecuredCount", "Level 2 unsecured custom chests", false],
+    ["customChestL3SecuredCount", "Level 3 secured custom chests", false],
+    ["customChestL3UnsecuredCount", "Level 3 unsecured custom chests", false]
+  ];
+
+  for (const [id, label, allowDecimal] of numberFields) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (!isValidNonNegativeNumberInput(el.value, allowDecimal)) {
+      return `${label} must be a non-negative ${allowDecimal ? "number" : "whole number"}.`;
+    }
+  }
+
+  for (const item of optionalBuildings) {
+    const levels = getBuildingLevelOrder(item.building);
+    const currentIndex = levels.indexOf(String(item.currentLevel));
+    const targetIndex = levels.indexOf(String(item.targetLevel));
+    if (!BUILDING_COSTS[item.building] || currentIndex < 0 || targetIndex < 0) {
+      return "One optional building has an invalid building or level selection. Please reselect it and try again.";
+    }
+    if (targetIndex < currentIndex) {
+      const buildingLabel = String(item.building).replace(/_/g, " ").toUpperCase();
+      return `${buildingLabel}: target level cannot be below current level.`;
+    }
+  }
+
+  for (const mail of bearHuntMails) {
+    const tierIndex = Number(mail.tierIndex);
+    const count = Number(mail.count);
+    if (!Number.isInteger(tierIndex) || tierIndex < 0 || tierIndex >= BEAR_HUNT_TIERS.length) {
+      return "One Bear Hunt Mail row has an invalid damage tier. Please reselect it and try again.";
+    }
+    if (!Number.isFinite(count) || count < 0) {
+      return "Bear Hunt Mail counts must be 0 or higher.";
+    }
+  }
+
+  return null;
 }
 
 // ============================================================
@@ -1267,6 +1361,17 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
         const savedState = loadPrerequisiteState(selectedBuilding);
         if (!savedState[prereqBuilding]) savedState[prereqBuilding] = {};
         savedState[prereqBuilding].currentLevel = this.value;
+
+        const levelOptions = getBuildingLevelOrder(prereqBuilding);
+        const currentIndex = levelOptions.indexOf(this.value);
+        const targetSelect = document.getElementById(`${prereqBuilding}Level`);
+        const targetValue = targetSelect ? String(targetSelect.value) : String(savedState[prereqBuilding].targetLevel || "");
+        const targetIndex = levelOptions.indexOf(targetValue);
+        if (targetSelect && currentIndex >= 0 && targetIndex >= 0 && targetIndex < currentIndex) {
+          targetSelect.value = this.value;
+          savedState[prereqBuilding].targetLevel = this.value;
+        }
+
         savePrerequisiteState(selectedBuilding, savedState);
       });
     });
@@ -1277,7 +1382,21 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
         if (!prereqBuilding) return;
         const savedState = loadPrerequisiteState(selectedBuilding);
         if (!savedState[prereqBuilding]) savedState[prereqBuilding] = {};
-        savedState[prereqBuilding].targetLevel = this.value;
+
+        const levelOptions = getBuildingLevelOrder(prereqBuilding);
+        const currentSelect = document.getElementById(`${prereqBuilding}CurrentLevel`);
+        const currentValue = currentSelect ? String(currentSelect.value) : String(savedState[prereqBuilding].currentLevel || "");
+        const currentIndex = levelOptions.indexOf(currentValue);
+        const targetIndex = levelOptions.indexOf(this.value);
+
+        savedState[prereqBuilding].targetLevel = (currentIndex >= 0 && targetIndex >= 0 && targetIndex < currentIndex)
+          ? currentValue
+          : this.value;
+
+        if (savedState[prereqBuilding].targetLevel !== this.value) {
+          this.value = savedState[prereqBuilding].targetLevel;
+        }
+
         savePrerequisiteState(selectedBuilding, savedState);
       });
     });
@@ -1492,6 +1611,12 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const targetIdx = selectedBuildingLevels.indexOf(targetLevel);
   if (currentIdx < 0 || targetIdx < 0 || currentIdx > targetIdx) {
     alert("Please ensure current level does not exceed target level.");
+    return;
+  }
+
+  const validationError = getCalculationValidationError();
+  if (validationError) {
+    alert(validationError);
     return;
   }
 
