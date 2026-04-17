@@ -458,6 +458,11 @@ button:hover {
 
 /* Small-screen adjustments keep the layout usable on phones */
 @media (max-width: 640px) {
+  body[data-theme="wos"] {
+    background: linear-gradient(90deg, #0a204a 0%, #12346f 18%, #2a5a9f 50%, #12346f 82%, #0a204a 100%);
+    background-attachment: scroll;
+  }
+
   .container {
     margin: 14px;
     padding: 18px;
