@@ -514,7 +514,7 @@ function renderBearHuntMails() {
             </select>
           </div>
           <div style="flex: 1 1 100px; min-width: 80px;">
-            <label for="bearHuntCount_${index}">Mails</label>
+            <label for="bearHuntCount_${index}">Mail</label>
             <input id="bearHuntCount_${index}" type="number" min="0" value="${mail.count || 1}" class="bearHuntCountInput" data-index="${index}" style="width: 100%;" />
           </div>
           <button type="button" class="removeBearHuntBtn" data-index="${index}" style="background-color: #ff6b6b; color: white; padding: 10px 14px; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;">Remove</button>
@@ -1165,7 +1165,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     const totalBearMails = bearHuntMails.reduce((sum, m) => sum + Math.max(0, m.count || 0), 0);
     resultsHTML += `
       <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,165,0,0.7);">
-        <strong>BEAR HUNT MAILS (+${totalBearMails.toLocaleString()} mails added to backpack)</strong><br>
+        <strong>BEAR HUNT MAIL (+${totalBearMails.toLocaleString()} mail added to backpack)</strong><br>
         Meat: +${bearHuntTotals.meat.toLocaleString()} | Wood: +${bearHuntTotals.wood.toLocaleString()} | Coal: +${bearHuntTotals.coal.toLocaleString()} | Iron: +${bearHuntTotals.iron.toLocaleString()}<br>
         Essence Stones: +${bearHuntTotals.essenceStones.toLocaleString()} | Lucky Hero Gear Chests: +${bearHuntTotals.luckyHeroGearChest.toLocaleString()}<br>
         XP Components: +${bearHuntTotals.xp10.toLocaleString()} \xd7 10XP, +${bearHuntTotals.xp100.toLocaleString()} \xd7 100XP | Alliance Tokens: +${bearHuntTotals.allianceToken.toLocaleString()}
