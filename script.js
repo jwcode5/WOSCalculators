@@ -5,6 +5,7 @@
 let BUILDING_COSTS = null;
 let PREREQUISITES = null;
 let optionalBuildings = [];
+let bearHuntMails = [];
 
 const SUPPLY_FIELD_IDS = [
   "ownedMeat",
@@ -36,6 +37,34 @@ const CUSTOM_CHEST_VALUES = {
 };
 
 const BASIC_RESOURCES = ["meat", "wood", "coal", "iron"];
+
+const BEAR_HUNT_TIERS = [
+  { label: "1 – 2,500",             essenceStones: 1,  luckyHeroGearChest: 1, xp10: 2,  xp100: 0, allianceToken: 5500,   meat: 495500,   wood: 495500,   coal: 99000,   iron: 25000   },
+  { label: "2,501 – 5,000",         essenceStones: 1,  luckyHeroGearChest: 1, xp10: 2,  xp100: 0, allianceToken: 7000,   meat: 991500,   wood: 991500,   coal: 198500,  iron: 50000   },
+  { label: "5,001 – 8,000",         essenceStones: 1,  luckyHeroGearChest: 1, xp10: 2,  xp100: 0, allianceToken: 8000,   meat: 1400000,  wood: 1400000,  coal: 297500,  iron: 75000   },
+  { label: "8,001 – 12,000",        essenceStones: 1,  luckyHeroGearChest: 1, xp10: 3,  xp100: 0, allianceToken: 9000,   meat: 1900000,  wood: 1900000,  coal: 396500,  iron: 100000  },
+  { label: "12,001 – 27,500",       essenceStones: 1,  luckyHeroGearChest: 1, xp10: 3,  xp100: 0, allianceToken: 10000,  meat: 2400000,  wood: 2400000,  coal: 495500,  iron: 125000  },
+  { label: "27,501 – 62,500",       essenceStones: 1,  luckyHeroGearChest: 1, xp10: 4,  xp100: 0, allianceToken: 14500,  meat: 4300000,  wood: 4300000,  coal: 867500,  iron: 218500  },
+  { label: "62,501 – 145,000",      essenceStones: 2,  luckyHeroGearChest: 1, xp10: 4,  xp100: 0, allianceToken: 18500,  meat: 6100000,  wood: 6100000,  coal: 1200000, iron: 312500  },
+  { label: "145,001 – 325,000",     essenceStones: 2,  luckyHeroGearChest: 1, xp10: 5,  xp100: 0, allianceToken: 22000,  meat: 8000000,  wood: 8000000,  coal: 1600000, iron: 406000  },
+  { label: "325,001 – 745,000",     essenceStones: 3,  luckyHeroGearChest: 1, xp10: 6,  xp100: 0, allianceToken: 26000,  meat: 9900000,  wood: 9900000,  coal: 1900000, iron: 499500  },
+  { label: "745,001 – 1.7M",        essenceStones: 3,  luckyHeroGearChest: 2, xp10: 7,  xp100: 0, allianceToken: 30000,  meat: 11700000, wood: 11700000, coal: 2300000, iron: 593500  },
+  { label: "1.7M – 3.9M",           essenceStones: 4,  luckyHeroGearChest: 2, xp10: 8,  xp100: 0, allianceToken: 35000,  meat: 13800000, wood: 13800000, coal: 2700000, iron: 687000  },
+  { label: "3.9M – 8.9M",           essenceStones: 5,  luckyHeroGearChest: 2, xp10: 9,  xp100: 0, allianceToken: 40000,  meat: 15400000, wood: 15400000, coal: 3000000, iron: 781000  },
+  { label: "8.9M – 20.5M",          essenceStones: 6,  luckyHeroGearChest: 2, xp10: 0,  xp100: 1, allianceToken: 43000,  meat: 17300000, wood: 17300000, coal: 3400000, iron: 874500  },
+  { label: "20.5M – 47M",           essenceStones: 7,  luckyHeroGearChest: 2, xp10: 0,  xp100: 1, allianceToken: 47000,  meat: 19200000, wood: 19200000, coal: 3800000, iron: 968500  },
+  { label: "47M – 90M",             essenceStones: 8,  luckyHeroGearChest: 2, xp10: 0,  xp100: 1, allianceToken: 50000,  meat: 21000000, wood: 21000000, coal: 4200000, iron: 1000000 },
+  { label: "90M – 175M",            essenceStones: 9,  luckyHeroGearChest: 2, xp10: 0,  xp100: 2, allianceToken: 55000,  meat: 23200000, wood: 23200000, coal: 4600000, iron: 1100000 },
+  { label: "175M – 330M",           essenceStones: 10, luckyHeroGearChest: 2, xp10: 0,  xp100: 2, allianceToken: 60000,  meat: 25500000, wood: 25500000, coal: 5100000, iron: 1200000 },
+  { label: "330M – 635M",           essenceStones: 11, luckyHeroGearChest: 2, xp10: 0,  xp100: 2, allianceToken: 65000,  meat: 27700000, wood: 27700000, coal: 5500000, iron: 1300000 },
+  { label: "635M – 1.2B",           essenceStones: 12, luckyHeroGearChest: 2, xp10: 0,  xp100: 3, allianceToken: 70000,  meat: 29900000, wood: 29900000, coal: 5900000, iron: 1500000 },
+  { label: "1.2B – 2.4B",           essenceStones: 13, luckyHeroGearChest: 3, xp10: 0,  xp100: 3, allianceToken: 75600,  meat: 32200000, wood: 32200000, coal: 6400000, iron: 1600000 },
+  { label: "2.4B – 4.8B",           essenceStones: 14, luckyHeroGearChest: 3, xp10: 0,  xp100: 4, allianceToken: 80000,  meat: 34100000, wood: 34100000, coal: 6800000, iron: 1700000 },
+  { label: "4.8B – 9.6B",           essenceStones: 15, luckyHeroGearChest: 3, xp10: 0,  xp100: 4, allianceToken: 85000,  meat: 35800000, wood: 35800000, coal: 7100000, iron: 1700000 },
+  { label: "9.6B – 19.2B",          essenceStones: 16, luckyHeroGearChest: 3, xp10: 0,  xp100: 5, allianceToken: 90000,  meat: 37500000, wood: 37500000, coal: 7500000, iron: 1800000 },
+  { label: "19.2B – 38.4B",         essenceStones: 17, luckyHeroGearChest: 3, xp10: 0,  xp100: 5, allianceToken: 95000,  meat: 39400000, wood: 39400000, coal: 7800000, iron: 1900000 },
+  { label: "38.4B+",                 essenceStones: 18, luckyHeroGearChest: 3, xp10: 0,  xp100: 6, allianceToken: 100000, meat: 41400000, wood: 41400000, coal: 8200000, iron: 2000000 }
+];
 
 function parseLevelKey(levelKey) {
   const key = String(levelKey || "");
@@ -445,6 +474,108 @@ function addOptionalBuilding() {
   renderOptionalBuildings();
 }
 
+function saveBearHuntMails() {
+  localStorage.setItem("wosCalc_bearHuntMails", JSON.stringify(bearHuntMails));
+}
+
+function loadBearHuntMails() {
+  const saved = localStorage.getItem("wosCalc_bearHuntMails");
+  if (saved) {
+    try {
+      bearHuntMails = JSON.parse(saved);
+    } catch (e) {
+      bearHuntMails = [];
+    }
+  }
+  renderBearHuntMails();
+}
+
+function renderBearHuntMails() {
+  const container = document.getElementById("bearHuntMailsContainer");
+  if (!container) return;
+  if (bearHuntMails.length === 0) {
+    container.innerHTML = "";
+    return;
+  }
+
+  let html = "";
+  bearHuntMails.forEach((mail, index) => {
+    const tierOptions = BEAR_HUNT_TIERS
+      .map((tier, i) => `<option value="${i}"${i === mail.tierIndex ? " selected" : ""}>${tier.label}</option>`)
+      .join("");
+
+    html += `
+      <div class="card-panel" style="margin-bottom: 10px;">
+        <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+          <div style="flex: 2 1 200px; min-width: 160px;">
+            <label for="bearHuntTier_${index}">Damage Tier</label>
+            <select id="bearHuntTier_${index}" class="bearHuntTierSelect" data-index="${index}" style="width: 100%;">
+              ${tierOptions}
+            </select>
+          </div>
+          <div style="flex: 1 1 100px; min-width: 80px;">
+            <label for="bearHuntCount_${index}">Mails</label>
+            <input id="bearHuntCount_${index}" type="number" min="0" value="${mail.count || 1}" class="bearHuntCountInput" data-index="${index}" style="width: 100%;" />
+          </div>
+          <button type="button" class="removeBearHuntBtn" data-index="${index}" style="background-color: #ff6b6b; color: white; padding: 10px 14px; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;">Remove</button>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  document.querySelectorAll(".removeBearHuntBtn").forEach(btn => {
+    btn.addEventListener("click", function() {
+      const idx = parseInt(this.getAttribute("data-index"));
+      bearHuntMails.splice(idx, 1);
+      saveBearHuntMails();
+      renderBearHuntMails();
+    });
+  });
+
+  document.querySelectorAll(".bearHuntTierSelect").forEach(sel => {
+    sel.addEventListener("change", function() {
+      const idx = parseInt(this.getAttribute("data-index"));
+      bearHuntMails[idx].tierIndex = parseInt(this.value);
+      saveBearHuntMails();
+    });
+  });
+
+  document.querySelectorAll(".bearHuntCountInput").forEach(inp => {
+    inp.addEventListener("input", function() {
+      const idx = parseInt(this.getAttribute("data-index"));
+      bearHuntMails[idx].count = Math.max(0, parseInt(this.value) || 0);
+      saveBearHuntMails();
+    });
+  });
+}
+
+function addBearHuntMail() {
+  bearHuntMails.push({ tierIndex: 0, count: 1 });
+  saveBearHuntMails();
+  renderBearHuntMails();
+}
+
+function getBearHuntResourceTotals() {
+  const totals = { meat: 0, wood: 0, coal: 0, iron: 0, essenceStones: 0, luckyHeroGearChest: 0, xp10: 0, xp100: 0, allianceToken: 0 };
+  for (const mail of bearHuntMails) {
+    const tier = BEAR_HUNT_TIERS[mail.tierIndex];
+    if (!tier) continue;
+    const count = Math.max(0, mail.count || 0);
+    totals.meat += tier.meat * count;
+    totals.wood += tier.wood * count;
+    totals.coal += tier.coal * count;
+    totals.iron += tier.iron * count;
+    totals.essenceStones += tier.essenceStones * count;
+    totals.luckyHeroGearChest += tier.luckyHeroGearChest * count;
+    totals.xp10 += tier.xp10 * count;
+    totals.xp100 += tier.xp100 * count;
+    totals.allianceToken += tier.allianceToken * count;
+  }
+  return totals;
+}
+
 function setAllPrerequisiteCurrentLevels(levelKey) {
   const currentSelectors = document.querySelectorAll("#prerequisitesContainer select[id$='CurrentLevel']");
   currentSelectors.forEach(sel => {
@@ -743,6 +874,7 @@ async function loadData() {
     
     // Load optional buildings after data is available
     loadOptionalBuildings();
+    loadBearHuntMails();
     loadSuppliesState();
     updateCustomChestVisibility();
     applyTheme(loadThemePreference());
@@ -817,6 +949,13 @@ document.getElementById("addBuildingBtn").addEventListener("click", function() {
   addOptionalBuilding();
 });
 
+const addBearHuntMailBtn = document.getElementById("addBearHuntMailBtn");
+if (addBearHuntMailBtn) {
+  addBearHuntMailBtn.addEventListener("click", function() {
+    addBearHuntMail();
+  });
+}
+
 // Calculate total costs for target building + all prerequisites
 document.getElementById("calculateBtn").addEventListener("click", function() {
   // Validate data is loaded
@@ -843,6 +982,14 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const meatBackpack = parseResourceAmount(document.getElementById("ownedMeat").value);
   const coalBackpack = parseResourceAmount(document.getElementById("ownedCoal").value);
   const ironBackpack = parseResourceAmount(document.getElementById("ownedIron").value);
+
+  // Bear Hunt Mail resources are added to the effective backpack
+  const bearHuntTotals = getBearHuntResourceTotals();
+  const effectiveMeatBackpack = meatBackpack + bearHuntTotals.meat;
+  const effectiveWoodBackpack = woodBackpack + bearHuntTotals.wood;
+  const effectiveCoalBackpack = coalBackpack + bearHuntTotals.coal;
+  const effectiveIronBackpack = ironBackpack + bearHuntTotals.iron;
+
   const fireCrystalsBackpack = parseResourceAmount(document.getElementById("ownedFireCrystals").value);
   const refinedFireCrystalsBackpack = parseResourceAmount(document.getElementById("ownedRefinedFireCrystals").value);
   const generalSpeedupsMinutes = parseInt(document.getElementById("generalSpeedups").value) || 0;
@@ -976,11 +1123,11 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     `;
   }
 
-  // Calculate remaining resources after upgrade
-  const woodRemaining = woodBackpack - totalWood;
-  const meatRemaining = meatBackpack - totalMeat;
-  const coalRemaining = coalBackpack - totalCoal;
-  const ironRemaining = ironBackpack - totalIron;
+  // Calculate remaining resources after upgrade (using effective backpack which includes bear hunt mails)
+  const woodRemaining = effectiveWoodBackpack - totalWood;
+  const meatRemaining = effectiveMeatBackpack - totalMeat;
+  const coalRemaining = effectiveCoalBackpack - totalCoal;
+  const ironRemaining = effectiveIronBackpack - totalIron;
   const fireCrystalsRemaining = fireCrystalsBackpack - totalFireCrystals;
   const refinedFireCrystalsRemaining = refinedFireCrystalsBackpack - totalRefinedFireCrystals;
   const additiveSpeedPct = Math.max(0, constructionSpeedPct + hyenaBuffPct + castleBuffPct + positionBuffPct);
@@ -994,10 +1141,10 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const speedupSurplusSeconds = Math.max(0, totalSpeedupSeconds - doubleTimeAdjustedSeconds);
 
   const basicDeficits = {
-    meat: Math.max(0, totalMeat - meatBackpack),
-    wood: Math.max(0, totalWood - woodBackpack),
-    coal: Math.max(0, totalCoal - coalBackpack),
-    iron: Math.max(0, totalIron - ironBackpack)
+    meat: Math.max(0, totalMeat - effectiveMeatBackpack),
+    wood: Math.max(0, totalWood - effectiveWoodBackpack),
+    coal: Math.max(0, totalCoal - effectiveCoalBackpack),
+    iron: Math.max(0, totalIron - effectiveIronBackpack)
   };
 
   const useCustomChests = !!document.getElementById("useCustomChests")?.checked;
@@ -1012,6 +1159,19 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     coal: coalRemaining + (chestPlan ? chestPlan.provided.coal : 0),
     iron: ironRemaining + (chestPlan ? chestPlan.provided.iron : 0)
   };
+
+  // Bear Hunt Mail summary block
+  if (bearHuntMails.length > 0) {
+    const totalBearMails = bearHuntMails.reduce((sum, m) => sum + Math.max(0, m.count || 0), 0);
+    resultsHTML += `
+      <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,165,0,0.7);">
+        <strong>BEAR HUNT MAILS (+${totalBearMails.toLocaleString()} mails added to backpack)</strong><br>
+        Meat: +${bearHuntTotals.meat.toLocaleString()} | Wood: +${bearHuntTotals.wood.toLocaleString()} | Coal: +${bearHuntTotals.coal.toLocaleString()} | Iron: +${bearHuntTotals.iron.toLocaleString()}<br>
+        Essence Stones: +${bearHuntTotals.essenceStones.toLocaleString()} | Lucky Hero Gear Chests: +${bearHuntTotals.luckyHeroGearChest.toLocaleString()}<br>
+        XP Components: +${bearHuntTotals.xp10.toLocaleString()} \xd7 10XP, +${bearHuntTotals.xp100.toLocaleString()} \xd7 100XP | Alliance Tokens: +${bearHuntTotals.allianceToken.toLocaleString()}
+      </div>
+    `;
+  }
 
   // Add grand total
   resultsHTML += `
