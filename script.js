@@ -1592,6 +1592,46 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, 
 
     const prereqMap = getAggregatedPrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
 
+    // If the main building is NOT the furnace, but the furnace is being
+    // upgraded as part of this plan (either as a required building or as an
+    // optional building), also pull in the prerequisites needed to upgrade the
+    // furnace itself and merge them into the displayed required buildings.
+    if (selectedBuilding !== "furnace") {
+      let furnaceFrom = null;
+      let furnaceTo   = null;
+
+      if (prereqMap.has("furnace")) {
+        // Furnace is a required building — read current/target from saved state.
+        const prereqState   = loadPrerequisiteState(selectedBuilding);
+        const furnaceState  = prereqState["furnace"] || {};
+        const furnaceLevels = getBuildingLevelOrder("furnace");
+        furnaceFrom = (furnaceState.currentLevel && furnaceLevels.includes(String(furnaceState.currentLevel)))
+          ? String(furnaceState.currentLevel)
+          : (furnaceLevels[0] || "1");
+        furnaceTo = (furnaceState.targetLevel && furnaceLevels.includes(String(furnaceState.targetLevel)))
+          ? String(furnaceState.targetLevel)
+          : prereqMap.get("furnace"); // fall back to minimum required level
+      }
+
+      if (!furnaceTo) {
+        // Furnace is in optional buildings instead.
+        const optFurnace = optionalBuildings.find(b => b.building === "furnace");
+        if (optFurnace) {
+          furnaceFrom = String(optFurnace.currentLevel);
+          furnaceTo   = String(optFurnace.targetLevel);
+        }
+      }
+
+      if (furnaceFrom && furnaceTo && furnaceFrom !== furnaceTo) {
+        const furnacePrereqMap = getAggregatedPrerequisites("furnace", furnaceFrom, furnaceTo);
+        for (const [building, level] of furnacePrereqMap.entries()) {
+          if (building === selectedBuilding) continue; // skip the main building itself
+          const existing = prereqMap.get(building);
+          prereqMap.set(building, getHigherRequiredLevel(building, existing, level));
+        }
+      }
+    }
+
     let prereqsHTML = `
       <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
         <div style="flex: 1 1 220px; min-width: 140px;">
