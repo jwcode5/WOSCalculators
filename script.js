@@ -27,6 +27,40 @@ const CALCULATOR_KEYS = {
   WHAT_IF: "whatIf"
 };
 
+function translateText(key, vars = {}, fallback = "") {
+  if (window.i18n && typeof window.i18n.t === "function") {
+    return window.i18n.t(key, vars, fallback);
+  }
+  return fallback || key;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+
+function prettifyBuildingName(buildingName) {
+  return String(buildingName || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function getBuildingDisplayName(buildingName) {
+  return translateText(`building.${buildingName}`, {}, prettifyBuildingName(buildingName));
+}
+
+function getResourceDisplayName(resourceKey) {
+  return translateText(`resource.${resourceKey}`, {}, prettifyBuildingName(resourceKey));
+}
+
 // ============================================================
 // CONSTANTS — SUPPLY FIELD IDs
 // A list of every HTML input/select/checkbox id that belongs
@@ -450,16 +484,21 @@ function renderComingSoonPanel(calculatorKey) {
   const accountName = account?.name || "this account";
 
   const friendlyNameMap = {
-    [CALCULATOR_KEYS.CHIEF_GEAR]: "Chief Gear Calculator",
-    [CALCULATOR_KEYS.CHIEF_CHARM]: "Chief Charm Calculator",
-    [CALCULATOR_KEYS.WHAT_IF]: "What If Calculator"
+    [CALCULATOR_KEYS.CHIEF_GEAR]: translateText("calculator.chiefGearFull", {}, "Chief Gear Calculator"),
+    [CALCULATOR_KEYS.CHIEF_CHARM]: translateText("calculator.chiefCharmFull", {}, "Chief Charm Calculator"),
+    [CALCULATOR_KEYS.WHAT_IF]: translateText("calculator.whatIfFull", {}, "What If Calculator")
   };
 
-  const calculatorName = friendlyNameMap[calculatorKey] || "Calculator";
-  if (titleEl) titleEl.textContent = `${calculatorName} - Coming Soon`;
+  const calculatorName = friendlyNameMap[calculatorKey] || translateText("calculator.generic", {}, "Calculator");
+  if (titleEl) {
+    titleEl.textContent = translateText("comingSoon.heading", { calculator: calculatorName }, `${calculatorName} - Coming Soon`);
+  }
   if (accountNameEl) accountNameEl.textContent = accountName;
   if (messageEl) {
-    messageEl.textContent = `Account data is already structured for ${accountName}. When ${calculatorName} goes live, its values will be saved under this same account and will switch with your account selector.`;
+    messageEl.textContent = translateText("comingSoon.accountStructured", {
+      account: accountName,
+      calculator: calculatorName
+    });
   }
 }
 
@@ -873,7 +912,9 @@ function applyTheme(theme) {
   document.body.dataset.theme = safeTheme;
   const button = document.getElementById("themeToggleBtn");
   if (button) {
-    button.textContent = safeTheme === "dark" ? "Light Mode" : "Dark Mode";
+    button.textContent = safeTheme === "dark"
+      ? translateText("theme.lightMode", {}, "Light Mode")
+      : translateText("theme.darkMode", {}, "Dark Mode");
   }
 }
 
@@ -925,7 +966,7 @@ function getAllBuildingOptionsHTML(selectedValue) {
   const buildingSelect = document.getElementById("targetBuilding");
   if (!buildingSelect) return "";
   return Array.from(buildingSelect.options)
-    .map(opt => `<option value="${opt.value}"${opt.value === selectedValue ? " selected" : ""}>${opt.text}</option>`)
+    .map(opt => `<option value="${escapeAttr(opt.value)}"${opt.value === selectedValue ? " selected" : ""}>${escapeHtml(opt.text)}</option>`)
     .join("");
 }
 
@@ -946,32 +987,37 @@ function renderOptionalBuildings() {
     const buildingLevels = getBuildingLevelOrder(item.building);
     const buildingOptions = getAllBuildingOptionsHTML(item.building);
     const currentOptions = buildingLevels
-      .map(lvl => `<option value="${lvl}"${lvl === item.currentLevel ? " selected" : ""}>${formatLevelLabel(lvl)}</option>`)
+      .map(lvl => `<option value="${escapeAttr(lvl)}"${lvl === item.currentLevel ? " selected" : ""}>${escapeHtml(formatLevelLabel(lvl))}</option>`)
       .join("");
     const targetOptions = buildingLevels
-      .map(lvl => `<option value="${lvl}"${lvl === item.targetLevel ? " selected" : ""}>${formatLevelLabel(lvl)}</option>`)
+      .map(lvl => `<option value="${escapeAttr(lvl)}"${lvl === item.targetLevel ? " selected" : ""}>${escapeHtml(formatLevelLabel(lvl))}</option>`)
       .join("");
+
+    const buildingLabel = escapeHtml(translateText("labels.building", {}, "Building"));
+    const removeLabel = escapeHtml(translateText("buttons.remove", {}, "Remove"));
+    const currentLevelLabel = escapeHtml(translateText("labels.currentLevel", {}, "Current Level"));
+    const targetLevelLabel = escapeHtml(translateText("labels.targetLevel", {}, "Target Level"));
 
     html += `
       <div class="card-panel" style="margin-bottom: 12px;">
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 8px;">
           <div style="flex: 1 1 200px; min-width: 160px;">
-            <label for="optionalBuilding_${index}">Building</label>
+            <label for="optionalBuilding_${index}">${buildingLabel}</label>
             <select id="optionalBuilding_${index}" class="optionalBuildingSelect" data-index="${index}" style="width: 100%;">
               ${buildingOptions}
             </select>
           </div>
-          <button type="button" class="removeOptionalBtn inlineActionBtn inlineActionBtnDanger" data-index="${index}">Remove</button>
+          <button type="button" class="removeOptionalBtn inlineActionBtn inlineActionBtnDanger" data-index="${index}">${removeLabel}</button>
         </div>
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 1 1 150px; min-width: 130px;">
-            <label for="optionalCurrent_${index}">Current Level</label>
+            <label for="optionalCurrent_${index}">${currentLevelLabel}</label>
             <select id="optionalCurrent_${index}" class="optionalCurrentLevel" data-index="${index}">
               ${currentOptions}
             </select>
           </div>
           <div style="flex: 1 1 150px; min-width: 130px;">
-            <label for="optionalTarget_${index}">Target Level</label>
+            <label for="optionalTarget_${index}">${targetLevelLabel}</label>
             <select id="optionalTarget_${index}" class="optionalTargetLevel" data-index="${index}">
               ${targetOptions}
             </select>
@@ -1056,7 +1102,7 @@ function addOptionalBuilding() {
   const selectedBuilding = document.getElementById("targetBuilding")?.value || "furnace";
   const levels = getBuildingLevelOrder(selectedBuilding);
   if (levels.length < 2) {
-    alert("Cannot add optional building: no level data available");
+    alert(translateText("alerts.cannotAddOptionalBuilding", {}, "Cannot add optional building: no level data available"));
     return;
   }
   optionalBuildings.push({
@@ -1095,32 +1141,35 @@ function renderBearHuntMails() {
     container.innerHTML = "";
     return;
   }
-
   let html = "";
   bearHuntMails.forEach((mail, index) => {
-    const safeTierIndex = Number.isInteger(Number(mail.tierIndex))
+    const safeTierIndex = Number.isFinite(Number(mail.tierIndex))
       ? Math.max(0, Math.min(BEAR_HUNT_TIERS.length - 1, Number(mail.tierIndex)))
       : 0;
     const parsedMailCount = parseInt(String(mail.count ?? "1"), 10);
     const safeMailCount = Number.isNaN(parsedMailCount) ? 1 : Math.max(0, parsedMailCount);
     const tierOptions = BEAR_HUNT_TIERS
-      .map((tier, i) => `<option value="${i}"${i === safeTierIndex ? " selected" : ""}>${tier.label}</option>`)
+      .map((tier, i) => `<option value="${i}"${i === safeTierIndex ? " selected" : ""}>${escapeHtml(tier.label)}</option>`)
       .join("");
+
+    const damageTierLabel = escapeHtml(translateText("labels.damageTier", {}, "Damage Tier"));
+    const mailLabel = escapeHtml(translateText("labels.mail", {}, "Mail"));
+    const removeLabel = escapeHtml(translateText("buttons.remove", {}, "Remove"));
 
     html += `
       <div class="card-panel" style="margin-bottom: 10px;">
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 2 1 200px; min-width: 160px;">
-            <label for="bearHuntTier_${index}">Damage Tier</label>
+            <label for="bearHuntTier_${index}">${damageTierLabel}</label>
             <select id="bearHuntTier_${index}" class="bearHuntTierSelect" data-index="${index}" style="width: 100%;">
               ${tierOptions}
             </select>
           </div>
           <div style="flex: 1 1 100px; min-width: 80px;">
-            <label for="bearHuntCount_${index}">Mail</label>
+            <label for="bearHuntCount_${index}">${mailLabel}</label>
             <input id="bearHuntCount_${index}" type="number" min="0" value="${safeMailCount}" class="bearHuntCountInput" data-index="${index}" style="width: 100%;" />
           </div>
-          <button type="button" class="removeBearHuntBtn inlineActionBtn inlineActionBtnDanger" data-index="${index}">Remove</button>
+          <button type="button" class="removeBearHuntBtn inlineActionBtn inlineActionBtnDanger" data-index="${index}">${removeLabel}</button>
         </div>
       </div>
     `;
@@ -1206,7 +1255,7 @@ function setAllPrerequisiteCurrentLevels(levelKey) {
 function setSelectOptions(selectEl, optionValues, selectedValue) {
   const normalized = optionValues.map(v => String(v));
   selectEl.innerHTML = normalized
-    .map(v => `<option value="${v}">${formatLevelLabel(v)}</option>`)
+    .map(v => `<option value="${escapeAttr(v)}">${escapeHtml(formatLevelLabel(v))}</option>`)
     .join("");
 
   const preferred = String(selectedValue || "");
@@ -1280,40 +1329,45 @@ function isValidNonNegativeNumberInput(rawInput, allowDecimal = false) {
 // Focused validation pass for the main calculation action.
 function getCalculationValidationError() {
   const resourceFields = [
-    ["ownedMeat", "Meat"],
-    ["ownedWood", "Wood"],
-    ["ownedCoal", "Coal"],
-    ["ownedIron", "Iron"],
-    ["ownedFireCrystals", "Fire Crystals"],
-    ["ownedRefinedFireCrystals", "Refined Fire Crystals"]
+    ["ownedMeat", "labels.meat"],
+    ["ownedWood", "labels.wood"],
+    ["ownedCoal", "labels.coal"],
+    ["ownedIron", "labels.iron"],
+    ["ownedFireCrystals", "labels.fireCrystals"],
+    ["ownedRefinedFireCrystals", "labels.refinedFireCrystals"]
   ];
 
-  for (const [id, label] of resourceFields) {
+  for (const [id, labelKey] of resourceFields) {
     const el = document.getElementById(id);
     if (!el) continue;
     if (!isValidResourceAmountInput(el.value)) {
-      return `${label} must be a non-negative number. You can use plain numbers or K/M/B suffixes.`;
+      return translateText("validation.nonNegativeResource", {
+        label: translateText(labelKey, {}, labelKey)
+      });
     }
   }
 
   const numberFields = [
-    ["generalSpeedups", "General Speedups", false],
-    ["constructionSpeedups", "Construction Speedups", false],
-    ["constructionSpeedPct", "Construction Speed", true],
-    ["positionBuffPct", "Position Buff", true],
-    ["customChestL1SecuredCount", "Level 1 secured custom chests", false],
-    ["customChestL1UnsecuredCount", "Level 1 unsecured custom chests", false],
-    ["customChestL2SecuredCount", "Level 2 secured custom chests", false],
-    ["customChestL2UnsecuredCount", "Level 2 unsecured custom chests", false],
-    ["customChestL3SecuredCount", "Level 3 secured custom chests", false],
-    ["customChestL3UnsecuredCount", "Level 3 unsecured custom chests", false]
+    ["generalSpeedups", "labels.generalSpeedups", false],
+    ["constructionSpeedups", "labels.constructionSpeedups", false],
+    ["constructionSpeedPct", "labels.constructionSpeed", true],
+    ["positionBuffPct", "labels.positionBuff", true],
+    ["customChestL1SecuredCount", "labels.level1Secured", false],
+    ["customChestL1UnsecuredCount", "labels.level1Unsecured", false],
+    ["customChestL2SecuredCount", "labels.level2Secured", false],
+    ["customChestL2UnsecuredCount", "labels.level2Unsecured", false],
+    ["customChestL3SecuredCount", "labels.level3Secured", false],
+    ["customChestL3UnsecuredCount", "labels.level3Unsecured", false]
   ];
 
-  for (const [id, label, allowDecimal] of numberFields) {
+  for (const [id, labelKey, allowDecimal] of numberFields) {
     const el = document.getElementById(id);
     if (!el) continue;
     if (!isValidNonNegativeNumberInput(el.value, allowDecimal)) {
-      return `${label} must be a non-negative ${allowDecimal ? "number" : "whole number"}.`;
+      return translateText(
+        allowDecimal ? "validation.nonNegativeNumber" : "validation.nonNegativeWholeNumber",
+        { label: translateText(labelKey, {}, labelKey) }
+      );
     }
   }
 
@@ -1322,11 +1376,11 @@ function getCalculationValidationError() {
     const currentIndex = levels.indexOf(String(item.currentLevel));
     const targetIndex = levels.indexOf(String(item.targetLevel));
     if (!BUILDING_COSTS[item.building] || currentIndex < 0 || targetIndex < 0) {
-      return "One optional building has an invalid building or level selection. Please reselect it and try again.";
+      return translateText("alerts.invalidOptionalBuilding");
     }
     if (targetIndex < currentIndex) {
-      const buildingLabel = String(item.building).replace(/_/g, " ").toUpperCase();
-      return `${buildingLabel}: target level cannot be below current level.`;
+      const buildingLabel = getBuildingDisplayName(item.building).toUpperCase();
+      return translateText("alerts.optionalTargetBelowCurrent", { building: buildingLabel });
     }
   }
 
@@ -1334,10 +1388,10 @@ function getCalculationValidationError() {
     const tierIndex = Number(mail.tierIndex);
     const count = Number(mail.count);
     if (!Number.isInteger(tierIndex) || tierIndex < 0 || tierIndex >= BEAR_HUNT_TIERS.length) {
-      return "One Bear Hunt Mail row has an invalid damage tier. Please reselect it and try again.";
+      return translateText("alerts.invalidBearHuntTier");
     }
     if (!Number.isFinite(count) || count < 0) {
-      return "Bear Hunt Mail counts must be 0 or higher.";
+      return translateText("alerts.invalidBearHuntCount");
     }
   }
 
@@ -1465,10 +1519,10 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
     let prereqsHTML = `
       <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
         <div style="flex: 1 1 220px; min-width: 140px;">
-          <label for="prereqBatchCurrent">Set all current levels</label>
+          <label for="prereqBatchCurrent">${escapeHtml(translateText("labels.setAllCurrentLevels", {}, "Set all current levels"))}</label>
           <select id="prereqBatchCurrent"></select>
         </div>
-        <button id="setAllPrereqCurrentBtn" type="button" class="inlineActionBtn inlineActionBtnPrimary">Set All</button>
+        <button id="setAllPrereqCurrentBtn" type="button" class="inlineActionBtn inlineActionBtnPrimary">${escapeHtml(translateText("buttons.setAll", {}, "Set All"))}</button>
       </div>
     `;
 
@@ -1476,7 +1530,7 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
 
     for (const [buildingName, requiredLevel] of prereqMap.entries()) {
       const hasCostData = !!(BUILDING_COSTS && BUILDING_COSTS[buildingName]);
-      const buildingLabel = buildingName.replace("_", " ").toUpperCase();
+      const buildingLabel = escapeHtml(getBuildingDisplayName(buildingName).toUpperCase());
       const existingCurrentInput = document.getElementById(`${buildingName}CurrentLevel`);
       const existingTargetInput = document.getElementById(`${buildingName}Level`);
       const levelOptions = getBuildingLevelOrder(buildingName);
@@ -1495,7 +1549,7 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
       const chosenTarget = (targetIdx >= currentIdx && targetIdx >= 0) ? chosenTargetRaw : chosenCurrent;
 
       const renderOptions = (selected) => levelOptions
-        .map(opt => `<option value="${opt}"${opt === selected ? " selected" : ""}>${formatLevelLabel(opt)}</option>`)
+        .map(opt => `<option value="${escapeAttr(opt)}"${opt === selected ? " selected" : ""}>${escapeHtml(formatLevelLabel(opt))}</option>`)
         .join("");
 
       if (hasCostData) {
@@ -1504,14 +1558,14 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
             <div style="font-weight: 700; margin-bottom: 6px;">${buildingLabel}</div>
             <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
               <div style="flex: 1 1 160px; min-width: 140px;">
-                <label for="${buildingName}CurrentLevel">Current Level</label>
+                <label for="${buildingName}CurrentLevel">${escapeHtml(translateText("labels.currentLevel", {}, "Current Level"))}</label>
                 <select
                   id="${buildingName}CurrentLevel" 
                   data-building="${buildingName}"
                 >${renderOptions(chosenCurrent)}</select>
               </div>
               <div style="flex: 1 1 160px; min-width: 140px;">
-                <label for="${buildingName}Level">Required Level</label>
+                <label for="${buildingName}Level">${escapeHtml(translateText("labels.requiredLevel", {}, "Required Level"))}</label>
                 <select
                   id="${buildingName}Level" 
                   data-building="${buildingName}"
@@ -1524,7 +1578,7 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
         prereqsHTML += `
           <div class="card-panel" style="margin-bottom: 10px; padding: 10px;">
             <strong>${buildingLabel}</strong><br>
-            <div style="margin-top: 6px;">Required Level: ${requiredLevel}</div>
+            <div style="margin-top: 6px;">${escapeHtml(translateText("labels.requiredLevel", {}, "Required Level"))}: ${escapeHtml(requiredLevel)}</div>
           </div>
         `;
       }
@@ -1642,7 +1696,7 @@ async function loadData() {
     applyTheme(loadThemePreference());
   } catch (error) {
     console.error("Error loading data:", error);
-    alert("Error loading calculator data. Please refresh the page.");
+    alert(translateText("alerts.dataLoadingError", {}, "Error loading calculator data. Please refresh the page."));
   }
 }
 
@@ -1716,9 +1770,12 @@ if (addAccountBtn) {
   addAccountBtn.addEventListener("click", function() {
     // prompt() shows a native browser dialog and returns the typed string,
     // or null if the user clicked Cancel
-    const name = prompt("Account name:", `Account ${accounts.length + 1}`);
+    const name = prompt(
+      translateText("account.namePrompt", {}, "Account name:"),
+      translateText("account.defaultName", { number: accounts.length + 1 }, `Account ${accounts.length + 1}`)
+    );
     if (name === null) return; // User cancelled
-    const newAccount = addAccount(name.trim() || `Account ${accounts.length}`);
+    const newAccount = addAccount(name.trim() || translateText("account.defaultName", { number: accounts.length + 1 }, `Account ${accounts.length + 1}`));
     switchAccount(newAccount.id);
   });
 }
@@ -1729,7 +1786,7 @@ if (renameAccountBtn) {
   renameAccountBtn.addEventListener("click", function() {
     const account = getActiveAccount();
     if (!account) return;
-    const newName = prompt("Rename account:", account.name);
+    const newName = prompt(translateText("account.renamePrompt", {}, "Rename account:"), account.name);
     if (newName === null) return;
     renameAccount(account.id, newName);
     renderAccountSelector();
@@ -1742,8 +1799,8 @@ if (deleteAccountBtn) {
   deleteAccountBtn.addEventListener("click", function() {
     const account = getActiveAccount();
     if (!account) return;
-    if (accounts.length <= 1) { alert("Cannot delete the only account."); return; }
-    if (!confirm(`Delete "${account.name}"? This cannot be undone.`)) return;
+    if (accounts.length <= 1) { alert(translateText("account.cannotDeleteOnly", {}, "Cannot delete the only account.")); return; }
+    if (!confirm(translateText("account.deleteConfirm", { name: account.name }, `Delete "${account.name}"? This cannot be undone.`))) return;
     deleteAccount(account.id);
     loadAllStateFromAccount();
   });
@@ -1808,7 +1865,7 @@ if (addBearHuntMailBtn) {
 document.getElementById("calculateBtn").addEventListener("click", function() {
   // Guard: bail out if data hasn't loaded yet
   if (!BUILDING_COSTS || !PREREQUISITES) {
-    alert("Data is still loading. Please wait and try again.");
+    alert(translateText("alerts.dataStillLoading", {}, "Data is still loading. Please wait and try again."));
     return;
   }
 
@@ -1821,7 +1878,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const currentIdx = selectedBuildingLevels.indexOf(currentLevel);
   const targetIdx = selectedBuildingLevels.indexOf(targetLevel);
   if (currentIdx < 0 || targetIdx < 0 || currentIdx > targetIdx) {
-    alert("Please ensure current level does not exceed target level.");
+    alert(translateText("alerts.currentExceedsTarget", {}, "Please ensure current level does not exceed target level."));
     return;
   }
 
@@ -1978,33 +2035,37 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
     const extraStatLines = [];
 
     if (typeof rallyFrom === "number" && typeof rallyTo === "number") {
-      extraStatLines.push(`Rally Capacity: ${rallyFrom.toLocaleString()} -> ${rallyTo.toLocaleString()}`);
+      extraStatLines.push(`${translateText("results.rallyCapacity", {}, "Rally Capacity")}: ${rallyFrom.toLocaleString()} -> ${rallyTo.toLocaleString()}`);
     }
 
     if (typeof deployFrom === "number" && typeof deployTo === "number") {
-      extraStatLines.push(`Troop Deployment Capacity: ${deployFrom.toLocaleString()} -> ${deployTo.toLocaleString()}`);
+      extraStatLines.push(`${translateText("results.troopDeploymentCapacity", {}, "Troop Deployment Capacity")}: ${deployFrom.toLocaleString()} -> ${deployTo.toLocaleString()}`);
     }
 
     if (typeof storageFrom === "number" && typeof storageTo === "number") {
-      extraStatLines.push(`Storage Capacity: ${storageFrom.toLocaleString()} -> ${storageTo.toLocaleString()}`);
+      extraStatLines.push(`${translateText("results.storageCapacity", {}, "Storage Capacity")}: ${storageFrom.toLocaleString()} -> ${storageTo.toLocaleString()}`);
     }
 
     const extraStatsHtml = extraStatLines.length
       ? `<br>${extraStatLines.join("<br>")}`
       : "";
     const crystalCostsHtml = (buildingFireCrystals > 0 || buildingRefinedFireCrystals > 0)
-      ? `<br>Fire Crystals: ${buildingFireCrystals.toLocaleString()} | Refined Fire Crystals: ${buildingRefinedFireCrystals.toLocaleString()}`
+      ? `<br>${translateText("labels.fireCrystals", {}, "Fire Crystals")}: ${buildingFireCrystals.toLocaleString()} | ${translateText("labels.refinedFireCrystals", {}, "Refined Fire Crystals")}: ${buildingRefinedFireCrystals.toLocaleString()}`
       : "";
 
     // Display results for this building
-    const buildingDisplay = building.replace("_", " ").toUpperCase();
+    const buildingDisplay = escapeHtml(getBuildingDisplayName(building).toUpperCase());
+    const meatLabel = escapeHtml(translateText("labels.meat", {}, "Meat"));
+    const woodLabel = escapeHtml(translateText("labels.wood", {}, "Wood"));
+    const coalLabel = escapeHtml(translateText("labels.coal", {}, "Coal"));
+    const ironLabel = escapeHtml(translateText("labels.iron", {}, "Iron"));
     resultsHTML += `
       <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
         <strong>${buildingDisplay}</strong> (${curLvl} → ${tgtLvl})<br>
-        Meat: ${buildingMeat.toLocaleString()} | 
-        Wood: ${buildingWood.toLocaleString()} | 
-        Coal: ${buildingCoal.toLocaleString()} | 
-        Iron: ${buildingIron.toLocaleString()}
+        ${meatLabel}: ${buildingMeat.toLocaleString()} | 
+        ${woodLabel}: ${buildingWood.toLocaleString()} | 
+        ${coalLabel}: ${buildingCoal.toLocaleString()} | 
+        ${ironLabel}: ${buildingIron.toLocaleString()}
         ${crystalCostsHtml}
         ${extraStatsHtml}
       </div>
@@ -2073,26 +2134,26 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   // Add grand total
   resultsHTML += `
     <div class="card-panel" style="margin-top: 15px;">
-      <strong>GRAND TOTAL</strong><br>
-      Meat: ${totalMeat.toLocaleString()} | 
-      Wood: ${totalWood.toLocaleString()} | 
-      Coal: ${totalCoal.toLocaleString()} | 
-      Iron: ${totalIron.toLocaleString()}<br>
-      ${totalFireCrystals > 0 || totalRefinedFireCrystals > 0 ? `Fire Crystals: ${totalFireCrystals.toLocaleString()} | Refined Fire Crystals: ${totalRefinedFireCrystals.toLocaleString()}<br>` : ""}
-      ${clampedZinmanResourceDiscountPct > 0 ? `Base Cost Before Zinman Discount — Meat: ${baseTotalMeat.toLocaleString()} | Wood: ${baseTotalWood.toLocaleString()} | Coal: ${baseTotalCoal.toLocaleString()} | Iron: ${baseTotalIron.toLocaleString()}<br>` : ""}
-      Total Upgrade Time (Base): ${formatDuration(totalSeconds)}<br>
-      Additive Speed (${additiveSpeedPct.toFixed(1)}%): ${formatDuration(additiveAdjustedSeconds)} (${formatDuration(additiveTimeSavedSeconds)} saved)<br>
-      Double Time (${clampedDoubleTimePct.toFixed(1)}%): ${formatDuration(doubleTimeAdjustedSeconds)} (${formatDuration(doubleTimeSavedSeconds)} saved)
+      <strong>${translateText("results.grandTotal", {}, "GRAND TOTAL")}</strong><br>
+      ${translateText("labels.meat", {}, "Meat")}: ${totalMeat.toLocaleString()} | 
+      ${translateText("labels.wood", {}, "Wood")}: ${totalWood.toLocaleString()} | 
+      ${translateText("labels.coal", {}, "Coal")}: ${totalCoal.toLocaleString()} | 
+      ${translateText("labels.iron", {}, "Iron")}: ${totalIron.toLocaleString()}<br>
+      ${totalFireCrystals > 0 || totalRefinedFireCrystals > 0 ? `${translateText("labels.fireCrystals", {}, "Fire Crystals")}: ${totalFireCrystals.toLocaleString()} | ${translateText("labels.refinedFireCrystals", {}, "Refined Fire Crystals")}: ${totalRefinedFireCrystals.toLocaleString()}<br>` : ""}
+      ${clampedZinmanResourceDiscountPct > 0 ? `${translateText("results.baseCostBeforeZinman", {}, "Base Cost Before Zinman Discount")} - ${translateText("labels.meat", {}, "Meat")}: ${baseTotalMeat.toLocaleString()} | ${translateText("labels.wood", {}, "Wood")}: ${baseTotalWood.toLocaleString()} | ${translateText("labels.coal", {}, "Coal")}: ${baseTotalCoal.toLocaleString()} | ${translateText("labels.iron", {}, "Iron")}: ${baseTotalIron.toLocaleString()}<br>` : ""}
+      ${translateText("results.totalUpgradeTimeBase", {}, "Total Upgrade Time (Base)")}: ${formatDuration(totalSeconds)}<br>
+      ${translateText("results.additiveSpeed", { percent: additiveSpeedPct.toFixed(1) }, `Additive Speed (${additiveSpeedPct.toFixed(1)}%)`)}: ${formatDuration(additiveAdjustedSeconds)} (${translateText("results.saved", { duration: formatDuration(additiveTimeSavedSeconds) }, `${formatDuration(additiveTimeSavedSeconds)} saved`)})<br>
+      ${translateText("results.doubleTime", { percent: clampedDoubleTimePct.toFixed(1) }, `Double Time (${clampedDoubleTimePct.toFixed(1)}%)`)}: ${formatDuration(doubleTimeAdjustedSeconds)} (${translateText("results.saved", { duration: formatDuration(doubleTimeSavedSeconds) }, `${formatDuration(doubleTimeSavedSeconds)} saved`)})
       
       <br><br>
-      <strong>After Upgrade (Backpack Balance)</strong><br>
-      Meat: ${meatRemaining.toLocaleString()} | 
-      Wood: ${woodRemaining.toLocaleString()} | 
-      Coal: ${coalRemaining.toLocaleString()} | 
-      Iron: ${ironRemaining.toLocaleString()}<br>
-      ${totalFireCrystals > 0 || totalRefinedFireCrystals > 0 ? `Fire Crystals: ${fireCrystalsRemaining.toLocaleString()} | Refined Fire Crystals: ${refinedFireCrystalsRemaining.toLocaleString()}<br>` : ""}
-      Remaining Time After Speedups: ${formatDuration(remainingTimeSeconds)}
-      ${speedupSurplusSeconds > 0 ? `<br>Speedup Surplus: ${formatDuration(speedupSurplusSeconds)}` : ""}
+      <strong>${translateText("results.afterUpgradeBalance", {}, "After Upgrade (Backpack Balance)")}</strong><br>
+      ${translateText("labels.meat", {}, "Meat")}: ${meatRemaining.toLocaleString()} | 
+      ${translateText("labels.wood", {}, "Wood")}: ${woodRemaining.toLocaleString()} | 
+      ${translateText("labels.coal", {}, "Coal")}: ${coalRemaining.toLocaleString()} | 
+      ${translateText("labels.iron", {}, "Iron")}: ${ironRemaining.toLocaleString()}<br>
+      ${totalFireCrystals > 0 || totalRefinedFireCrystals > 0 ? `${translateText("labels.fireCrystals", {}, "Fire Crystals")}: ${fireCrystalsRemaining.toLocaleString()} | ${translateText("labels.refinedFireCrystals", {}, "Refined Fire Crystals")}: ${refinedFireCrystalsRemaining.toLocaleString()}<br>` : ""}
+      ${translateText("results.remainingTimeAfterSpeedups", {}, "Remaining Time After Speedups")}: ${formatDuration(remainingTimeSeconds)}
+      ${speedupSurplusSeconds > 0 ? `<br>${translateText("results.speedupSurplus", {}, "Speedup Surplus")}: ${formatDuration(speedupSurplusSeconds)}` : ""}
     </div>
   `;
 
@@ -2103,10 +2164,10 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       const usedCount = alloc[1] + alloc[2] + alloc[3];
       if (usedCount === 0) return; // Skip resources that needed no chests
 
-      const resourceLabel = resource.charAt(0).toUpperCase() + resource.slice(1);
+      const resourceLabel = getResourceDisplayName(resource);
       chestLines.push(
-        `${resourceLabel}: L3 x${alloc[3]}, L2 x${alloc[2]}, L1 x${alloc[1]} ` +
-        `(provided ${chestPlan.provided[resource].toLocaleString()}, uncovered deficit ${chestPlan.remainingDeficits[resource].toLocaleString()})`
+        `${escapeHtml(resourceLabel)}: L3 x${alloc[3]}, L2 x${alloc[2]}, L1 x${alloc[1]} ` +
+        `(${escapeHtml(translateText("results.provided", { amount: chestPlan.provided[resource].toLocaleString() }, `provided ${chestPlan.provided[resource].toLocaleString()}`))}, ${escapeHtml(translateText("results.uncoveredDeficit", { amount: chestPlan.remainingDeficits[resource].toLocaleString() }, `uncovered deficit ${chestPlan.remainingDeficits[resource].toLocaleString()}`))})`
       );
     });
 
@@ -2122,20 +2183,22 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 
     resultsHTML += `
       <div class="card-panel" style="margin-top: 15px;">
-        <strong>CUSTOM CHEST RECOMMENDATION</strong><br>
-        ${chestLines.length ? chestLines.join("<br>") : "No chest usage needed for current deficits."}<br><br>
-        Chests Used: L3 ${usedL3}/${totalL3} | L2 ${usedL2}/${totalL2} | L1 ${usedL1}/${totalL1}<br>
-        <strong>After Recommended Chest Use</strong><br>
-        Meat: ${postChestRemaining.meat.toLocaleString()} |
-        Wood: ${postChestRemaining.wood.toLocaleString()} |
-        Coal: ${postChestRemaining.coal.toLocaleString()} |
-        Iron: ${postChestRemaining.iron.toLocaleString()}
+        <strong>${translateText("results.customChestRecommendation", {}, "CUSTOM CHEST RECOMMENDATION")}</strong><br>
+        ${chestLines.length ? chestLines.join("<br>") : translateText("results.noChestUsage", {}, "No chest usage needed for current deficits.")}<br><br>
+        ${translateText("results.chestsUsed", {}, "Chests Used")}: L3 ${usedL3}/${totalL3} | L2 ${usedL2}/${totalL2} | L1 ${usedL1}/${totalL1}<br>
+        <strong>${translateText("results.afterRecommendedChestUse", {}, "After Recommended Chest Use")}</strong><br>
+        ${translateText("labels.meat", {}, "Meat")}: ${postChestRemaining.meat.toLocaleString()} |
+        ${translateText("labels.wood", {}, "Wood")}: ${postChestRemaining.wood.toLocaleString()} |
+        ${translateText("labels.coal", {}, "Coal")}: ${postChestRemaining.coal.toLocaleString()} |
+        ${translateText("labels.iron", {}, "Iron")}: ${postChestRemaining.iron.toLocaleString()}
       </div>
     `;
   }
 
   // Inject all the generated HTML into the results section
-  document.getElementById("result").innerHTML = resultsHTML;
+  const resultEl = document.getElementById("result");
+  resultEl.dataset.hasResults = "true";
+  resultEl.innerHTML = resultsHTML;
 });
 
 
@@ -2148,6 +2211,37 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 // interactive while it fetches the JSON files.
 loadData();
 
+document.addEventListener("wos:languagechange", () => {
+  applyTheme(document.body.dataset.theme || localStorage.getItem(THEME_STORAGE_KEY) || "wos");
+
+  if (activeCalculator !== CALCULATOR_KEYS.UPGRADE) {
+    renderComingSoonPanel(activeCalculator);
+  }
+
+  if (BUILDING_COSTS && PREREQUISITES) {
+    const targetBuilding = document.getElementById("targetBuilding")?.value || "furnace";
+    const currentLevelKey = document.getElementById("currentLevel")?.value || "1";
+    const targetLevelKey = document.getElementById("targetLevel")?.value || currentLevelKey;
+
+    renderOptionalBuildings();
+    renderBearHuntMails();
+    updatePrerequisites(targetBuilding, currentLevelKey, targetLevelKey);
+
+    const resultEl = document.getElementById("result");
+    if (resultEl?.dataset.hasResults === "true") {
+      document.getElementById("calculateBtn")?.click();
+    }
+  }
+
+  const updateToast = document.getElementById("swUpdateToast");
+  if (updateToast) {
+    const label = updateToast.querySelector("span");
+    const button = updateToast.querySelector("button");
+    if (label) label.textContent = translateText("update.ready", {}, "A new version is ready.");
+    if (button) button.textContent = translateText("buttons.refresh", {}, "Refresh");
+  }
+});
+
 function showUpdateToast(registration) {
   const existingToast = document.getElementById("swUpdateToast");
   if (existingToast) return;
@@ -2157,8 +2251,8 @@ function showUpdateToast(registration) {
   toast.className = "update-toast";
   toast.setAttribute("role", "status");
   toast.innerHTML = `
-    <span>A new version is ready.</span>
-    <button id="swUpdateBtn" type="button">Refresh</button>
+    <span>${escapeHtml(translateText("update.ready", {}, "A new version is ready."))}</span>
+    <button id="swUpdateBtn" type="button">${escapeHtml(translateText("buttons.refresh", {}, "Refresh"))}</button>
   `;
 
   document.body.appendChild(toast);

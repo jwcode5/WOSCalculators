@@ -99,6 +99,18 @@ body[data-theme="dark"] select {
   color: var(--muted);
 }
 
+.top-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(180px, 100%);
+}
+
+.language-select {
+  min-height: 44px;
+  margin-top: 0;
+}
+
 /* Reusable button styling for the theme switcher */
 .theme-toggle {
   background: rgba(255, 255, 255, 0.12);
@@ -473,6 +485,10 @@ button:hover {
   }
 
   .theme-toggle {
+    width: 100%;
+  }
+
+  .top-controls {
     width: 100%;
   }
 

@@ -4,10 +4,12 @@
   <!-- Basic document metadata and asset loading -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="theme-color" content="#071533" />
-  <title>WOS Calc</title>
+  <title data-i18n="page.title.index">WOS Calc</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="i18n.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -18,67 +20,70 @@
   <main class="container">
     <div class="top-row">
       <div>
-        <h1>WOS Calc</h1>
+        <h1 data-i18n="app.name">WOS Calc</h1>
       </div>
-      <button id="themeToggleBtn" type="button" class="theme-toggle">Dark Mode</button>
+      <div class="top-controls">
+        <select id="languageSelect" class="language-select" data-i18n-aria-label="language.label"></select>
+        <button id="themeToggleBtn" type="button" class="theme-toggle" data-i18n="theme.darkMode">Dark Mode</button>
+      </div>
     </div>
 
     <!-- Account switching controls for the multi-account save system -->
     <div class="account-bar">
       <select id="accountSelect" class="account-select"></select>
       <div class="account-btn-group">
-        <button id="renameAccountBtn" type="button" class="account-btn" title="Rename account">&#9998;</button>
-        <button id="addAccountBtn" type="button" class="account-btn account-btn-add" title="Add account">+ Account</button>
-        <button id="deleteAccountBtn" type="button" class="account-btn account-btn-delete" title="Delete account">&#128465;</button>
+        <button id="renameAccountBtn" type="button" class="account-btn" title="Rename account" data-i18n-title="account.renameTitle">&#9998;</button>
+        <button id="addAccountBtn" type="button" class="account-btn account-btn-add" title="Add account" data-i18n-title="account.addTitle" data-i18n="account.addButton">+ Account</button>
+        <button id="deleteAccountBtn" type="button" class="account-btn account-btn-delete" title="Delete account" data-i18n-title="account.deleteTitle">&#128465;</button>
       </div>
     </div>
 
-    <nav class="calculator-tabs" aria-label="Calculator tabs">
-      <button type="button" class="calculator-tab" data-calculator="upgrade">Upgrade</button>
-      <button type="button" class="calculator-tab" data-calculator="chiefGear">Chief Gear</button>
-      <button type="button" class="calculator-tab" data-calculator="chiefCharm">Chief Charm</button>
-      <button type="button" class="calculator-tab" data-calculator="whatIf">What If</button>
+    <nav class="calculator-tabs" aria-label="Calculator tabs" data-i18n-aria-label="nav.calculatorTabs">
+      <button type="button" class="calculator-tab" data-calculator="upgrade" data-i18n="calculator.upgrade">Upgrade</button>
+      <button type="button" class="calculator-tab" data-calculator="chiefGear" data-i18n="calculator.chiefGear">Chief Gear</button>
+      <button type="button" class="calculator-tab" data-calculator="chiefCharm" data-i18n="calculator.chiefCharm">Chief Charm</button>
+      <button type="button" class="calculator-tab" data-calculator="whatIf" data-i18n="calculator.whatIf">What If</button>
     </nav>
 
-    <div class="site-links" aria-label="Site links">
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+    <div class="site-links" aria-label="Site links" data-i18n-aria-label="nav.siteLinks">
+      <a href="about.html" data-i18n="nav.about">About</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
     </div>
 
     <section id="comingSoonPanel" class="coming-soon-panel" style="display: none;">
-      <h2 id="comingSoonTitle">Coming Soon</h2>
-      <p class="coming-soon-account">Active account: <strong id="comingSoonAccountName"></strong></p>
+      <h2 id="comingSoonTitle" data-i18n="comingSoon.title">Coming Soon</h2>
+      <p class="coming-soon-account"><span data-i18n="account.activeAccount">Active account:</span> <strong id="comingSoonAccountName"></strong></p>
       <p id="comingSoonMessage"></p>
-      <p>This calculator tab is visible now as a placeholder so users can see what is planned next.</p>
-      <p>Once this calculator is live, this message can be removed and replaced with the full tool.</p>
+      <p data-i18n="comingSoon.placeholderIntro">This calculator tab is visible now as a placeholder so users can see what is planned next.</p>
+      <p data-i18n="comingSoon.placeholderOutro">Once this calculator is live, this message can be removed and replaced with the full tool.</p>
     </section>
 
     <div id="upgradeCalculatorPanel">
 
     <!-- Primary "what am I upgrading?" inputs -->
     <fieldset>
-      <legend>Target Building</legend>
-      <label for="targetBuilding">Building</label>
+      <legend data-i18n="sections.targetBuilding">Target Building</legend>
+      <label for="targetBuilding" data-i18n="labels.building">Building</label>
       <select id="targetBuilding">
-        <option value="furnace">Furnace</option>
-        <option value="embassy">Embassy</option>
-        <option value="research_center">Research Center</option>
-        <option value="infirmary">Infirmary</option>
-        <option value="infantry_camp">Infantry Camp</option>
-        <option value="lancer_camp">Lancer Camp</option>
-        <option value="marksman_camp">Marksman Camp</option>
-        <option value="barricade">Barricade</option>
-        <option value="command_center">Command Center</option>
-        <option value="storehouse">Storehouse</option>
+        <option value="furnace" data-i18n="building.furnace">Furnace</option>
+        <option value="embassy" data-i18n="building.embassy">Embassy</option>
+        <option value="research_center" data-i18n="building.research_center">Research Center</option>
+        <option value="infirmary" data-i18n="building.infirmary">Infirmary</option>
+        <option value="infantry_camp" data-i18n="building.infantry_camp">Infantry Camp</option>
+        <option value="lancer_camp" data-i18n="building.lancer_camp">Lancer Camp</option>
+        <option value="marksman_camp" data-i18n="building.marksman_camp">Marksman Camp</option>
+        <option value="barricade" data-i18n="building.barricade">Barricade</option>
+        <option value="command_center" data-i18n="building.command_center">Command Center</option>
+        <option value="storehouse" data-i18n="building.storehouse">Storehouse</option>
       </select>
 
       <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-top: 10px;">
         <div style="flex: 1 1 180px; min-width: 150px;">
-          <label for="currentLevel">Current Level</label>
+          <label for="currentLevel" data-i18n="labels.currentLevel">Current Level</label>
           <select id="currentLevel"></select>
         </div>
         <div style="flex: 1 1 180px; min-width: 150px;">
-          <label for="targetLevel">Target (Goal) Level</label>
+          <label for="targetLevel" data-i18n="labels.targetGoalLevel">Target (Goal) Level</label>
           <select id="targetLevel"></select>
         </div>
       </div>
@@ -86,95 +91,95 @@
 
     <!-- Resources and speedups currently owned by the player -->
     <fieldset>
-      <legend>Your Resources</legend>
-      <label for="ownedMeat">Meat</label>
+      <legend data-i18n="sections.yourResources">Your Resources</legend>
+      <label for="ownedMeat" data-i18n="labels.meat">Meat</label>
       <input id="ownedMeat" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
-      <label for="ownedWood">Wood</label>
+      <label for="ownedWood" data-i18n="labels.wood">Wood</label>
       <input id="ownedWood" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
-      <label for="ownedCoal">Coal</label>
+      <label for="ownedCoal" data-i18n="labels.coal">Coal</label>
       <input id="ownedCoal" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
-      <label for="ownedIron">Iron</label>
+      <label for="ownedIron" data-i18n="labels.iron">Iron</label>
       <input id="ownedIron" type="text" value="0" inputmode="text" placeholder="e.g. 953.14M" />
 
       <!-- Fire Crystal inputs stay hidden until an FC-tier upgrade is selected -->
       <div id="fcSuppliesSection" style="display: none; margin-top: 12px;">
-        <label for="ownedFireCrystals">Fire Crystals</label>
+        <label for="ownedFireCrystals" data-i18n="labels.fireCrystals">Fire Crystals</label>
         <input id="ownedFireCrystals" type="text" value="0" inputmode="text" placeholder="e.g. 1200" />
 
-        <label for="ownedRefinedFireCrystals">Refined Fire Crystals</label>
+        <label for="ownedRefinedFireCrystals" data-i18n="labels.refinedFireCrystals">Refined Fire Crystals</label>
         <input id="ownedRefinedFireCrystals" type="text" value="0" inputmode="text" placeholder="e.g. 450" />
       </div>
 
       <label for="useCustomChests" class="checkbox-row" style="margin-top: 12px;">
         <input id="useCustomChests" type="checkbox" />
-        Use Custom Resource Chests
+        <span data-i18n="labels.useCustomResourceChests">Use Custom Resource Chests</span>
       </label>
 
       <!-- Extra chest inputs only appear when the user enables chest planning -->
       <div id="customChestSection" style="display: none; margin-top: 12px;">
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 10px;">
           <div style="flex: 1 1 180px; min-width: 160px;">
-            <label for="customChestL1UnsecuredCount">Level 1 Unsecured</label>
+            <label for="customChestL1UnsecuredCount" data-i18n="labels.level1Unsecured">Level 1 Unsecured</label>
             <input id="customChestL1UnsecuredCount" type="number" min="0" value="0" />
           </div>
           <div style="flex: 1 1 180px; min-width: 160px;">
-            <label for="customChestL1SecuredCount">Level 1 Secured</label>
+            <label for="customChestL1SecuredCount" data-i18n="labels.level1Secured">Level 1 Secured</label>
             <input id="customChestL1SecuredCount" type="number" min="0" value="0" />
           </div>
         </div>
 
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 10px;">
           <div style="flex: 1 1 180px; min-width: 160px;">
-            <label for="customChestL2UnsecuredCount">Level 2 Unsecured</label>
+            <label for="customChestL2UnsecuredCount" data-i18n="labels.level2Unsecured">Level 2 Unsecured</label>
             <input id="customChestL2UnsecuredCount" type="number" min="0" value="0" />
           </div>
           <div style="flex: 1 1 180px; min-width: 160px;">
-            <label for="customChestL2SecuredCount">Level 2 Secured</label>
+            <label for="customChestL2SecuredCount" data-i18n="labels.level2Secured">Level 2 Secured</label>
             <input id="customChestL2SecuredCount" type="number" min="0" value="0" />
           </div>
         </div>
 
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
           <div style="flex: 1 1 180px; min-width: 160px;">
-            <label for="customChestL3UnsecuredCount">Level 3 Unsecured</label>
+            <label for="customChestL3UnsecuredCount" data-i18n="labels.level3Unsecured">Level 3 Unsecured</label>
             <input id="customChestL3UnsecuredCount" type="number" min="0" value="0" />
           </div>
           <div style="flex: 1 1 180px; min-width: 160px;">
-            <label for="customChestL3SecuredCount">Level 3 Secured</label>
+            <label for="customChestL3SecuredCount" data-i18n="labels.level3Secured">Level 3 Secured</label>
             <input id="customChestL3SecuredCount" type="number" min="0" value="0" />
           </div>
         </div>
       </div>
 
-      <label for="generalSpeedups">General Speedups (minutes)</label>
+      <label for="generalSpeedups" data-i18n="labels.generalSpeedups">General Speedups (minutes)</label>
       <input id="generalSpeedups" type="number" min="0" value="0" />
 
-      <label for="constructionSpeedups">Construction Speedups (minutes)</label>
+      <label for="constructionSpeedups" data-i18n="labels.constructionSpeedups">Construction Speedups (minutes)</label>
       <input id="constructionSpeedups" type="number" min="0" value="0" />
     </fieldset>
 
     <!-- Percentage-based buffs that reduce total construction time -->
     <fieldset>
-      <legend>Construction Buffs (%)</legend>
+      <legend data-i18n="sections.constructionBuffs">Construction Buffs (%)</legend>
       <label for="doubleTimeEnabled" class="checkbox-row">
         <input id="doubleTimeEnabled" type="checkbox" />
-        Double Time (20%)
+        <span data-i18n="labels.doubleTime">Double Time (20%)</span>
       </label>
 
       <label for="castleBuffEnabled" class="checkbox-row">
         <input id="castleBuffEnabled" type="checkbox" />
-        Castle Buff (10%)
+        <span data-i18n="labels.castleBuff">Castle Buff (10%)</span>
       </label>
 
-      <label for="constructionSpeedPct">Construction Speed</label>
+      <label for="constructionSpeedPct" data-i18n="labels.constructionSpeed">Construction Speed</label>
       <input id="constructionSpeedPct" type="number" min="0" step="0.1" value="0" />
 
-      <label for="hyenaBuffPct">Builder's Aide (Hyena) Buff</label>
+      <label for="hyenaBuffPct" data-i18n="labels.hyenaBuff">Builder's Aide (Hyena) Buff</label>
       <select id="hyenaBuffPct">
-        <option value="" selected>None (0%)</option>
+        <option value="" selected data-i18n="options.none0">None (0%)</option>
         <option value="5">5%</option>
         <option value="7">7%</option>
         <option value="9">9%</option>
@@ -182,9 +187,9 @@
         <option value="15">15%</option>
       </select>
 
-      <label for="zinmanBastionistPct">Zinman's Bastionist Skill</label>
+      <label for="zinmanBastionistPct" data-i18n="labels.zinmanBastionist">Zinman's Bastionist Skill</label>
       <select id="zinmanBastionistPct">
-        <option value="" selected>None (0%)</option>
+        <option value="" selected data-i18n="options.none0">None (0%)</option>
         <option value="3">3%</option>
         <option value="6">6%</option>
         <option value="9">9%</option>
@@ -192,34 +197,34 @@
         <option value="15">15%</option>
       </select>
 
-      <label for="positionBuffPct">Position Buff</label>
+      <label for="positionBuffPct" data-i18n="labels.positionBuff">Position Buff</label>
       <input id="positionBuffPct" type="number" min="0" step="0.1" value="0" />
     </fieldset>
 
     <!-- Filled dynamically with prerequisite buildings for the chosen target -->
     <fieldset id="prerequisitesSection" style="display: none;">
-      <legend>Required Buildings</legend>
+      <legend data-i18n="sections.requiredBuildings">Required Buildings</legend>
       <div id="prerequisitesContainer"></div>
     </fieldset>
 
     <!-- Extra buildings the user wants to include in the same calculation -->
     <fieldset id="optionalBuildingsSection">
-      <legend>Optional Additional Buildings</legend>
+      <legend data-i18n="sections.optionalAdditionalBuildings">Optional Additional Buildings</legend>
       <div id="optionalBuildingsContainer"></div>
-      <button id="addBuildingBtn" type="button">+ Add Building</button>
+      <button id="addBuildingBtn" type="button" data-i18n="buttons.addBuilding">+ Add Building</button>
     </fieldset>
 
     <!-- Bear Hunt mail rewards that can be counted as available resources -->
     <fieldset>
-      <legend>Bear Hunt Mail</legend>
+      <legend data-i18n="sections.bearHuntMail">Bear Hunt Mail</legend>
       <div id="bearHuntMailsContainer"></div>
-      <button id="addBearHuntMailBtn" type="button">+ Add Bear Hunt Mail</button>
+      <button id="addBearHuntMailBtn" type="button" data-i18n="buttons.addBearHuntMail">+ Add Bear Hunt Mail</button>
     </fieldset>
 
-    <button id="calculateBtn" type="button">Calculate</button>
+    <button id="calculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
 
     <!-- script.js replaces this placeholder with generated result cards -->
-    <section id="result" class="result">Loading building data...</section>
+    <section id="result" class="result" data-i18n="results.loading">Loading building data...</section>
     </div>
   </main>
 </body>

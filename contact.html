@@ -3,27 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact - WOS Calc</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <title data-i18n="page.title.contact">Contact - WOS Calc</title>
   <link rel="stylesheet" href="styles.css" />
+  <script src="i18n.js" defer></script>
 </head>
 <body>
   <main class="container">
     <div class="top-row">
-      <h1>Contact</h1>
+      <h1 data-i18n="contactPage.heading">Contact</h1>
+      <div class="top-controls">
+        <select id="languageSelect" class="language-select" data-i18n-aria-label="language.label"></select>
+      </div>
     </div>
 
-    <div class="site-links" aria-label="Site links">
-      <a href="index.html">Calculator</a>
-      <a href="about.html">About</a>
+    <div class="site-links" aria-label="Site links" data-i18n-aria-label="nav.siteLinks">
+      <a href="index.html" data-i18n="nav.calculator">Calculator</a>
+      <a href="about.html" data-i18n="nav.about">About</a>
     </div>
 
     <section class="coming-soon-panel">
-      <h2>Coming Soon</h2>
-      <p>This Contact page is a placeholder and will be expanded later.</p>
-      <p>You can keep adding calculator features first and plug in final contact details when ready.</p>
+      <h2 data-i18n="comingSoon.title">Coming Soon</h2>
+      <p data-i18n="contactPage.placeholderOne">This Contact page is a placeholder and will be expanded later.</p>
+      <p data-i18n="contactPage.placeholderTwo">You can keep adding calculator features first and plug in final contact details when ready.</p>
     </section>
 
-    <a href="index.html">Return to Calculator</a>
+    <a href="index.html" data-i18n="contactPage.returnToCalculator">Return to Calculator</a>
   </main>
 </body>
 </html>
