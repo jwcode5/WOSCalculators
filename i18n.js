@@ -1612,6 +1612,185 @@ const TRANSLATIONS = {
       nonNegativeNumber: "{label} は 0 以上の数値である必要があります。",
       nonNegativeWholeNumber: "{label} は 0 以上の整数である必要があります。"
     }
+  },
+  fil: {
+    page: {
+      title: {
+        index: "WOS Calc",
+        about: "Tungkol - WOS Calc",
+        contact: "Makipag-ugnayan - WOS Calc"
+      }
+    },
+    app: {
+      name: "WOS Calc"
+    },
+    language: {
+      label: "Wika"
+    },
+    theme: {
+      darkMode: "Dark Mode",
+      lightMode: "Light Mode"
+    },
+    account: {
+      renameTitle: "Baguhin ang pangalan ng account",
+      addTitle: "Magdagdag ng account",
+      deleteTitle: "Tanggalin ang account",
+      addButton: "+ Account",
+      activeAccount: "Active na account:",
+      namePrompt: "Pangalan ng account:",
+      renamePrompt: "Baguhin ang pangalan ng account:",
+      defaultName: "Account {number}",
+      cannotDeleteOnly: "Hindi maaaring tanggalin ang tanging account.",
+      deleteConfirm: "Tanggalin ang \"{name}\"? Ang aksyong ito ay hindi maaaring bawiin."
+    },
+    nav: {
+      calculatorTabs: "Mga tab ng calculator",
+      siteLinks: "Mga link ng site",
+      calculator: "Calculator",
+      about: "Tungkol",
+      contact: "Makipag-ugnayan"
+    },
+    calculator: {
+      upgrade: "Upgrade",
+      chiefGear: "Chief Gear",
+      chiefCharm: "Chief Charm",
+      whatIf: "Paano kung",
+      chiefGearFull: "Chief Gear Calculator",
+      chiefCharmFull: "Chief Charm Calculator",
+      whatIfFull: "Paano Kung Calculator",
+      generic: "Calculator"
+    },
+    sections: {
+      targetBuilding: "Target na Gusali",
+      yourResources: "Iyong Mga Resources",
+      constructionBuffs: "Construction Buffs (%)",
+      requiredBuildings: "Kailangang Gusali",
+      optionalAdditionalBuildings: "Opsyonal na Karagdagang Gusali",
+      bearHuntMail: "Bear Hunt Mail"
+    },
+    labels: {
+      building: "Gusali",
+      currentLevel: "Kasalukuyang Antas",
+      targetLevel: "Target na Antas",
+      targetGoalLevel: "Target (Layunin) na Antas",
+      meat: "Lasa",
+      wood: "Kahoy",
+      coal: "Uling",
+      iron: "Bakal",
+      fireCrystals: "Fire Crystals",
+      refinedFireCrystals: "Refined Fire Crystals",
+      useCustomResourceChests: "Gumamit ng Custom Resource Chests",
+      level1Unsecured: "Level 1 Unsecured",
+      level1Secured: "Level 1 Secured",
+      level2Unsecured: "Level 2 Unsecured",
+      level2Secured: "Level 2 Secured",
+      level3Unsecured: "Level 3 Unsecured",
+      level3Secured: "Level 3 Secured",
+      generalSpeedups: "General Speedups (minuto)",
+      constructionSpeedups: "Construction Speedups (minuto)",
+      doubleTime: "Double Time (20%)",
+      castleBuff: "Castle Buff (10%)",
+      constructionSpeed: "Construction Speed",
+      hyenaBuff: "Builder's Aide (Hyena) Buff",
+      zinmanBastionist: "Zinman's Bastionist Skill",
+      positionBuff: "Position Buff",
+      damageTier: "Damage Tier",
+      mail: "Mail",
+      setAllCurrentLevels: "I-set ang lahat ng kasalukuyang antas",
+      requiredLevel: "Kailangang Antas"
+    },
+    buttons: {
+      addBuilding: "+ Magdagdag ng Gusali",
+      addBearHuntMail: "+ Magdagdag ng Bear Hunt Mail",
+      calculate: "Kalkulahin",
+      remove: "Alisin",
+      setAll: "I-set ang Lahat",
+      refresh: "I-refresh"
+    },
+    options: {
+      none0: "Wala (0%)"
+    },
+    building: {
+      furnace: "Furnace",
+      embassy: "Embassy",
+      research_center: "Research Center",
+      infirmary: "Infirmary",
+      infantry_camp: "Infantry Camp",
+      lancer_camp: "Lancer Camp",
+      marksman_camp: "Marksman Camp",
+      barricade: "Barricade",
+      command_center: "Command Center",
+      storehouse: "Storehouse"
+    },
+    comingSoon: {
+      title: "Malapit na",
+      placeholderIntro: "Ang calculator tab na ito ay visible bilang placeholder upang makita ng mga user kung ano ang susunod.",
+      placeholderOutro: "Kapag live na ang calculator na ito, ang mensaheng ito ay maaaring alisin at palitan ng buong tool.",
+      heading: "{calculator} - Malapit na",
+      accountStructured: "Ang account data ay nakaayos na para sa {account}. Kapag live ang {calculator}, ang mga values nito ay mae-save sa ilalim ng parehong account at magbabago kasama ang account selector."
+    },
+    aboutPage: {
+      heading: "Tungkol",
+      placeholderOne: "Ang About page na ito ay placeholder at mae-expand pa sa hinaharap.",
+      placeholderTwo: "Ang calculator architecture ay ino-organize muna upang ang mga bagong tool ay maaaring ilabas nang walang mawawalang data sa pagitan ng mga account.",
+      returnToCalculator: "Bumalik sa Calculator"
+    },
+    contactPage: {
+      heading: "Makipag-ugnayan",
+      placeholderOne: "Ang Contact page na ito ay placeholder at mae-expand pa sa hinaharap.",
+      placeholderTwo: "Maaari kang magpatuloy sa pagdagdag ng calculator features at magdagdag ng final contact details kapag handa na.",
+      returnToCalculator: "Bumalik sa Calculator"
+    },
+    update: {
+      ready: "Handa na ang bagong bersyon."
+    },
+    alerts: {
+      cannotAddOptionalBuilding: "Hindi maaaring magdagdag ng optional building: walang available na level data",
+      dataLoadingError: "Error sa pag-load ng calculator data. Mangyaring i-refresh ang page.",
+      dataStillLoading: "Ang data ay nagsisikap pang mag-load. Mangyaring maghintay at subukan muli.",
+      currentExceedsTarget: "Mangyaring tiyakin na ang kasalukuyang antas ay hindi lumalampas sa target antas.",
+      invalidOptionalBuilding: "Ang isang optional building ay may invalid na building o level selection. Mangyaring piliin muli at subukan.",
+      optionalTargetBelowCurrent: "{building}: ang target level ay hindi maaaring mababa kaysa sa kasalukuyang antas.",
+      invalidBearHuntTier: "Ang isang Bear Hunt Mail row ay may invalid na damage tier. Mangyaring piliin muli at subukan.",
+      invalidBearHuntCount: "Ang Bear Hunt Mail counts ay dapat na 0 o mas mataas."
+    },
+    validation: {
+      nonNegativeResource: "{label} ay dapat na isang non-negative number. Maaari kang gumamit ng plain numbers o K/M/B suffixes.",
+      nonNegativeNumber: "{label} ay dapat na isang non-negative number.",
+      nonNegativeWholeNumber: "{label} ay dapat na isang non-negative whole number."
+    },
+    results: {
+      loading: "Nag-load ng building data...",
+      bearHuntMail: "BEAR HUNT MAIL (+{count} mail na idinagdag sa backpack)",
+      grandTotal: "KABUUANG TOTAL",
+      baseCostBeforeZinman: "Base Cost Bago ang Zinman Discount",
+      totalUpgradeTimeBase: "Kabuuang Upgrade Time (Base)",
+      additiveSpeed: "Additive Speed ({percent}%)",
+      doubleTime: "Double Time ({percent}%)",
+      saved: "{duration} na nai-save",
+      afterUpgradeBalance: "Pagkatapos ng Upgrade (Backpack Balance)",
+      remainingTimeAfterSpeedups: "Natitirang Oras Pagkatapos ng Speedups",
+      speedupSurplus: "Speedup Surplus",
+      customChestRecommendation: "CUSTOM CHEST RECOMMENDATION",
+      noChestUsage: "Walang chest usage na kailangan para sa kasalukuyang deficits.",
+      chestsUsed: "Chests na Ginagamit",
+      afterRecommendedChestUse: "Pagkatapos ng Recommended Chest Use",
+      provided: "provided {amount}",
+      uncoveredDeficit: "uncovered deficit {amount}",
+      rallyCapacity: "Rally Capacity",
+      troopDeploymentCapacity: "Troop Deployment Capacity",
+      storageCapacity: "Storage Capacity",
+      essenceStones: "Essence Stones",
+      luckyHeroGearChests: "Lucky Hero Gear Chests",
+      xpComponents: "XP Components",
+      allianceTokens: "Alliance Tokens"
+    },
+    resource: {
+      meat: "Lasa",
+      wood: "Kahoy",
+      coal: "Uling",
+      iron: "Bakal"
+    }
   }
 };
 
@@ -1675,7 +1854,8 @@ function populateLanguageSelectors() {
       { value: "zh-CN", label: "中文(简体)" },
       { value: "pl", label: "Polski" },
       { value: "ko", label: "한국어" },
-      { value: "ja", label: "日本語" }
+      { value: "ja", label: "日本語" },
+      { value: "fil", label: "Filipino" }
     ].forEach(optionData => {
       const option = document.createElement("option");
       option.value = optionData.value;
