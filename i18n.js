@@ -94,7 +94,8 @@ const TRANSLATIONS = {
       calculate: "Calculate",
       remove: "Remove",
       setAll: "Set All",
-      refresh: "Refresh"
+      refresh: "Refresh",
+      reset: "Reset"
     },
     options: {
       none0: "None (0%)"
@@ -273,7 +274,8 @@ const TRANSLATIONS = {
       calculate: "Calcular",
       remove: "Quitar",
       setAll: "Aplicar a todos",
-      refresh: "Actualizar"
+      refresh: "Actualizar",
+      reset: "Restablecer"
     },
     options: {
       none0: "Ninguno (0%)"
@@ -452,7 +454,8 @@ const TRANSLATIONS = {
       calculate: "Berechnen",
       remove: "Entfernen",
       setAll: "Alle setzen",
-      refresh: "Aktualisieren"
+      refresh: "Aktualisieren",
+      reset: "Zurücksetzen"
     },
     options: {
       none0: "Keine (0%)"
@@ -631,7 +634,8 @@ const TRANSLATIONS = {
       calculate: "Calculer",
       remove: "Retirer",
       setAll: "Tout appliquer",
-      refresh: "Actualiser"
+      refresh: "Actualiser",
+      reset: "Réinitialiser"
     },
     options: {
       none0: "Aucun (0%)"
@@ -810,7 +814,8 @@ const TRANSLATIONS = {
       calculate: "Calcular",
       remove: "Remover",
       setAll: "Aplicar a todos",
-      refresh: "Atualizar"
+      refresh: "Atualizar",
+      reset: "Redefinir"
     },
     options: {
       none0: "Nenhum (0%)"
@@ -989,7 +994,8 @@ const TRANSLATIONS = {
       calculate: "计算",
       remove: "移除",
       setAll: "全部设置",
-      refresh: "刷新"
+      refresh: "刷新",
+      reset: "重置"
     },
     options: {
       none0: "无 (0%)"
@@ -1168,7 +1174,8 @@ const TRANSLATIONS = {
       calculate: "Oblicz",
       remove: "Usuń",
       setAll: "Ustaw wszystko",
-      refresh: "Odśwież"
+      refresh: "Odśwież",
+      reset: "Resetuj"
     },
     options: {
       none0: "Brak (0%)"
@@ -1347,7 +1354,8 @@ const TRANSLATIONS = {
       calculate: "계산",
       remove: "제거",
       setAll: "모두 적용",
-      refresh: "새로 고침"
+      refresh: "새로 고침",
+      reset: "초기화"
     },
     options: {
       none0: "없음 (0%)"
@@ -1526,7 +1534,8 @@ const TRANSLATIONS = {
       calculate: "計算",
       remove: "削除",
       setAll: "すべて設定",
-      refresh: "更新"
+      refresh: "更新",
+      reset: "リセット"
     },
     options: {
       none0: "なし (0%)"
@@ -1705,7 +1714,8 @@ const TRANSLATIONS = {
       calculate: "Kalkulahin",
       remove: "Alisin",
       setAll: "I-set ang Lahat",
-      refresh: "I-refresh"
+      refresh: "I-refresh",
+      reset: "I-reset"
     },
     options: {
       none0: "Wala (0%)"

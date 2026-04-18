@@ -1508,12 +1508,26 @@ function updateMainLevelSelectors(selectedBuilding) {
 // building and level selection.
 // ============================================================
 
-// Show/hide prerequisites for a given building and target level
-function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) {
+// Show/hide prerequisites for a given building and target level.
+// Pass resetTargetsToRequired = true to force all prereq target levels
+// back to their minimum required level (used when the main building or
+// goal level changes).
+function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, resetTargetsToRequired = false) {
   const prereqsFieldset = document.getElementById("prerequisitesSection");
   const prereqsContainer = document.getElementById("prerequisitesContainer");
 
   if (PREREQUISITES && PREREQUISITES[selectedBuilding]) {
+    // When the main goal changes, wipe saved target levels so the
+    // render loop falls back to the fresh required level.
+    if (resetTargetsToRequired) {
+      const existingState = loadPrerequisiteState(selectedBuilding);
+      const clearedState = {};
+      Object.keys(existingState).forEach(b => {
+        clearedState[b] = { currentLevel: existingState[b].currentLevel };
+      });
+      savePrerequisiteState(selectedBuilding, clearedState);
+    }
+
     const prereqMap = getAggregatedPrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
 
     let prereqsHTML = `
@@ -1571,6 +1585,7 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
                   data-building="${buildingName}"
                 >${renderOptions(chosenTarget)}</select>
               </div>
+              <button type="button" class="prereqResetBtn inlineActionBtn inlineActionBtnSecondary" data-building="${escapeAttr(buildingName)}" data-required="${escapeAttr(requiredLevelKey)}" title="${escapeAttr(translateText('buttons.reset', {}, 'Reset'))}">${escapeHtml(translateText("buttons.reset", {}, "Reset"))}</button>
             </div>
           </div>
         `;
@@ -1656,6 +1671,31 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey) 
       });
     });
 
+    // Reset button: snap the target level back to the minimum required level.
+    document.querySelectorAll("#prerequisitesContainer .prereqResetBtn").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const prereqBuilding = this.dataset.building;
+        const requiredLevel = this.dataset.required;
+        if (!prereqBuilding || !requiredLevel) return;
+
+        const levelOptions = getBuildingLevelOrder(prereqBuilding);
+        const currentSelect = document.getElementById(`${prereqBuilding}CurrentLevel`);
+        const currentValue = currentSelect ? currentSelect.value : (levelOptions[0] || "1");
+        const currentIdx = levelOptions.indexOf(currentValue);
+        const requiredIdx = levelOptions.indexOf(requiredLevel);
+        // Never go below current level
+        const finalLevel = (requiredIdx >= currentIdx && requiredIdx >= 0) ? requiredLevel : currentValue;
+
+        const targetSelect = document.getElementById(`${prereqBuilding}Level`);
+        if (targetSelect) targetSelect.value = finalLevel;
+
+        const savedState = loadPrerequisiteState(selectedBuilding);
+        if (!savedState[prereqBuilding]) savedState[prereqBuilding] = {};
+        savedState[prereqBuilding].targetLevel = finalLevel;
+        savePrerequisiteState(selectedBuilding, savedState);
+      });
+    });
+
     prereqsFieldset.style.display = "block";
   } else {
     // No prerequisites for this building — hide the section
@@ -1712,7 +1752,7 @@ document.getElementById("targetBuilding").addEventListener("change", function() 
   updateMainLevelSelectors(this.value);
   const currentLevelKey = document.getElementById("currentLevel").value;
   const targetLevelKey = document.getElementById("targetLevel").value;
-  updatePrerequisites(this.value, currentLevelKey, targetLevelKey);
+  updatePrerequisites(this.value, currentLevelKey, targetLevelKey, true);
   updateFireCrystalSuppliesVisibility(this.value, currentLevelKey, targetLevelKey);
   saveTargetBuildingState();
 });
@@ -1743,7 +1783,7 @@ document.getElementById("targetLevel").addEventListener("change", function() {
   if (targetIdx < currentIdx) {
     this.value = currentLevelKey;
   }
-  updatePrerequisites(selectedBuilding, currentLevelKey, this.value);
+  updatePrerequisites(selectedBuilding, currentLevelKey, this.value, true);
   updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, this.value);
   saveTargetBuildingState();
 });
