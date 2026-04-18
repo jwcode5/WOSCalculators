@@ -1327,6 +1327,28 @@ function isValidNonNegativeNumberInput(rawInput, allowDecimal = false) {
 }
 
 // Focused validation pass for the main calculation action.
+// Returns the furnace's effective goal level for the current form state,
+// or null if furnace is not present in any tracked position.
+// Priority: (1) main target building is furnace → use target level dropdown
+//           (2) furnace appears in optional buildings → use that item's target
+//           (3) furnace appears in the prereq panel → read its select element
+function getEffectiveFurnaceGoalLevel() {
+  const mainBuilding = document.getElementById("targetBuilding")?.value;
+  if (mainBuilding === "furnace") {
+    return document.getElementById("targetLevel")?.value || null;
+  }
+
+  // Check optional buildings array
+  const optFurnace = optionalBuildings.find(b => b.building === "furnace");
+  if (optFurnace) return String(optFurnace.targetLevel);
+
+  // Check prereq panel DOM
+  const prereqSelect = document.getElementById("furnaceLevel");
+  if (prereqSelect) return String(prereqSelect.value);
+
+  return null;
+}
+
 function getCalculationValidationError() {
   const resourceFields = [
     ["ownedMeat", "labels.meat"],
@@ -1381,6 +1403,46 @@ function getCalculationValidationError() {
     if (targetIndex < currentIndex) {
       const buildingLabel = getBuildingDisplayName(item.building).toUpperCase();
       return translateText("alerts.optionalTargetBelowCurrent", { building: buildingLabel });
+    }
+  }
+
+  // Furnace ceiling check — every non-furnace building's goal level must
+  // not exceed the furnace goal level, since furnace must always lead.
+  const furnaceGoalLevel = getEffectiveFurnaceGoalLevel();
+  if (furnaceGoalLevel !== null) {
+    const furnaceLevels = getBuildingLevelOrder("furnace");
+    const furnaceGoalIdx = furnaceLevels.indexOf(furnaceGoalLevel);
+
+    // Check optional buildings
+    for (const item of optionalBuildings) {
+      if (item.building === "furnace") continue;
+      const furnaceComparableLevels = getBuildingLevelOrder("furnace");
+      const itemTargetStr = String(item.targetLevel);
+      const itemGoalIdx = furnaceComparableLevels.indexOf(itemTargetStr);
+      // Only flag if both levels are in the furnace level list (same scale)
+      if (furnaceGoalIdx >= 0 && itemGoalIdx > furnaceGoalIdx) {
+        const buildingLabel = getBuildingDisplayName(item.building).toUpperCase();
+        return translateText("alerts.goalExceedsFurnace", { building: buildingLabel });
+      }
+    }
+
+    // Check required (prerequisite) buildings via the DOM
+    const prereqContainer = document.getElementById("prerequisitesContainer");
+    if (prereqContainer) {
+      prereqContainer.querySelectorAll("select[data-building][id$='Level']").forEach(sel => {
+        // error already returned above — can't short-circuit forEach, collect first
+      });
+      const prereqSelects = prereqContainer.querySelectorAll("select[data-building][id$='Level']");
+      for (const sel of prereqSelects) {
+        const prereqBuilding = sel.dataset.building;
+        if (!prereqBuilding || prereqBuilding === "furnace") continue;
+        const prereqTargetStr = String(sel.value);
+        const prereqGoalIdx = furnaceLevels.indexOf(prereqTargetStr);
+        if (furnaceGoalIdx >= 0 && prereqGoalIdx > furnaceGoalIdx) {
+          const buildingLabel = getBuildingDisplayName(prereqBuilding).toUpperCase();
+          return translateText("alerts.goalExceedsFurnace", { building: buildingLabel });
+        }
+      }
     }
   }
 

@@ -142,7 +142,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "One optional building has an invalid building or level selection. Please reselect it and try again.",
       optionalTargetBelowCurrent: "{building}: target level cannot be below current level.",
       invalidBearHuntTier: "One Bear Hunt Mail row has an invalid damage tier. Please reselect it and try again.",
-      invalidBearHuntCount: "Bear Hunt Mail counts must be 0 or higher."
+      invalidBearHuntCount: "Bear Hunt Mail counts must be 0 or higher.",
+      goalExceedsFurnace: "{building}: goal level cannot exceed the furnace goal level. The furnace must be upgraded first."
     },
     validation: {
       nonNegativeResource: "{label} must be a non-negative number. You can use plain numbers or K/M/B suffixes.",
@@ -322,7 +323,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "Un edificio opcional tiene una seleccion invalida de edificio o nivel. Vuelve a seleccionarlo e intentalo de nuevo.",
       optionalTargetBelowCurrent: "{building}: el nivel objetivo no puede ser menor que el nivel actual.",
       invalidBearHuntTier: "Una fila de Correo de Caza del Oso tiene un rango de dano invalido. Vuelve a seleccionarlo e intentalo de nuevo.",
-      invalidBearHuntCount: "Las cantidades de Correo de Caza del Oso deben ser 0 o mayores."
+      invalidBearHuntCount: "Las cantidades de Correo de Caza del Oso deben ser 0 o mayores.",
+      goalExceedsFurnace: "{building}: el nivel objetivo no puede superar el nivel objetivo del Horno. El Horno debe mejorarse primero."
     },
     validation: {
       nonNegativeResource: "{label} debe ser un numero no negativo. Puedes usar numeros normales o sufijos K/M/B.",
@@ -502,7 +504,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "Ein optionales Gebäude hat eine ungültige Gebäude- oder Levelauswahl. Bitte erneut auswählen und noch einmal versuchen.",
       optionalTargetBelowCurrent: "{building}: Das Ziellevel darf nicht unter dem aktuellen Level liegen.",
       invalidBearHuntTier: "Eine Bärenjagd-Mail-Zeile hat eine ungültige Schadensstufe. Bitte erneut auswählen und noch einmal versuchen.",
-      invalidBearHuntCount: "Bärenjagd-Mail-Anzahlen müssen 0 oder höher sein."
+      invalidBearHuntCount: "Bärenjagd-Mail-Anzahlen müssen 0 oder höher sein.",
+      goalExceedsFurnace: "{building}: Das Ziellevel darf nicht über dem Ziellevel des Ofens liegen. Der Ofen muss zuerst aufgerüstet werden."
     },
     validation: {
       nonNegativeResource: "{label} muss eine nicht negative Zahl sein. Du kannst normale Zahlen oder K/M/B-Suffixe verwenden.",
@@ -682,7 +685,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "Un bâtiment optionnel a une sélection de bâtiment ou de niveau invalide. Resélectionnez-le puis réessayez.",
       optionalTargetBelowCurrent: "{building} : le niveau cible ne peut pas être inférieur au niveau actuel.",
       invalidBearHuntTier: "Une ligne de courrier de chasse à l'ours a un palier de dégâts invalide. Resélectionnez-la puis réessayez.",
-      invalidBearHuntCount: "Le nombre de courriers de chasse à l'ours doit être supérieur ou égal à 0."
+      invalidBearHuntCount: "Le nombre de courriers de chasse à l'ours doit être supérieur ou égal à 0.",
+      goalExceedsFurnace: "{building} : le niveau cible ne peut pas dépasser le niveau cible de la fournaise. La fournaise doit être améliorée en premier."
     },
     validation: {
       nonNegativeResource: "{label} doit être un nombre positif ou nul. Vous pouvez utiliser des nombres simples ou les suffixes K/M/B.",
@@ -862,7 +866,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "Um edifício opcional possui seleção inválida de edifício ou nível. Selecione novamente e tente outra vez.",
       optionalTargetBelowCurrent: "{building}: o nível alvo não pode ser menor que o nível atual.",
       invalidBearHuntTier: "Uma linha de Correio de Caça ao Urso possui faixa de dano inválida. Selecione novamente e tente outra vez.",
-      invalidBearHuntCount: "As quantidades de Correio de Caça ao Urso devem ser 0 ou maiores."
+      invalidBearHuntCount: "As quantidades de Correio de Caça ao Urso devem ser 0 ou maiores.",
+      goalExceedsFurnace: "{building}: o nível alvo não pode superar o nível alvo da Fornalha. A Fornalha deve ser melhorada primeiro."
     },
     validation: {
       nonNegativeResource: "{label} deve ser um número não negativo. Você pode usar números simples ou sufixos K/M/B.",
@@ -1042,7 +1047,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "某个可选建筑的建筑或等级选择无效。请重新选择后重试。",
       optionalTargetBelowCurrent: "{building}: 目标等级不能低于当前等级。",
       invalidBearHuntTier: "某一行熊狩邮件的伤害档位无效。请重新选择后重试。",
-      invalidBearHuntCount: "熊狩邮件数量必须为 0 或更大。"
+      invalidBearHuntCount: "熊狩邮件数量必须为 0 或更大。",
+      goalExceedsFurnace: "{building}：目标等级不能超过燔炉目标等级。燔炉必须首先升级。"
     },
     validation: {
       nonNegativeResource: "{label} 必须是非负数字。你可以使用普通数字或 K/M/B 后缀。",
@@ -1254,7 +1260,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "Jeden z opcjonalnych budynków ma nieprawidłowy wybór budynku lub poziomu. Wybierz ponownie i spróbuj jeszcze raz.",
       optionalTargetBelowCurrent: "{building}: poziom docelowy nie może być niższy niż poziom aktualny.",
       invalidBearHuntTier: "Jeden z wierszy poczty polowania na niedźwiedzia ma nieprawidłowy poziom obrażeń. Wybierz ponownie i spróbuj jeszcze raz.",
-      invalidBearHuntCount: "Liczba wiadomości polowania na niedźwiedzia musi wynosić co najmniej 0."
+      invalidBearHuntCount: "Liczba wiadomości polowania na niedźwiedzia musi wynosić co najmniej 0.",
+      goalExceedsFurnace: "{building}: poziom docelowy nie może przekraczać poziomu docelowego Pieca. Piec musi być rozbudowany jako pierwszy."
     },
     validation: {
       nonNegativeResource: "{label} musi być liczbą nieujemną. Możesz używać zwykłych liczb lub sufiksów K/M/B.",
@@ -1614,7 +1621,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "オプション建物のいずれかで建物またはレベルの選択が無効です。選び直して再試行してください。",
       optionalTargetBelowCurrent: "{building}: 目標レベルは現在レベル未満にできません。",
       invalidBearHuntTier: "熊狩りメールの行のいずれかでダメージ階層が無効です。選び直して再試行してください。",
-      invalidBearHuntCount: "熊狩りメールの件数は 0 以上である必要があります。"
+      invalidBearHuntCount: "熊狩りメールの件数は 0 以上である必要があります。",
+      goalExceedsFurnace: "{building}: 目標レベルは炉の目標レベルを超えることはできません。炉を先にアップグレードする必要があります。"
     },
     validation: {
       nonNegativeResource: "{label} は 0 以上の数値である必要があります。通常の数値または K/M/B 接尾辞を使用できます。",
@@ -1762,7 +1770,8 @@ const TRANSLATIONS = {
       invalidOptionalBuilding: "Ang isang optional building ay may invalid na building o level selection. Mangyaring piliin muli at subukan.",
       optionalTargetBelowCurrent: "{building}: ang target level ay hindi maaaring mababa kaysa sa kasalukuyang antas.",
       invalidBearHuntTier: "Ang isang Bear Hunt Mail row ay may invalid na damage tier. Mangyaring piliin muli at subukan.",
-      invalidBearHuntCount: "Ang Bear Hunt Mail counts ay dapat na 0 o mas mataas."
+      invalidBearHuntCount: "Ang Bear Hunt Mail counts ay dapat na 0 o mas mataas.",
+      goalExceedsFurnace: "{building}: ang goal level ay hindi maaaring lumampas sa furnace goal level. Ang furnace ay kailangang i-upgrade muna."
     },
     validation: {
       nonNegativeResource: "{label} ay dapat na isang non-negative number. Maaari kang gumamit ng plain numbers o K/M/B suffixes.",
