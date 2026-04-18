@@ -2415,7 +2415,7 @@ function showUpdateToast(registration) {
 // Register the service worker for PWA (installable app) support.
 // The service worker caches files so the app works offline.
 if ('serviceWorker' in navigator) {
-  const SW_VERSION = '11';
+  const SW_VERSION = '12';
 
   window.addEventListener('load', () => {
     const swUrl = `service-worker.js?v=${SW_VERSION}`;
