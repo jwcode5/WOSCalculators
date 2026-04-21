@@ -79,6 +79,7 @@ const SUPPLY_FIELD_IDS = [
   "constructionSpeedPct",
   "hyenaBuffPct",
   "zinmanBastionistPct",
+  "agnusProjectManagementHours",
   "positionBuffPct",
   "doubleTimeEnabled",
   "castleBuffEnabled",
@@ -2054,10 +2055,12 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const constructionSpeedPct = parseFloat(document.getElementById("constructionSpeedPct").value) || 0;
   const hyenaBuffPct = parseFloat(document.getElementById("hyenaBuffPct").value) || 0;
   const zinmanResourceDiscountPct = parseFloat(document.getElementById("zinmanBastionistPct").value) || 0;
+  const agnusProjectManagementHours = parseFloat(document.getElementById("agnusProjectManagementHours").value) || 0;
   const doubleTimePct = document.getElementById("doubleTimeEnabled").checked ? 20 : 0;
   const castleBuffPct = document.getElementById("castleBuffEnabled").checked ? 10 : 0;
   const positionBuffPct = parseFloat(document.getElementById("positionBuffPct").value) || 0;
   const clampedZinmanResourceDiscountPct = Math.max(0, Math.min(100, zinmanResourceDiscountPct));
+  const agnusProjectManagementSeconds = Math.max(0, Math.floor(agnusProjectManagementHours * 3600));
   const zinmanResourceMultiplier = 1 - (clampedZinmanResourceDiscountPct / 100);
 
   // --- Build list of buildings to calculate ---
@@ -2113,6 +2116,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   let totalWood = 0, totalMeat = 0, totalCoal = 0, totalIron = 0;
   let totalFireCrystals = 0, totalRefinedFireCrystals = 0;
   let totalSeconds = 0;
+  let agnusAppliedUpgradeCount = 0;
   let resultsHTML = "";
 
   for (const item of buildingsToCalc) {
@@ -2125,9 +2129,12 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 
     // Walk every level in this building's upgrade path and add its costs
     const upgradePath = getUpgradePathKeys(building, curLvl, tgtLvl);
+    let buildingBaseSeconds = 0;
     for (const level of upgradePath) {
       const levelData = BUILDING_COSTS[building][level];
       if (!levelData) continue;
+
+      agnusAppliedUpgradeCount += 1;
 
       const levelWood = levelData.wood || 0;
       const levelMeat = levelData.meat || 0;
@@ -2146,8 +2153,10 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       buildingIron += levelIron;
       buildingFireCrystals += levelFireCrystals;
       buildingRefinedFireCrystals += levelRefinedFireCrystals;
-      totalSeconds += levelData.seconds || 0;
+      buildingBaseSeconds += levelData.seconds || 0;
     }
+
+    totalSeconds += buildingBaseSeconds;
 
     buildingWood = Math.floor(buildingWood * zinmanResourceMultiplier);
     buildingMeat = Math.floor(buildingMeat * zinmanResourceMultiplier);
@@ -2234,10 +2243,15 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const doubleTimeAdjustedSeconds = Math.floor(additiveAdjustedSeconds * (1 - (clampedDoubleTimePct / 100)));
   const doubleTimeSavedSeconds = Math.max(0, additiveAdjustedSeconds - doubleTimeAdjustedSeconds);
 
+  // Agnus is a flat time cut applied per upgraded level after percentage buffs.
+  const totalAgnusReductionSeconds = agnusProjectManagementSeconds * agnusAppliedUpgradeCount;
+  const agnusAdjustedSeconds = Math.max(0, doubleTimeAdjustedSeconds - totalAgnusReductionSeconds);
+  const agnusTimeSavedSeconds = Math.max(0, doubleTimeAdjustedSeconds - agnusAdjustedSeconds);
+
   // Speedups are subtracted from remaining time (converted from minutes to seconds)
   const totalSpeedupSeconds = (generalSpeedupsMinutes + constructionSpeedupsMinutes) * 60;
-  const remainingTimeSeconds = Math.max(0, doubleTimeAdjustedSeconds - totalSpeedupSeconds);
-  const speedupSurplusSeconds = Math.max(0, totalSpeedupSeconds - doubleTimeAdjustedSeconds);
+  const remainingTimeSeconds = Math.max(0, agnusAdjustedSeconds - totalSpeedupSeconds);
+  const speedupSurplusSeconds = Math.max(0, totalSpeedupSeconds - agnusAdjustedSeconds);
 
   // How much of each resource is still needed after accounting for the effective backpack
   const basicDeficits = {
@@ -2286,6 +2300,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
       ${translateText("results.totalUpgradeTimeBase", {}, "Total Upgrade Time (Base)")}: ${formatDuration(totalSeconds)}<br>
       ${translateText("results.additiveSpeed", { percent: additiveSpeedPct.toFixed(1) }, `Additive Speed (${additiveSpeedPct.toFixed(1)}%)`)}: ${formatDuration(additiveAdjustedSeconds)} (${translateText("results.saved", { duration: formatDuration(additiveTimeSavedSeconds) }, `${formatDuration(additiveTimeSavedSeconds)} saved`)})<br>
       ${translateText("results.doubleTime", { percent: clampedDoubleTimePct.toFixed(1) }, `Double Time (${clampedDoubleTimePct.toFixed(1)}%)`)}: ${formatDuration(doubleTimeAdjustedSeconds)} (${translateText("results.saved", { duration: formatDuration(doubleTimeSavedSeconds) }, `${formatDuration(doubleTimeSavedSeconds)} saved`)})
+      ${agnusTimeSavedSeconds > 0 ? `<br>${translateText("labels.agnusProjectManagement", {}, "Agnus' Project Management Skill")}: ${formatDuration(agnusAdjustedSeconds)} (${translateText("results.saved", { duration: formatDuration(agnusTimeSavedSeconds) }, `${formatDuration(agnusTimeSavedSeconds)} saved`)})` : ""}
       
       <br><br>
       <strong>${translateText("results.afterUpgradeBalance", {}, "After Upgrade (Backpack Balance)")}</strong><br>
@@ -2415,7 +2430,7 @@ function showUpdateToast(registration) {
 // Register the service worker for PWA (installable app) support.
 // The service worker caches files so the app works offline.
 if ('serviceWorker' in navigator) {
-  const SW_VERSION = '12';
+  const SW_VERSION = '13';
 
   window.addEventListener('load', () => {
     const swUrl = `service-worker.js?v=${SW_VERSION}`;
