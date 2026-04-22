@@ -15,6 +15,7 @@
 let BUILDING_COSTS = null;      // Loaded from data/buildings.json
 let PREREQUISITES = null;       // Loaded from data/prerequisites.json
 let CHIEF_GEAR_DATA = null;     // Loaded from data/chiefGear.json
+let CHIEF_CHARM_DATA = null;    // Loaded from data/chiefCharm.json
 let optionalBuildings = [];     // Extra buildings the user added manually
 let bearHuntMails = [];         // Bear Hunt Mail reward rows
 let accounts = [];              // All saved accounts (Option B blob model)
@@ -142,6 +143,32 @@ const GEAR_MATERIAL_FIELDS = [
   "gearDesignPlans",
   "gearLunarAmber"
 ];
+
+const CHARM_MATERIAL_FIELDS = [
+  "charmDesignsInput",
+  "charmGuidesInput",
+  "jewelSecretsInput"
+];
+
+const CHARM_GEAR_PIECES = [
+  { id: "hat", labelKey: "labels.hat", fallback: "Cap (Lancer)" },
+  { id: "watch", labelKey: "labels.watch", fallback: "Watch (Lancer)" },
+  { id: "coat", labelKey: "labels.coat", fallback: "Coat (Infantry)" },
+  { id: "pants", labelKey: "labels.pants", fallback: "Pants (Infantry)" },
+  { id: "ring", labelKey: "labels.ring", fallback: "Ring (Marksman)" },
+  { id: "shortStaff", labelKey: "labels.shortStaff", fallback: "Weapon (Marksman)" }
+];
+
+const CHARM_SLOT_DEFINITIONS = CHARM_GEAR_PIECES.flatMap(piece =>
+  [1, 2, 3].map(charmNumber => ({
+    slotKey: `${piece.id}_charm_${charmNumber}`,
+    currentId: `${piece.id}Charm${charmNumber}Current`,
+    targetId: `${piece.id}Charm${charmNumber}Target`,
+    pieceLabelKey: piece.labelKey,
+    pieceFallback: piece.fallback,
+    charmNumber
+  }))
+);
 
 // ============================================================
 // CONSTANTS — BEAR HUNT TIERS
@@ -421,13 +448,29 @@ function captureCurrentStateToAccount() {
 // 3. Load all state from the new account
 function switchAccount(id) {
   if (id === activeAccountId) return; // Already on this account, nothing to do
+  // Save the current calculator state for the active account before switching
   if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
     captureCurrentStateToAccount();
+  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR) {
+    saveChiefGearState();
+  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM) {
+    if (typeof saveChiefCharmState === "function") saveChiefCharmState();
   }
+
   activeAccountId = id;
   localStorage.setItem("wosCalc_activeAccountId", id);
+
+  // Load the correct calculator state for the new account
   if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
     loadAllStateFromAccount();
+  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR) {
+    renderAccountSelector();
+    initChiefGearPanel();
+    loadChiefGearState();
+  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM) {
+    renderAccountSelector();
+    if (typeof initChiefCharmPanel === "function") initChiefCharmPanel();
+    if (typeof loadChiefCharmState === "function") loadChiefCharmState();
   } else {
     renderAccountSelector();
     renderComingSoonPanel(activeCalculator);
@@ -560,6 +603,8 @@ function setActiveCalculator(calculatorKey) {
     captureCurrentStateToAccount();
   } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR && safeKey !== CALCULATOR_KEYS.CHIEF_GEAR) {
     saveChiefGearState();
+  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM && safeKey !== CALCULATOR_KEYS.CHIEF_CHARM) {
+    saveChiefCharmState();
   }
 
   activeCalculator = safeKey;
@@ -573,22 +618,33 @@ function setActiveCalculator(calculatorKey) {
 
   const upgradePanel = document.getElementById("upgradeCalculatorPanel");
   const chiefGearPanel = document.getElementById("chiefGearPanel");
+  const chiefCharmPanel = document.getElementById("chiefCharmPanel");
   const comingSoonPanel = document.getElementById("comingSoonPanel");
 
   if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
     if (upgradePanel) upgradePanel.style.display = "block";
     if (chiefGearPanel) chiefGearPanel.style.display = "none";
+    if (chiefCharmPanel) chiefCharmPanel.style.display = "none";
     if (comingSoonPanel) comingSoonPanel.style.display = "none";
     loadAllStateFromAccount();
   } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR) {
     if (upgradePanel) upgradePanel.style.display = "none";
     if (chiefGearPanel) chiefGearPanel.style.display = "block";
+    if (chiefCharmPanel) chiefCharmPanel.style.display = "none";
     if (comingSoonPanel) comingSoonPanel.style.display = "none";
     initChiefGearPanel();
     loadChiefGearState();
+  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM) {
+    if (upgradePanel) upgradePanel.style.display = "none";
+    if (chiefGearPanel) chiefGearPanel.style.display = "none";
+    if (chiefCharmPanel) chiefCharmPanel.style.display = "block";
+    if (comingSoonPanel) comingSoonPanel.style.display = "none";
+    initChiefCharmPanel();
+    loadChiefCharmState();
   } else {
     if (upgradePanel) upgradePanel.style.display = "none";
     if (chiefGearPanel) chiefGearPanel.style.display = "none";
+    if (chiefCharmPanel) chiefCharmPanel.style.display = "none";
     if (comingSoonPanel) comingSoonPanel.style.display = "block";
     renderComingSoonPanel(activeCalculator);
   }
@@ -2376,6 +2432,433 @@ function onGearSmartUpgradeClick() {
 }
 
 // ============================================================
+// CHIEF CHARM CALCULATOR HELPERS
+// Mirrors Chief Gear behavior with charm-specific materials.
+// ============================================================
+
+function renderChiefCharmRows() {
+  const tableBody = document.getElementById("charmTableBody");
+  if (!tableBody) return;
+
+  let html = "";
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const pieceLabel = escapeHtml(translateText(slot.pieceLabelKey, {}, slot.pieceFallback));
+    const charmWord = translateText("labels.charm", {}, "Charm");
+    const charmLabel = escapeHtml(`${charmWord} ${slot.charmNumber}`);
+    html += `
+      <div class="gear-table-block">
+        <span class="gear-piece-label">${pieceLabel} ${charmLabel}</span>
+        <div class="gear-table-row">
+          <select id="${escapeAttr(slot.currentId)}"></select>
+          <select id="${escapeAttr(slot.targetId)}"></select>
+        </div>
+      </div>
+    `;
+  });
+
+  tableBody.innerHTML = html;
+}
+
+function buildCharmLevelDropdown(selectEl) {
+  if (!CHIEF_CHARM_DATA || !CHIEF_CHARM_DATA.levelOrder) return;
+  selectEl.innerHTML = "";
+  CHIEF_CHARM_DATA.levelOrder.forEach(levelKey => {
+    const opt = document.createElement("option");
+    opt.value = levelKey;
+    const levelInfo = CHIEF_CHARM_DATA.levels[levelKey];
+    opt.textContent = levelInfo && levelInfo.label ? levelInfo.label : levelKey;
+    selectEl.appendChild(opt);
+  });
+}
+
+function clampCharmTargetToCurrent(slotDefinition) {
+  if (!CHIEF_CHARM_DATA || !CHIEF_CHARM_DATA.levelOrder) return;
+
+  const currentEl = document.getElementById(slotDefinition.currentId);
+  const targetEl = document.getElementById(slotDefinition.targetId);
+  if (!currentEl || !targetEl) return;
+
+  const currentIdx = CHIEF_CHARM_DATA.levelOrder.indexOf(currentEl.value || "none");
+  const targetIdx = CHIEF_CHARM_DATA.levelOrder.indexOf(targetEl.value || "none");
+  if (currentIdx >= 0 && targetIdx >= 0 && targetIdx < currentIdx) {
+    targetEl.value = currentEl.value;
+  }
+}
+
+function clampAllCharmTargets() {
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    clampCharmTargetToCurrent(slot);
+  });
+}
+
+function initChiefCharmPanel() {
+  renderChiefCharmRows();
+
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const currentEl = document.getElementById(slot.currentId);
+    const targetEl = document.getElementById(slot.targetId);
+    if (currentEl) buildCharmLevelDropdown(currentEl);
+    if (targetEl) buildCharmLevelDropdown(targetEl);
+
+    if (currentEl) {
+      currentEl.removeEventListener("change", onCharmSlotCurrentChange);
+      currentEl.addEventListener("change", onCharmSlotCurrentChange);
+    }
+    if (targetEl) {
+      targetEl.removeEventListener("change", onCharmSlotTargetChange);
+      targetEl.addEventListener("change", onCharmSlotTargetChange);
+    }
+  });
+
+  CHARM_MATERIAL_FIELDS.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.removeEventListener("input", saveChiefCharmState);
+    el.removeEventListener("change", saveChiefCharmState);
+    el.addEventListener("input", saveChiefCharmState);
+    el.addEventListener("change", saveChiefCharmState);
+  });
+
+  const calculateBtn = document.getElementById("charmCalculateBtn");
+  const smartUpgradeBtn = document.getElementById("charmSmartUpgradeBtn");
+  if (calculateBtn) {
+    calculateBtn.removeEventListener("click", onCharmCalculateClick);
+    calculateBtn.addEventListener("click", onCharmCalculateClick);
+  }
+  if (smartUpgradeBtn) {
+    smartUpgradeBtn.removeEventListener("click", onCharmSmartUpgradeClick);
+    smartUpgradeBtn.addEventListener("click", onCharmSmartUpgradeClick);
+  }
+}
+
+function onCharmSlotCurrentChange(event) {
+  const slot = CHARM_SLOT_DEFINITIONS.find(candidate => candidate.currentId === event.target.id);
+  if (!slot) return;
+  clampCharmTargetToCurrent(slot);
+  saveChiefCharmState();
+}
+
+function onCharmSlotTargetChange(event) {
+  const slot = CHARM_SLOT_DEFINITIONS.find(candidate => candidate.targetId === event.target.id);
+  if (!slot) return;
+  clampCharmTargetToCurrent(slot);
+  saveChiefCharmState();
+}
+
+function saveChiefCharmState() {
+  if (!activeAccountId) return;
+  const account = accounts.find(a => a.id === activeAccountId);
+  if (!account) return;
+  if (!account.calculators) account.calculators = {};
+  if (!account.calculators.chiefCharm) account.calculators.chiefCharm = {};
+
+  const state = account.calculators.chiefCharm;
+
+  state.levels = {};
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const currentEl = document.getElementById(slot.currentId);
+    const targetEl = document.getElementById(slot.targetId);
+    state.levels[slot.slotKey] = {
+      current: currentEl ? currentEl.value : "none",
+      target: targetEl ? targetEl.value : "none"
+    };
+  });
+
+  state.materials = {};
+  CHARM_MATERIAL_FIELDS.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    state.materials[fieldId] = el ? (parseResourceAmount(el.value) || 0) : 0;
+  });
+
+  localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
+}
+
+function loadChiefCharmState() {
+  if (!activeAccountId) return;
+  const account = accounts.find(a => a.id === activeAccountId);
+  if (!account || !account.calculators || !account.calculators.chiefCharm) {
+    initializeChiefCharmDefaults();
+    return;
+  }
+
+  const state = account.calculators.chiefCharm;
+
+  if (state.levels) {
+    CHARM_SLOT_DEFINITIONS.forEach(slot => {
+      const currentEl = document.getElementById(slot.currentId);
+      const targetEl = document.getElementById(slot.targetId);
+      if (currentEl) currentEl.value = state.levels[slot.slotKey]?.current || "none";
+      if (targetEl) targetEl.value = state.levels[slot.slotKey]?.target || "none";
+    });
+  }
+
+  clampAllCharmTargets();
+
+  if (state.materials) {
+    CHARM_MATERIAL_FIELDS.forEach(fieldId => {
+      const el = document.getElementById(fieldId);
+      if (el && fieldId in state.materials) {
+        el.value = String(state.materials[fieldId] ?? 0);
+      }
+    });
+  }
+}
+
+function initializeChiefCharmDefaults() {
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const currentEl = document.getElementById(slot.currentId);
+    const targetEl = document.getElementById(slot.targetId);
+    if (currentEl) currentEl.value = "none";
+    if (targetEl) targetEl.value = "none";
+  });
+
+  CHARM_MATERIAL_FIELDS.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    if (el) el.value = "0";
+  });
+}
+
+function calculateCharmCost(currentLevels, targetLevels) {
+  if (!CHIEF_CHARM_DATA) return null;
+
+  const costs = {
+    charmDesigns: 0,
+    charmGuides: 0,
+    jewelSecrets: 0
+  };
+
+  const levelKeyToIndex = {};
+  CHIEF_CHARM_DATA.levelOrder.forEach((key, idx) => {
+    levelKeyToIndex[key] = idx;
+  });
+
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const currentKey = currentLevels[slot.slotKey] || "none";
+    const targetKey = targetLevels[slot.slotKey] || "none";
+    const currentIdx = levelKeyToIndex[currentKey] || -1;
+    const targetIdx = levelKeyToIndex[targetKey] || -1;
+
+    for (let i = currentIdx + 1; i <= targetIdx; i++) {
+      const levelKey = CHIEF_CHARM_DATA.levelOrder[i];
+      const levelData = CHIEF_CHARM_DATA.levels[levelKey];
+      if (levelData) {
+        costs.charmDesigns += levelData.charmDesigns || 0;
+        costs.charmGuides += levelData.charmGuides || 0;
+        costs.jewelSecrets += levelData.jewelSecrets || 0;
+      }
+    }
+  });
+
+  return costs;
+}
+
+function canAffordCharmUpgrade(materials, cost) {
+  return materials.charmDesigns >= (cost.charmDesigns || 0)
+    && materials.charmGuides >= (cost.charmGuides || 0)
+    && materials.jewelSecrets >= (cost.jewelSecrets || 0);
+}
+
+function getAffordableCharmBatchCount(materials, cost, maxCount) {
+  if (!cost || maxCount <= 0) return 0;
+
+  const limits = [
+    cost.charmDesigns > 0 ? Math.floor(materials.charmDesigns / cost.charmDesigns) : maxCount,
+    cost.charmGuides > 0 ? Math.floor(materials.charmGuides / cost.charmGuides) : maxCount,
+    cost.jewelSecrets > 0 ? Math.floor(materials.jewelSecrets / cost.jewelSecrets) : maxCount
+  ];
+
+  return Math.max(0, Math.min(maxCount, ...limits));
+}
+
+function runSmartCharmUpgrade(currentLevels, materials) {
+  if (!CHIEF_CHARM_DATA) {
+    return {
+      finalLevels: currentLevels,
+      upgradeLog: [],
+      materialsRemaining: materials,
+      totalPiecesUpgraded: 0
+    };
+  }
+
+  const levelKeyToIndex = {};
+  CHIEF_CHARM_DATA.levelOrder.forEach((key, idx) => {
+    levelKeyToIndex[key] = idx;
+  });
+
+  const finalLevels = { ...currentLevels };
+  const remainingMaterials = { ...materials };
+  const upgradeLog = [];
+  let totalPiecesUpgraded = 0;
+
+  let changed = true;
+  while (changed) {
+    changed = false;
+
+    let lowestIndex = Infinity;
+    CHARM_SLOT_DEFINITIONS.forEach(slot => {
+      const levelKey = finalLevels[slot.slotKey] || "none";
+      const idx = levelKeyToIndex[levelKey] || -1;
+      if (idx < lowestIndex) lowestIndex = idx;
+    });
+
+    if (lowestIndex >= CHIEF_CHARM_DATA.levelOrder.length - 1) break;
+
+    const piecesAtLowest = CHARM_SLOT_DEFINITIONS.filter(slot => {
+      const levelKey = finalLevels[slot.slotKey] || "none";
+      return (levelKeyToIndex[levelKey] || -1) === lowestIndex;
+    });
+
+    const nextLevelKey = CHIEF_CHARM_DATA.levelOrder[lowestIndex + 1];
+    if (!nextLevelKey) break;
+
+    const costPerPiece = CHIEF_CHARM_DATA.levels[nextLevelKey];
+    if (!costPerPiece) break;
+
+    const affordableCount = getAffordableCharmBatchCount(remainingMaterials, costPerPiece, piecesAtLowest.length);
+    if (affordableCount <= 0 || !canAffordCharmUpgrade(remainingMaterials, costPerPiece)) break;
+
+    const slotsToUpgrade = piecesAtLowest.slice(0, affordableCount);
+    slotsToUpgrade.forEach(slot => {
+      finalLevels[slot.slotKey] = nextLevelKey;
+      remainingMaterials.charmDesigns -= costPerPiece.charmDesigns || 0;
+      remainingMaterials.charmGuides -= costPerPiece.charmGuides || 0;
+      remainingMaterials.jewelSecrets -= costPerPiece.jewelSecrets || 0;
+    });
+
+    totalPiecesUpgraded += slotsToUpgrade.length;
+    upgradeLog.push(translateText(
+      "results.charmBatchUpgrade",
+      { count: formatNumber(slotsToUpgrade.length), level: costPerPiece.label },
+      `Upgraded ${formatNumber(slotsToUpgrade.length)} charms to ${costPerPiece.label}`
+    ));
+    changed = true;
+  }
+
+  return {
+    finalLevels,
+    upgradeLog,
+    materialsRemaining: remainingMaterials,
+    totalPiecesUpgraded
+  };
+}
+
+function renderChiefCharmResult(html) {
+  const resultEl = document.getElementById("charmResult");
+  if (resultEl) {
+    resultEl.innerHTML = html;
+    resultEl.setAttribute("data-has-results", "true");
+  }
+}
+
+function onCharmCalculateClick() {
+  clampAllCharmTargets();
+
+  const currentLevels = {};
+  const targetLevels = {};
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const currentEl = document.getElementById(slot.currentId);
+    const targetEl = document.getElementById(slot.targetId);
+    currentLevels[slot.slotKey] = currentEl ? currentEl.value : "none";
+    targetLevels[slot.slotKey] = targetEl ? targetEl.value : "none";
+  });
+
+  const costs = calculateCharmCost(currentLevels, targetLevels);
+  if (!costs) {
+    renderChiefCharmResult(`<p>${escapeHtml(translateText("alerts.charmDataNotLoaded", {}, "Error: Charm data not loaded."))}</p>`);
+    return;
+  }
+
+  const materials = {
+    charmDesigns: parseResourceAmount(document.getElementById("charmDesignsInput")?.value || "0") || 0,
+    charmGuides: parseResourceAmount(document.getElementById("charmGuidesInput")?.value || "0") || 0,
+    jewelSecrets: parseResourceAmount(document.getElementById("jewelSecretsInput")?.value || "0") || 0
+  };
+
+  const remaining = {
+    charmDesigns: materials.charmDesigns - costs.charmDesigns,
+    charmGuides: materials.charmGuides - costs.charmGuides,
+    jewelSecrets: materials.jewelSecrets - costs.jewelSecrets
+  };
+
+  const charmDesignsLabel = translateText("labels.charmDesigns", {}, "Charm Designs");
+  const charmGuidesLabel = translateText("labels.charmGuides", {}, "Charm Guides");
+  const jewelSecretsLabel = translateText("labels.jewelSecrets", {}, "Jewel Secrets");
+  const costSummaryLabel = translateText("results.charmCostSummary", {}, "COST SUMMARY");
+  const afterUpgradeLabel = translateText("results.charmAfterUpgradeBalance", {}, "AFTER UPGRADE (MATERIAL BALANCE)");
+
+  const html = `
+    <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
+      <strong>${costSummaryLabel}</strong><br>
+      ${charmDesignsLabel}: ${formatNumber(costs.charmDesigns)} |
+      ${charmGuidesLabel}: ${formatNumber(costs.charmGuides)} |
+      ${jewelSecretsLabel}: ${formatNumber(costs.jewelSecrets)}
+    </div>
+    <div class="card-panel" style="margin-top: 15px;">
+      <strong>${afterUpgradeLabel}</strong><br>
+      ${charmDesignsLabel}: ${formatNumber(remaining.charmDesigns)} |
+      ${charmGuidesLabel}: ${formatNumber(remaining.charmGuides)} |
+      ${jewelSecretsLabel}: ${formatNumber(remaining.jewelSecrets)}
+    </div>
+  `;
+
+  renderChiefCharmResult(html);
+  saveChiefCharmState();
+}
+
+function onCharmSmartUpgradeClick() {
+  clampAllCharmTargets();
+
+  const currentLevels = {};
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const currentEl = document.getElementById(slot.currentId);
+    currentLevels[slot.slotKey] = currentEl ? currentEl.value : "none";
+  });
+
+  const materials = {
+    charmDesigns: parseResourceAmount(document.getElementById("charmDesignsInput")?.value || "0") || 0,
+    charmGuides: parseResourceAmount(document.getElementById("charmGuidesInput")?.value || "0") || 0,
+    jewelSecrets: parseResourceAmount(document.getElementById("jewelSecretsInput")?.value || "0") || 0
+  };
+
+  const result = runSmartCharmUpgrade(currentLevels, materials);
+
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const targetEl = document.getElementById(slot.targetId);
+    if (targetEl) targetEl.value = result.finalLevels[slot.slotKey] || "none";
+  });
+
+  const smartUpgradeCompleteLabel = translateText("results.charmSmartUpgradeComplete", {}, "Smart Upgrade Complete");
+  const charmsUpgradedLabel = translateText("results.charmsUpgraded", {}, "Charms upgraded");
+  const noUpgradesLabel = translateText("results.charmNoUpgradesPossible", {}, "No upgrades possible with current materials.");
+  const materialsRemainingLabel = translateText("results.charmMaterialsRemaining", {}, "Materials Remaining");
+  const charmDesignsLabel = translateText("labels.charmDesigns", {}, "Charm Designs");
+  const charmGuidesLabel = translateText("labels.charmGuides", {}, "Charm Guides");
+  const jewelSecretsLabel = translateText("labels.jewelSecrets", {}, "Jewel Secrets");
+
+  let html = `<div class="gear-result-container">`;
+  html += `<div class="gear-result-row"><strong>${smartUpgradeCompleteLabel}</strong></div>`;
+  if (result.upgradeLog.length > 0) {
+    html += `<div class="gear-result-row">${charmsUpgradedLabel}: ${formatNumber(result.totalPiecesUpgraded)}</div>`;
+    html += `<div class="gear-upgrade-log">`;
+    result.upgradeLog.forEach(logEntry => {
+      html += `<div class="gear-log-entry">• ${escapeHtml(logEntry)}</div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<p>${noUpgradesLabel}</p>`;
+  }
+
+  html += `<div class="gear-result-row"><strong>${materialsRemainingLabel}</strong></div>`;
+  html += `<div class="gear-result-row">${charmDesignsLabel}: ${formatNumber(result.materialsRemaining.charmDesigns)}</div>`;
+  html += `<div class="gear-result-row">${charmGuidesLabel}: ${formatNumber(result.materialsRemaining.charmGuides)}</div>`;
+  html += `<div class="gear-result-row">${jewelSecretsLabel}: ${formatNumber(result.materialsRemaining.jewelSecrets)}</div>`;
+  html += `</div>`;
+
+  renderChiefCharmResult(html);
+  saveChiefCharmState();
+}
+
+// ============================================================
 // DATA LOADING
 // Fetches buildings.json and prerequisites.json, then
 // initializes accounts and restores all saved state.
@@ -2398,7 +2881,11 @@ async function loadData() {
     const gearData = await gearResponse.json();
     CHIEF_GEAR_DATA = gearData;
 
-    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA });
+    const charmResponse = await fetch("data/chiefCharm.json");
+    const charmData = await charmResponse.json();
+    CHIEF_CHARM_DATA = charmData;
+
+    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA, CHIEF_CHARM_DATA });
 
     // Initialize accounts (migrates legacy flat keys on first run)
     initAccounts();
@@ -3002,7 +3489,7 @@ function showUpdateToast(registration) {
 // Register the service worker for PWA (installable app) support.
 // The service worker caches files so the app works offline.
 if ('serviceWorker' in navigator) {
-  const SW_VERSION = '15';
+  const SW_VERSION = '16';
 
   window.addEventListener('load', () => {
     const swUrl = `service-worker.js?v=${SW_VERSION}`;

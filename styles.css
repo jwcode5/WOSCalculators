@@ -554,12 +554,16 @@ button:hover {
 /* Match upgrade panel styling for fieldsets and result */
 #chiefGearPanel fieldset,
 #chiefGearPanel .card-panel,
-#chiefGearPanel .result {
+#chiefGearPanel .result,
+#chiefCharmPanel fieldset,
+#chiefCharmPanel .card-panel,
+#chiefCharmPanel .result {
   background: rgba(8, 20, 46, 0.95) !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-#chiefGearPanel {
+#chiefGearPanel,
+#chiefCharmPanel {
   background: transparent;
 }
 

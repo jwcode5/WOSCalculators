@@ -325,6 +325,47 @@
     <section id="gearResult" class="result"></section>
   </div>
 
+  <!-- Chief Charm Calculator Panel -->
+  <div id="chiefCharmPanel" style="display: none;">
+
+    <fieldset>
+      <legend data-i18n="sections.chiefCharmLevels">Chief Charm Levels</legend>
+      <div class="gear-table">
+        <div class="gear-table-header">
+          <span></span>
+          <span data-i18n="labels.currentLevel">Current Level</span>
+          <span data-i18n="labels.targetLevel">Target Level</span>
+        </div>
+        <div id="charmTableBody"></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend data-i18n="sections.chiefCharmMaterials">Your Materials</legend>
+      <div class="gear-materials-grid">
+        <div class="gear-material-field">
+          <label for="charmDesignsInput" data-i18n="labels.charmDesigns">Charm Designs</label>
+          <input id="charmDesignsInput" type="number" min="0" value="0" />
+        </div>
+        <div class="gear-material-field">
+          <label for="charmGuidesInput" data-i18n="labels.charmGuides">Charm Guides</label>
+          <input id="charmGuidesInput" type="number" min="0" value="0" />
+        </div>
+        <div class="gear-material-field">
+          <label for="jewelSecretsInput" data-i18n="labels.jewelSecrets">Jewel Secrets</label>
+          <input id="jewelSecretsInput" type="number" min="0" value="0" />
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="gear-button-row">
+      <button id="charmCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+      <button id="charmSmartUpgradeBtn" type="button" data-i18n="buttons.smartUpgrade">Smart Upgrade</button>
+    </div>
+
+    <section id="charmResult" class="result"></section>
+  </div>
+
   </main>
 </body>
 </html>

@@ -57,7 +57,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "Optional Additional Buildings",
       bearHuntMail: "Bear Hunt Mail",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "Niveles de Talismán del Jefe",
+      chiefCharmMaterials: "Tus materiales"
     },
     labels: {
       building: "Building",
@@ -98,7 +101,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "Diseños de Talismán",
+      charmGuides: "Guías de Talismán",
+      jewelSecrets: "Secretos de Joya"
     },
     buttons: {
       addBuilding: "+ Add Building",
@@ -188,7 +195,15 @@ const TRANSLATIONS = {
       essenceStones: "Essence Stones",
       luckyHeroGearChests: "Lucky Hero Gear Chests",
       xpComponents: "XP Components",
-      allianceTokens: "Alliance Tokens"
+      allianceTokens: "Alliance Tokens",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "RESUMEN DE COSTOS",
+      charmAfterUpgradeBalance: "DESPUÉS DE MEJORAR (SALDO DE MATERIALES)",
+      charmSmartUpgradeComplete: "Mejora inteligente completada",
+      charmNoUpgradesPossible: "No es posible mejorar con los materiales actuales.",
+      charmMaterialsRemaining: "Materiales restantes",
+      charmsUpgraded: "Talismanes mejorados",
+      charmBatchUpgrade: "Mejorados {count} talismanes a {level}"
     },
     resource: {
       meat: "Meat",
@@ -252,7 +267,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "Edificios adicionales opcionales",
       bearHuntMail: "Correo de Caza del Oso",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "Chef-Talisman-Stufen",
+      chiefCharmMaterials: "Deine Materialien"
     },
     labels: {
       building: "Edificio",
@@ -293,7 +311,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "Talisman-Designs",
+      charmGuides: "Talisman-Anleitungen",
+      jewelSecrets: "Juwelengeheimnisse"
     },
     buttons: {
       addBuilding: "+ Agregar edificio",
@@ -381,7 +403,15 @@ const TRANSLATIONS = {
       essenceStones: "Piedras de esencia",
       luckyHeroGearChests: "Cofres de equipo heroico de suerte",
       xpComponents: "Componentes de XP",
-      allianceTokens: "Fichas de alianza"
+      allianceTokens: "Fichas de alianza",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "KOSTENÜBERSICHT",
+      charmAfterUpgradeBalance: "NACH UPGRADE (MATERIALBESTAND)",
+      charmSmartUpgradeComplete: "Intelligentes Upgrade abgeschlossen",
+      charmNoUpgradesPossible: "Mit den aktuellen Materialien sind keine Upgrades möglich.",
+      charmMaterialsRemaining: "Verbleibende Materialien",
+      charmsUpgraded: "Talismane verbessert",
+      charmBatchUpgrade: "{count} Talismane auf {level} verbessert"
     },
     resource: {
       meat: "Carne",
@@ -445,7 +475,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "Optionale zusätzliche Gebäude",
       bearHuntMail: "Bärenjagd-Mail",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "Niveaux de charme du chef",
+      chiefCharmMaterials: "Vos matériaux"
     },
     labels: {
       building: "Gebäude",
@@ -486,7 +519,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "Plans de charme",
+      charmGuides: "Guides de charme",
+      jewelSecrets: "Secrets de bijoux"
     },
     buttons: {
       addBuilding: "+ Gebäude hinzufügen",
@@ -576,7 +613,15 @@ const TRANSLATIONS = {
       essenceStones: "Essenzsteine",
       luckyHeroGearChests: "Lucky Hero Gear Truhen",
       xpComponents: "XP-Komponenten",
-      allianceTokens: "Allianz-Token"
+      allianceTokens: "Allianz-Token",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "RÉCAPITULATIF DES COÛTS",
+      charmAfterUpgradeBalance: "APRÈS AMÉLIORATION (SOLDE MATÉRIEL)",
+      charmSmartUpgradeComplete: "Amélioration intelligente terminée",
+      charmNoUpgradesPossible: "Aucune amélioration possible avec les matériaux actuels.",
+      charmMaterialsRemaining: "Matériaux restants",
+      charmsUpgraded: "Charmes améliorés",
+      charmBatchUpgrade: "{count} charmes améliorés au niveau {level}"
     },
     resource: {
       meat: "Fleisch",
@@ -640,7 +685,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "Bâtiments supplémentaires optionnels",
       bearHuntMail: "Courrier de chasse à l'ours",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "Níveis de Talismã do Chefe",
+      chiefCharmMaterials: "Seus materiais"
     },
     labels: {
       building: "Bâtiment",
@@ -681,7 +729,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "Projetos de Talismã",
+      charmGuides: "Guias de Talismã",
+      jewelSecrets: "Segredos das Joias"
     },
     buttons: {
       addBuilding: "+ Ajouter un bâtiment",
@@ -771,7 +823,15 @@ const TRANSLATIONS = {
       essenceStones: "Pierres d'essence",
       luckyHeroGearChests: "Coffres d'équipement héroïque chanceux",
       xpComponents: "Composants XP",
-      allianceTokens: "Jetons d'alliance"
+      allianceTokens: "Jetons d'alliance",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "RESUMO DE CUSTOS",
+      charmAfterUpgradeBalance: "APÓS MELHORIA (SALDO DE MATERIAIS)",
+      charmSmartUpgradeComplete: "Upgrade inteligente concluído",
+      charmNoUpgradesPossible: "Não é possível melhorar com os materiais atuais.",
+      charmMaterialsRemaining: "Materiais restantes",
+      charmsUpgraded: "Talismãs melhorados",
+      charmBatchUpgrade: "Melhorados {count} talismãs para {level}"
     },
     resource: {
       meat: "Viande",
@@ -835,7 +895,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "Edifícios adicionais opcionais",
       bearHuntMail: "Correio de Caça ao Urso",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "统帅护符等级",
+      chiefCharmMaterials: "你的材料"
     },
     labels: {
       building: "Edifício",
@@ -876,7 +939,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "护符设计图",
+      charmGuides: "护符指南",
+      jewelSecrets: "珠宝秘籍"
     },
     buttons: {
       addBuilding: "+ Adicionar edifício",
@@ -966,7 +1033,15 @@ const TRANSLATIONS = {
       essenceStones: "Pedras de essência",
       luckyHeroGearChests: "Baús de equipamento heroico de sorte",
       xpComponents: "Componentes de XP",
-      allianceTokens: "Fichas de aliança"
+      allianceTokens: "Fichas de aliança",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "成本汇总",
+      charmAfterUpgradeBalance: "升级后（材料结余）",
+      charmSmartUpgradeComplete: "智能升级完成",
+      charmNoUpgradesPossible: "当前材料无法升级。",
+      charmMaterialsRemaining: "剩余材料",
+      charmsUpgraded: "护符已升级",
+      charmBatchUpgrade: "已将{count}个护符升级到{level}"
     },
     resource: {
       meat: "Carne",
@@ -1030,7 +1105,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "可选附加建筑",
       bearHuntMail: "熊狩邮件",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "Poziomy talizmanu dowódcy",
+      chiefCharmMaterials: "Twoje materiały"
     },
     labels: {
       building: "建筑",
@@ -1071,7 +1149,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "Projekty talizmanu",
+      charmGuides: "Przewodniki po talizmanach",
+      jewelSecrets: "Sekrety klejnotów"
     },
     buttons: {
       addBuilding: "+ 添加建筑",
@@ -1161,7 +1243,15 @@ const TRANSLATIONS = {
       essenceStones: "精华石",
       luckyHeroGearChests: "幸运英雄装备箱",
       xpComponents: "XP 组件",
-      allianceTokens: "联盟代币"
+      allianceTokens: "联盟代币",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "PODSUMOWANIE KOSZTÓW",
+      charmAfterUpgradeBalance: "PO ULEPSZENIU (STAN MATERIAŁÓW)",
+      charmSmartUpgradeComplete: "Inteligentne ulepszenie zakończone",
+      charmNoUpgradesPossible: "Brak możliwości ulepszenia przy obecnych materiałach.",
+      charmMaterialsRemaining: "Pozostałe materiały",
+      charmsUpgraded: "Talizmany ulepszone",
+      charmBatchUpgrade: "Ulepszono {count} talizmanów do {level}"
     },
     resource: {
       meat: "肉",
@@ -1225,7 +1315,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "Opcjonalne dodatkowe budynki",
       bearHuntMail: "Poczta polowania na niedźwiedzia",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "대장 부적 레벨",
+      chiefCharmMaterials: "보유 재료"
     },
     labels: {
       building: "Budynek",
@@ -1266,7 +1359,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "부적 도안",
+      charmGuides: "부적 가이드",
+      jewelSecrets: "보석 비밀"
     },
     buttons: {
       addBuilding: "+ Dodaj budynek",
@@ -1340,7 +1437,15 @@ const TRANSLATIONS = {
       essenceStones: "Kamienie esencji",
       luckyHeroGearChests: "Szczęśliwe skrzynie ekwipunku bohatera",
       xpComponents: "Komponenty XP",
-      allianceTokens: "Tokeny sojuszu"
+      allianceTokens: "Tokeny sojuszu",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "비용 요약",
+      charmAfterUpgradeBalance: "업그레이드 후 (재료 잔량)",
+      charmSmartUpgradeComplete: "스마트 업그레이드 완료",
+      charmNoUpgradesPossible: "현재 재료로는 업그레이드할 수 없습니다.",
+      charmMaterialsRemaining: "남은 재료",
+      charmsUpgraded: "부적 업그레이드 완료",
+      charmBatchUpgrade: "{count}개의 부적을 {level}(으)로 업그레이드함"
     },
     resource: {
       meat: "Mięso",
@@ -1420,7 +1525,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "선택 추가 건물",
       bearHuntMail: "곰 사냥 메일",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "チーフチャームレベル",
+      chiefCharmMaterials: "所持材料"
     },
     labels: {
       building: "건물",
@@ -1461,7 +1569,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "チャーム設計図",
+      charmGuides: "チャームガイド",
+      jewelSecrets: "ジュエルの秘密"
     },
     buttons: {
       addBuilding: "+ 건물 추가",
@@ -1550,7 +1662,15 @@ const TRANSLATIONS = {
       essenceStones: "에센스 스톤",
       luckyHeroGearChests: "행운의 영웅 장비 상자",
       xpComponents: "XP 부품",
-      allianceTokens: "연맹 토큰"
+      allianceTokens: "연맹 토큰",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "コスト概要",
+      charmAfterUpgradeBalance: "アップグレード後（材料残高）",
+      charmSmartUpgradeComplete: "スマートアップグレード完了",
+      charmNoUpgradesPossible: "現在の材料ではアップグレードできません。",
+      charmMaterialsRemaining: "残りの材料",
+      charmsUpgraded: "チャームをアップグレードしました",
+      charmBatchUpgrade: "{count}個のチャームを{level}にアップグレード"
     },
     resource: {
       meat: "고기",
@@ -1614,7 +1734,10 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "任意の追加建物",
       bearHuntMail: "熊狩りメール",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmLevels: "Mga Antas ng Pangunahing Anting-anting",
+      chiefCharmMaterials: "Iyong mga materyales"
     },
     labels: {
       building: "建物",
@@ -1655,7 +1778,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "Mga Disenyo ng Anting-anting",
+      charmGuides: "Mga Gabay sa Anting-anting",
+      jewelSecrets: "Mga Lihim ng Hiyas"
     },
     buttons: {
       addBuilding: "+ 建物を追加",
@@ -1729,7 +1856,15 @@ const TRANSLATIONS = {
       essenceStones: "エッセンスストーン",
       luckyHeroGearChests: "ラッキーヒーロー装備宝箱",
       xpComponents: "XPコンポーネント",
-      allianceTokens: "同盟トークン"
+      allianceTokens: "同盟トークン",
+      charmCostSummary: "COST SUMMARY",
+      charmCostSummary: "BUOD NG GASTOS",
+      charmAfterUpgradeBalance: "PAGKATAPOS NG UPGRADE (BALANSE NG MATERYAL)",
+      charmSmartUpgradeComplete: "Kumpleto na ang Smart Upgrade",
+      charmNoUpgradesPossible: "Walang upgrade na posible gamit ang kasalukuyang mga materyales.",
+      charmMaterialsRemaining: "Natitirang mga materyales",
+      charmsUpgraded: "Na-upgrade ang mga anting-anting",
+      charmBatchUpgrade: "Na-upgrade ang {count} anting-anting sa {level}"
     },
     resource: {
       meat: "肉",
@@ -1809,7 +1944,9 @@ const TRANSLATIONS = {
       optionalAdditionalBuildings: "Opsyonal na Karagdagang Gusali",
       bearHuntMail: "Bear Hunt Mail",
       chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials"
+      chiefGearMaterials: "Your Materials",
+      chiefCharmLevels: "Chief Charm Levels",
+      chiefCharmMaterials: "Your Materials"
     },
     labels: {
       building: "Gusali",
@@ -1850,7 +1987,11 @@ const TRANSLATIONS = {
       hardenedAlloy: "Hardened Alloy",
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
-      lunarAmber: "Lunar Amber"
+      lunarAmber: "Lunar Amber",
+      charm: "Charm",
+      charmDesigns: "Charm Designs",
+      charmGuides: "Charm Guides",
+      jewelSecrets: "Jewel Secrets"
     },
     buttons: {
       addBuilding: "+ Magdagdag ng Gusali",
@@ -1940,7 +2081,14 @@ const TRANSLATIONS = {
       essenceStones: "Essence Stones",
       luckyHeroGearChests: "Lucky Hero Gear Chests",
       xpComponents: "XP Components",
-      allianceTokens: "Alliance Tokens"
+      allianceTokens: "Alliance Tokens",
+      charmCostSummary: "COST SUMMARY",
+      charmAfterUpgradeBalance: "AFTER UPGRADE (MATERIAL BALANCE)",
+      charmSmartUpgradeComplete: "Smart Upgrade Complete",
+      charmNoUpgradesPossible: "No upgrades possible with current materials.",
+      charmMaterialsRemaining: "Materials Remaining",
+      charmsUpgraded: "Charms upgraded",
+      charmBatchUpgrade: "Upgraded {count} charms to {level}"
     },
     resource: {
       meat: "Lasa",
