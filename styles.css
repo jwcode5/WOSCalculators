@@ -1,4 +1,36 @@
-﻿/* Info icon styling for tooltips */
+﻿/* Chief Charm batch controls positioning */
+.charm-batch-row {
+  position: relative;
+  min-height: 54px;
+  margin-bottom: 8px;
+}
+
+.charm-batch-controls {
+  position: absolute;
+  left: 55%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.charm-batch-inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+#charmBatchCurrent {
+  min-width: 90px;
+}
+
+#setAllCharmCurrentBtn {
+  margin-left: 0;
+}
+/* Info icon styling for tooltips */
 .info-icon {
   display: inline-block;
   width: 18px;

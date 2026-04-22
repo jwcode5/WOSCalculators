@@ -2632,7 +2632,15 @@ function initChiefCharmPanel() {
       const selectedValue = batchCurrentSelect.value;
       CHARM_SLOT_DEFINITIONS.forEach(slot => {
         const currentEl = document.getElementById(slot.currentId);
+        const targetEl = document.getElementById(slot.targetId);
         if (currentEl) currentEl.value = selectedValue;
+        if (currentEl && targetEl && CHIEF_CHARM_DATA && CHIEF_CHARM_DATA.levelOrder) {
+          const currentIdx = CHIEF_CHARM_DATA.levelOrder.indexOf(selectedValue);
+          const targetIdx = CHIEF_CHARM_DATA.levelOrder.indexOf(targetEl.value);
+          if (currentIdx >= 0 && targetIdx >= 0 && targetIdx < currentIdx) {
+            targetEl.value = selectedValue;
+          }
+        }
       });
       saveChiefCharmState();
     };
