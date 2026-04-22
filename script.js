@@ -2440,7 +2440,6 @@ function onGearCalculateClick() {
             resources.designPlans >= (cost.designPlans || 0) &&
             resources.lunarAmber >= (cost.lunarAmber || 0)
           ) {
-            // Prioritize the slot with the furthest possible upgrade (greedy, but all are one step)
             if (curIdx + 1 > bestNextIdx) {
               bestSlot = slot;
               bestNextIdx = curIdx + 1;
@@ -2450,7 +2449,6 @@ function onGearCalculateClick() {
         }
       });
       if (bestSlot) {
-        // Upgrade this slot by one step
         const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[bestNextIdx];
         optimizedLevels[bestSlot] = nextLevelKey;
         resources.hardenedAlloy -= bestCost.hardenedAlloy || 0;
@@ -2459,6 +2457,8 @@ function onGearCalculateClick() {
         resources.lunarAmber -= bestCost.lunarAmber || 0;
         plan.push({ slot: bestSlot, to: nextLevelKey, label: bestCost.label });
         upgradesMade = true;
+      } else {
+        upgradesMade = false;
       }
     }
     return { optimizedLevels, resources, plan };
