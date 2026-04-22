@@ -2357,7 +2357,90 @@ function onGearCalculateClick() {
     </div>
   `;
 
-  renderChiefGearResult(html);
+  // --- Optimized Plan Calculation ---
+  // For each slot, upgrade as far as possible toward the target, maximizing resource use
+  function calculateOptimizedPlan(currentLevels, targetLevels, materials) {
+    if (!CHIEF_GEAR_DATA) return null;
+    const levelKeyToIndex = {};
+    CHIEF_GEAR_DATA.levelOrder.forEach((key, idx) => { levelKeyToIndex[key] = idx; });
+    const optimizedLevels = { ...currentLevels };
+    const resources = { ...materials };
+    const plan = [];
+    let upgradesMade = true;
+    while (upgradesMade) {
+      upgradesMade = false;
+      let bestSlot = null;
+      let bestNextIdx = -1;
+      let bestCost = null;
+      // Find the slot that can be upgraded the furthest (by one step) and is still below its target
+      GEAR_SLOTS.forEach(slot => {
+        const curIdx = levelKeyToIndex[optimizedLevels[slot] || "none"] || -1;
+        const tgtIdx = levelKeyToIndex[targetLevels[slot] || "none"] || -1;
+        if (curIdx < tgtIdx && curIdx < CHIEF_GEAR_DATA.levelOrder.length - 1) {
+          const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[curIdx + 1];
+          const cost = CHIEF_GEAR_DATA.levels[nextLevelKey];
+          if (cost &&
+            resources.hardenedAlloy >= (cost.hardenedAlloy || 0) &&
+            resources.polishingSolution >= (cost.polishingSolution || 0) &&
+            resources.designPlans >= (cost.designPlans || 0) &&
+            resources.lunarAmber >= (cost.lunarAmber || 0)
+          ) {
+            // Prioritize the slot with the furthest possible upgrade (greedy, but all are one step)
+            if (curIdx + 1 > bestNextIdx) {
+              bestSlot = slot;
+              bestNextIdx = curIdx + 1;
+              bestCost = cost;
+            }
+          }
+        }
+      });
+      if (bestSlot) {
+        // Upgrade this slot by one step
+        const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[bestNextIdx];
+        optimizedLevels[bestSlot] = nextLevelKey;
+        resources.hardenedAlloy -= bestCost.hardenedAlloy || 0;
+        resources.polishingSolution -= bestCost.polishingSolution || 0;
+        resources.designPlans -= bestCost.designPlans || 0;
+        resources.lunarAmber -= bestCost.lunarAmber || 0;
+        plan.push({ slot: bestSlot, to: nextLevelKey, label: bestCost.label });
+        upgradesMade = true;
+      }
+    }
+    return { optimizedLevels, resources, plan };
+  }
+
+  // Prepare materials for the optimized plan
+  const availableMaterials = {
+    hardenedAlloy: materials.gearHardenedAlloy || 0,
+    polishingSolution: materials.gearPolishingSolution || 0,
+    designPlans: materials.gearDesignPlans || 0,
+    lunarAmber: materials.gearLunarAmber || 0
+  };
+  const optimized = calculateOptimizedPlan(currentLevels, targetLevels, availableMaterials);
+
+  // Render Optimized Plan results
+  let optimizedHtml = "<div class='card-panel' style='margin-top:15px;'><strong>OPTIMIZED PLAN</strong><br>";
+  if (optimized && optimized.plan.length > 0) {
+    optimizedHtml += "<table class='optimized-plan-table'><thead><tr><th>Gear Piece</th><th>Final Level</th></tr></thead><tbody>";
+    GEAR_SLOTS.forEach(slot => {
+      const finalLevel = optimized.optimizedLevels[slot] || currentLevels[slot] || "none";
+      const levelLabel = CHIEF_GEAR_DATA.levels[finalLevel]?.label || finalLevel;
+      const pieceLabel = translateText(`labels.${slot}`, {}, prettifyBuildingName(slot));
+      optimizedHtml += `<tr><td>${escapeHtml(pieceLabel)}</td><td>${escapeHtml(levelLabel)}</td></tr>`;
+    });
+    optimizedHtml += "</tbody></table>";
+    optimizedHtml += `<div style='margin-top:10px;'><strong>Materials Remaining:</strong><br>
+      Hardened Alloy: ${formatNumber(optimized.resources.hardenedAlloy)} | 
+      Polishing Solution: ${formatNumber(optimized.resources.polishingSolution)} | 
+      Design Plans: ${formatNumber(optimized.resources.designPlans)} | 
+      Lunar Amber: ${formatNumber(optimized.resources.lunarAmber)}
+    </div>`;
+  } else {
+    optimizedHtml += "<em>No upgrades possible with current resources.</em>";
+  }
+  optimizedHtml += "</div>";
+
+  renderChiefGearResult(html + optimizedHtml);
   saveChiefGearState();
 }
 
