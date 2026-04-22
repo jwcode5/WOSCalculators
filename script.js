@@ -2616,7 +2616,27 @@ function clampAllCharmTargets() {
 }
 
 function initChiefCharmPanel() {
+
   renderChiefCharmRows();
+
+  // Populate the batch current level dropdown
+  const batchCurrentSelect = document.getElementById("charmBatchCurrent");
+  if (batchCurrentSelect) {
+    buildCharmLevelDropdown(batchCurrentSelect);
+  }
+
+  // Set All button logic
+  const setAllBtn = document.getElementById("setAllCharmCurrentBtn");
+  if (setAllBtn && batchCurrentSelect) {
+    setAllBtn.onclick = function() {
+      const selectedValue = batchCurrentSelect.value;
+      CHARM_SLOT_DEFINITIONS.forEach(slot => {
+        const currentEl = document.getElementById(slot.currentId);
+        if (currentEl) currentEl.value = selectedValue;
+      });
+      saveChiefCharmState();
+    };
+  }
 
   CHARM_SLOT_DEFINITIONS.forEach(slot => {
     const currentEl = document.getElementById(slot.currentId);

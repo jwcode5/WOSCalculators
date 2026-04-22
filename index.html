@@ -334,8 +334,17 @@
   <!-- Chief Charm Calculator Panel -->
   <div id="chiefCharmPanel" style="display: none;">
 
+
     <fieldset>
       <legend data-i18n="sections.chiefCharmLevels">Chief Charm Levels</legend>
+      <div style="display: flex; align-items: flex-end; gap: 10px; margin-bottom: 8px;">
+        <div style="flex: 1 1 auto;"></div>
+        <div>
+          <label for="charmBatchCurrent" style="font-size: 0.95em;">Set all current levels</label>
+          <select id="charmBatchCurrent" style="min-width: 90px;"></select>
+          <button id="setAllCharmCurrentBtn" type="button" class="inlineActionBtn inlineActionBtnSecondary" style="margin-left: 4px;">Set All</button>
+        </div>
+      </div>
       <div class="gear-table">
         <div class="gear-table-header">
           <span></span>
