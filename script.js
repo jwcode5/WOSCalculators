@@ -1865,6 +1865,17 @@ function buildGearLevelDropdown(selectEl) {
   });
 }
 
+function normalizeChiefGearLevelKey(levelKey) {
+  const raw = String(levelKey || "none");
+  if (!raw.startsWith("pink")) return raw;
+
+  // Backward compatibility for older saved state before red-tier key rename.
+  if (raw.startsWith("pink_t2_")) return raw.replace("pink_t2_", "red_t2_");
+  if (raw.startsWith("pink_t1_")) return raw.replace("pink_t1_", "red_t1_");
+  if (raw.startsWith("pink_")) return raw.replace("pink_", "red_");
+  return raw;
+}
+
 function clampChiefGearTargetToCurrent(slot) {
   if (!CHIEF_GEAR_DATA || !CHIEF_GEAR_DATA.levelOrder || !GEAR_SLOT_FIELDS[slot]) return;
 
@@ -1992,8 +2003,15 @@ function loadChiefGearState() {
     GEAR_SLOTS.forEach(slot => {
       const currentEl = document.getElementById(GEAR_SLOT_FIELDS[slot].current);
       const targetEl = document.getElementById(GEAR_SLOT_FIELDS[slot].target);
-      if (currentEl) currentEl.value = state.levels[slot]?.current || "none";
-      if (targetEl) targetEl.value = state.levels[slot]?.target || "none";
+      const normalizedCurrent = normalizeChiefGearLevelKey(state.levels[slot]?.current || "none");
+      const normalizedTarget = normalizeChiefGearLevelKey(state.levels[slot]?.target || "none");
+      if (currentEl) currentEl.value = normalizedCurrent;
+      if (targetEl) targetEl.value = normalizedTarget;
+
+      // Persist migrated keys so future loads no longer rely on compatibility mapping.
+      if (!state.levels[slot]) state.levels[slot] = {};
+      state.levels[slot].current = normalizedCurrent;
+      state.levels[slot].target = normalizedTarget;
     });
   }
 
@@ -2029,7 +2047,7 @@ function getGearBadgeClass(levelKey) {
   if (levelKey.startsWith("blue")) return "gear-badge-blue";
   if (levelKey.startsWith("purple")) return "gear-badge-purple";
   if (levelKey.startsWith("gold")) return "gear-badge-gold";
-  if (levelKey.startsWith("pink")) return "gear-badge-pink";
+  if (levelKey.startsWith("pink")) return "gear-badge-red";
   if (levelKey.startsWith("red")) return "gear-badge-red";
   return "gear-badge-none";
 }
