@@ -2241,58 +2241,44 @@ function runSmartUpgrade(currentLevels, materials) {
   let changed = true;
   while (changed) {
     changed = false;
-
-    // Find the lowest level piece
-    let lowestSlot = null;
-    let lowestIndex = Infinity;
+    // Track which slots were upgraded this pass
+    let slotsUpgradedThisPass = [];
+    // For each slot, try to upgrade if possible
     GEAR_SLOTS.forEach(slot => {
-      const levelKey = finalLevels[slot] || "none";
-      const idx = levelKeyToIndex[levelKey] || -1;
-      if (idx < lowestIndex) {
-        lowestIndex = idx;
-        lowestSlot = slot;
+      const currentKey = finalLevels[slot] || "none";
+      const currentIdx = levelKeyToIndex[currentKey] || -1;
+      if (currentIdx >= CHIEF_GEAR_DATA.levelOrder.length - 1) return; // Already max
+      const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[currentIdx + 1];
+      const cost = CHIEF_GEAR_DATA.levels[nextLevelKey];
+      if (!cost) return;
+      // Check if we can afford this upgrade for this slot
+      if (
+        remainingMaterials.hardenedAlloy >= (cost.hardenedAlloy || 0) &&
+        remainingMaterials.polishingSolution >= (cost.polishingSolution || 0) &&
+        remainingMaterials.designPlans >= (cost.designPlans || 0) &&
+        remainingMaterials.lunarAmber >= (cost.lunarAmber || 0)
+      ) {
+        // Deduct materials and upgrade
+        remainingMaterials.hardenedAlloy -= cost.hardenedAlloy || 0;
+        remainingMaterials.polishingSolution -= cost.polishingSolution || 0;
+        remainingMaterials.designPlans -= cost.designPlans || 0;
+        remainingMaterials.lunarAmber -= cost.lunarAmber || 0;
+        finalLevels[slot] = nextLevelKey;
+        slotsUpgradedThisPass.push({ slot, label: cost.label });
+        changed = true;
       }
     });
-
-    if (!lowestSlot || lowestIndex >= CHIEF_GEAR_DATA.levelOrder.length - 1) {
-      break; // All pieces at max level
+    if (slotsUpgradedThisPass.length > 0) {
+      // Group by label for summary
+      const labelGroups = {};
+      slotsUpgradedThisPass.forEach(({ label }) => {
+        labelGroups[label] = (labelGroups[label] || 0) + 1;
+      });
+      Object.entries(labelGroups).forEach(([label, count]) => {
+        upgradeLog.push(`Upgraded ${count} gear piece${count === 1 ? "" : "s"} to ${label}`);
+        totalPiecesUpgraded += count;
+      });
     }
-
-    // Find all pieces at lowestIndex level
-    const piecesAtLowest = GEAR_SLOTS.filter(slot => {
-      const levelKey = finalLevels[slot] || "none";
-      return (levelKeyToIndex[levelKey] || -1) === lowestIndex;
-    });
-
-    // Try to upgrade all pieces at lowest level by one level
-    const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[lowestIndex + 1];
-    if (!nextLevelKey) break;
-
-    const costPerPiece = CHIEF_GEAR_DATA.levels[nextLevelKey];
-    if (!costPerPiece) break;
-
-    const affordableCount = getAffordableGearBatchCount(
-      remainingMaterials,
-      costPerPiece,
-      piecesAtLowest.length
-    );
-
-    if (affordableCount <= 0 || !canAffordGearUpgrade(remainingMaterials, costPerPiece)) {
-      break;
-    }
-
-    const slotsToUpgrade = piecesAtLowest.slice(0, affordableCount);
-    slotsToUpgrade.forEach(slot => {
-      finalLevels[slot] = nextLevelKey;
-      remainingMaterials.hardenedAlloy -= costPerPiece.hardenedAlloy || 0;
-      remainingMaterials.polishingSolution -= costPerPiece.polishingSolution || 0;
-      remainingMaterials.designPlans -= costPerPiece.designPlans || 0;
-      remainingMaterials.lunarAmber -= costPerPiece.lunarAmber || 0;
-    });
-
-    totalPiecesUpgraded += slotsToUpgrade.length;
-    upgradeLog.push(`Upgraded ${slotsToUpgrade.length} gear piece${slotsToUpgrade.length === 1 ? "" : "s"} to ${costPerPiece.label}`);
-    changed = true;
   }
 
   return {
