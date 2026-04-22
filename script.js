@@ -1,3 +1,52 @@
+// Show info icon tooltips on tap/click for mobile users
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.info-icon').forEach(function(icon) {
+    // Remove any existing tooltip
+    function removeTooltip() {
+      const tip = document.getElementById('info-tooltip');
+      if (tip) tip.remove();
+    }
+    // Show tooltip
+    function showTooltip() {
+      removeTooltip();
+      const tip = document.createElement('div');
+      tip.id = 'info-tooltip';
+      tip.textContent = icon.getAttribute('title') || icon.getAttribute('aria-label') || '';
+      tip.style.position = 'fixed';
+      tip.style.zIndex = 9999;
+      tip.style.background = '#222a3a';
+      tip.style.color = '#ffe08a';
+      tip.style.padding = '10px 14px';
+      tip.style.borderRadius = '8px';
+      tip.style.boxShadow = '0 4px 16px rgba(0,0,0,0.25)';
+      tip.style.fontSize = '1em';
+      tip.style.maxWidth = '90vw';
+      tip.style.wordBreak = 'break-word';
+      // Position below the icon
+      const rect = icon.getBoundingClientRect();
+      tip.style.left = Math.min(rect.left, window.innerWidth - 220) + 'px';
+      tip.style.top = (rect.bottom + 8) + 'px';
+      document.body.appendChild(tip);
+    }
+    // Desktop: show on hover
+    icon.addEventListener('mouseenter', showTooltip);
+    icon.addEventListener('mouseleave', removeTooltip);
+    // Mobile: show on tap/click
+    icon.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (document.getElementById('info-tooltip')) {
+        removeTooltip();
+      } else {
+        showTooltip();
+      }
+    });
+  });
+  // Hide tooltip on outside tap
+  document.addEventListener('click', function(e) {
+    const tip = document.getElementById('info-tooltip');
+    if (tip) tip.remove();
+  });
+});
 // Ensure info icons always display the "i" character, even if inner text is missing
 document.addEventListener("DOMContentLoaded", function() {
   document.querySelectorAll('.info-icon').forEach(function(el) {
@@ -2825,6 +2874,54 @@ function renderChiefCharmResult(html) {
   }
 }
 
+
+// --- Optimized Plan Calculation for Chief Charm ---
+function calculateCharmOptimizedPlan(currentLevels, targetLevels, materials) {
+  if (!CHIEF_CHARM_DATA) return null;
+  const levelKeyToIndex = {};
+  CHIEF_CHARM_DATA.levelOrder.forEach((key, idx) => { levelKeyToIndex[key] = idx; });
+  const optimizedLevels = { ...currentLevels };
+  const resources = { ...materials };
+  const plan = [];
+  let upgradesMade = true;
+  while (upgradesMade) {
+    upgradesMade = false;
+    let bestSlot = null;
+    let bestNextIdx = -1;
+    let bestCost = null;
+    // Find the slot that can be upgraded the furthest (by one step) and is still below its target
+    CHARM_SLOT_DEFINITIONS.forEach(slot => {
+      const curIdx = levelKeyToIndex[optimizedLevels[slot.slotKey] || "none"] || -1;
+      const tgtIdx = levelKeyToIndex[targetLevels[slot.slotKey] || "none"] || -1;
+      if (curIdx < tgtIdx && curIdx < CHIEF_CHARM_DATA.levelOrder.length - 1) {
+        const nextLevelKey = CHIEF_CHARM_DATA.levelOrder[curIdx + 1];
+        const cost = CHIEF_CHARM_DATA.levels[nextLevelKey];
+        if (cost &&
+          resources.charmDesigns >= (cost.charmDesigns || 0) &&
+          resources.charmGuides >= (cost.charmGuides || 0) &&
+          resources.jewelSecrets >= (cost.jewelSecrets || 0)
+        ) {
+          if (curIdx + 1 > bestNextIdx) {
+            bestSlot = slot;
+            bestNextIdx = curIdx + 1;
+            bestCost = cost;
+          }
+        }
+      }
+    });
+    if (bestSlot) {
+      const nextLevelKey = CHIEF_CHARM_DATA.levelOrder[bestNextIdx];
+      optimizedLevels[bestSlot.slotKey] = nextLevelKey;
+      resources.charmDesigns -= bestCost.charmDesigns || 0;
+      resources.charmGuides -= bestCost.charmGuides || 0;
+      resources.jewelSecrets -= bestCost.jewelSecrets || 0;
+      plan.push({ slot: bestSlot.slotKey, to: nextLevelKey, label: bestCost.label });
+      upgradesMade = true;
+    }
+  }
+  return { optimizedLevels, resources, plan };
+}
+
 function onCharmCalculateClick() {
   clampAllCharmTargets();
 
@@ -2861,7 +2958,7 @@ function onCharmCalculateClick() {
   const costSummaryLabel = translateText("results.charmCostSummary", {}, "COST SUMMARY");
   const afterUpgradeLabel = translateText("results.charmAfterUpgradeBalance", {}, "AFTER UPGRADE (MATERIAL BALANCE)");
 
-  const html = `
+  let html = `
     <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
       <strong>${costSummaryLabel}</strong><br>
       ${charmDesignsLabel}: ${formatNumber(costs.charmDesigns)} |
@@ -2876,7 +2973,29 @@ function onCharmCalculateClick() {
     </div>
   `;
 
-  renderChiefCharmResult(html);
+  // --- Optimized Plan for Chief Charm ---
+  const optimized = calculateCharmOptimizedPlan(currentLevels, targetLevels, materials);
+  let optimizedHtml = "<div class='card-panel' style='margin-top:15px;'><strong>OPTIMIZED PLAN</strong><br>";
+  if (optimized && optimized.plan.length > 0) {
+    optimizedHtml += "<table class='optimized-plan-table'><thead><tr><th>Charm Slot</th><th>Final Level</th></tr></thead><tbody>";
+    CHARM_SLOT_DEFINITIONS.forEach(slot => {
+      const finalLevel = optimized.optimizedLevels[slot.slotKey] || currentLevels[slot.slotKey] || "none";
+      const levelLabel = CHIEF_CHARM_DATA.levels[finalLevel]?.label || finalLevel;
+      const slotLabel = translateText(`labels.${slot.slotKey}`, {}, slot.slotKey);
+      optimizedHtml += `<tr><td>${escapeHtml(slotLabel)}</td><td>${escapeHtml(levelLabel)}</td></tr>`;
+    });
+    optimizedHtml += "</tbody></table>";
+    optimizedHtml += `<div style='margin-top:10px;'><strong>Materials Remaining:</strong><br>
+      ${charmDesignsLabel}: ${formatNumber(optimized.resources.charmDesigns)} |
+      ${charmGuidesLabel}: ${formatNumber(optimized.resources.charmGuides)} |
+      ${jewelSecretsLabel}: ${formatNumber(optimized.resources.jewelSecrets)}
+    </div>`;
+  } else {
+    optimizedHtml += "<em>No upgrades possible with current resources.</em>";
+  }
+  optimizedHtml += "</div>";
+
+  renderChiefCharmResult(html + optimizedHtml);
   saveChiefCharmState();
 }
 

@@ -102,9 +102,9 @@ const TRANSLATIONS = {
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
       charm: "Charm",
-      charmDesigns: "Diseños de Talismán",
-      charmGuides: "Guías de Talismán",
-      jewelSecrets: "Secretos de Joya"
+      charmDesigns: "Charm Designs",
+      charmGuides: "Charm Guides",
+      jewelSecrets: "Jewel Secrets"
     },
     buttons: {
       addBuilding: "+ Add Building",
@@ -196,13 +196,12 @@ const TRANSLATIONS = {
       xpComponents: "XP Components",
       allianceTokens: "Alliance Tokens",
       charmCostSummary: "COST SUMMARY",
-      charmCostSummary: "RESUMEN DE COSTOS",
-      charmAfterUpgradeBalance: "DESPUÉS DE MEJORAR (SALDO DE MATERIALES)",
-      charmSmartUpgradeComplete: "Mejora inteligente completada",
-      charmNoUpgradesPossible: "No es posible mejorar con los materiales actuales.",
-      charmMaterialsRemaining: "Materiales restantes",
-      charmsUpgraded: "Talismanes mejorados",
-      charmBatchUpgrade: "Mejorados {count} talismanes a {level}"
+      charmAfterUpgradeBalance: "AFTER UPGRADE (MATERIAL BALANCE)",
+      charmSmartUpgradeComplete: "Smart Upgrade Complete",
+      charmNoUpgradesPossible: "No upgrades possible with current materials.",
+      charmMaterialsRemaining: "Materials Remaining",
+      charmsUpgraded: "Charms upgraded",
+      charmBatchUpgrade: "Upgraded {count} charms to {level}"
     },
     resource: {
       meat: "Meat",
@@ -261,15 +260,14 @@ const TRANSLATIONS = {
     sections: {
       targetBuilding: "Edificio objetivo",
       yourResources: "Tus recursos",
-      constructionBuffs: "Bonificaciones de construccion (%)",
+      constructionBuffs: "Bonificaciones de construcción (%)",
       requiredBuildings: "Edificios requeridos",
       optionalAdditionalBuildings: "Edificios adicionales opcionales",
       bearHuntMail: "Correo de Caza del Oso",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "Chef-Talisman-Stufen",
-      chiefCharmMaterials: "Deine Materialien"
+      chiefGearLevels: "Niveles de Equipo del Jefe",
+      chiefGearMaterials: "Tus materiales",
+      chiefCharmLevels: "Niveles de Talismán del Jefe",
+      chiefCharmMaterials: "Tus materiales"
     },
     labels: {
       building: "Edificio",
@@ -311,10 +309,10 @@ const TRANSLATIONS = {
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
-      charm: "Charm",
-      charmDesigns: "Talisman-Designs",
-      charmGuides: "Talisman-Anleitungen",
-      jewelSecrets: "Juwelengeheimnisse"
+      charm: "Talismán",
+      charmDesigns: "Diseños de Talismán",
+      charmGuides: "Guías de Talismán",
+      jewelSecrets: "Secretos de Joya"
     },
     buttons: {
       addBuilding: "+ Agregar edificio",
@@ -473,11 +471,10 @@ const TRANSLATIONS = {
       requiredBuildings: "Erforderliche Gebäude",
       optionalAdditionalBuildings: "Optionale zusätzliche Gebäude",
       bearHuntMail: "Bärenjagd-Mail",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "Niveaux de charme du chef",
-      chiefCharmMaterials: "Vos matériaux"
+      chiefGearLevels: "Chef-Ausrüstungsstufen",
+      chiefGearMaterials: "Deine Materialien",
+      chiefCharmLevels: "Chef-Talisman-Stufen",
+      chiefCharmMaterials: "Deine Materialien"
     },
     labels: {
       building: "Gebäude",
@@ -519,10 +516,10 @@ const TRANSLATIONS = {
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
-      charm: "Charm",
-      charmDesigns: "Plans de charme",
-      charmGuides: "Guides de charme",
-      jewelSecrets: "Secrets de bijoux"
+      charm: "Talisman",
+      charmDesigns: "Talisman-Designs",
+      charmGuides: "Talisman-Anleitungen",
+      jewelSecrets: "Juwelengeheimnisse"
     },
     buttons: {
       addBuilding: "+ Gebäude hinzufügen",
@@ -683,11 +680,10 @@ const TRANSLATIONS = {
       requiredBuildings: "Bâtiments requis",
       optionalAdditionalBuildings: "Bâtiments supplémentaires optionnels",
       bearHuntMail: "Courrier de chasse à l'ours",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "Níveis de Talismã do Chefe",
-      chiefCharmMaterials: "Seus materiais"
+      chiefGearLevels: "Niveaux d'équipement du chef",
+      chiefGearMaterials: "Vos matériaux",
+      chiefCharmLevels: "Niveaux de charme du chef",
+      chiefCharmMaterials: "Vos matériaux"
     },
     labels: {
       building: "Bâtiment",
@@ -729,10 +725,10 @@ const TRANSLATIONS = {
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
-      charm: "Charm",
-      charmDesigns: "Projetos de Talismã",
-      charmGuides: "Guias de Talismã",
-      jewelSecrets: "Segredos das Joias"
+      charm: "Charme",
+      charmDesigns: "Plans de charme",
+      charmGuides: "Guides de charme",
+      jewelSecrets: "Secrets de bijoux"
     },
     buttons: {
       addBuilding: "+ Ajouter un bâtiment",
@@ -893,11 +889,10 @@ const TRANSLATIONS = {
       requiredBuildings: "Edifícios necessários",
       optionalAdditionalBuildings: "Edifícios adicionais opcionais",
       bearHuntMail: "Correio de Caça ao Urso",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "统帅护符等级",
-      chiefCharmMaterials: "你的材料"
+      chiefGearLevels: "Níveis de Equipamento do Chefe",
+      chiefGearMaterials: "Seus materiais",
+      chiefCharmLevels: "Níveis de Talismã do Chefe",
+      chiefCharmMaterials: "Seus materiais"
     },
     labels: {
       building: "Edifício",
@@ -939,10 +934,10 @@ const TRANSLATIONS = {
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
-      charm: "Charm",
-      charmDesigns: "护符设计图",
-      charmGuides: "护符指南",
-      jewelSecrets: "珠宝秘籍"
+      charm: "Talismã",
+      charmDesigns: "Desenhos de Talismã",
+      charmGuides: "Guias de Talismã",
+      jewelSecrets: "Segredos de Joia"
     },
     buttons: {
       addBuilding: "+ Adicionar edifício",
@@ -1103,11 +1098,10 @@ const TRANSLATIONS = {
       requiredBuildings: "必需建筑",
       optionalAdditionalBuildings: "可选附加建筑",
       bearHuntMail: "熊狩邮件",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "Poziomy talizmanu dowódcy",
-      chiefCharmMaterials: "Twoje materiały"
+      chiefGearLevels: "统帅装备等级",
+      chiefGearMaterials: "你的材料",
+      chiefCharmLevels: "统帅护符等级",
+      chiefCharmMaterials: "你的材料"
     },
     labels: {
       building: "建筑",
@@ -1149,10 +1143,10 @@ const TRANSLATIONS = {
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
-      charm: "Charm",
-      charmDesigns: "Projekty talizmanu",
-      charmGuides: "Przewodniki po talizmanach",
-      jewelSecrets: "Sekrety klejnotów"
+      charm: "护符",
+      charmDesigns: "护符设计图",
+      charmGuides: "护符指南",
+      jewelSecrets: "珠宝秘籍"
     },
     buttons: {
       addBuilding: "+ 添加建筑",
@@ -1313,11 +1307,10 @@ const TRANSLATIONS = {
       requiredBuildings: "Wymagane budynki",
       optionalAdditionalBuildings: "Opcjonalne dodatkowe budynki",
       bearHuntMail: "Poczta polowania na niedźwiedzia",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "대장 부적 레벨",
-      chiefCharmMaterials: "보유 재료"
+      chiefGearLevels: "Poziomy wyposażenia dowódcy",
+      chiefGearMaterials: "Twoje materiały",
+      chiefCharmLevels: "Poziomy talizmanu dowódcy",
+      chiefCharmMaterials: "Twoje materiały"
     },
     labels: {
       building: "Budynek",
@@ -1359,10 +1352,10 @@ const TRANSLATIONS = {
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
-      charm: "Charm",
-      charmDesigns: "부적 도안",
-      charmGuides: "부적 가이드",
-      jewelSecrets: "보석 비밀"
+      charm: "Talizman",
+      charmDesigns: "Projekty talizmanu",
+      charmGuides: "Przewodniki po talizmanach",
+      jewelSecrets: "Sekrety klejnotów"
     },
     buttons: {
       addBuilding: "+ Dodaj budynek",
@@ -1523,11 +1516,10 @@ const TRANSLATIONS = {
       requiredBuildings: "필수 건물",
       optionalAdditionalBuildings: "선택 추가 건물",
       bearHuntMail: "곰 사냥 메일",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "チーフチャームレベル",
-      chiefCharmMaterials: "所持材料"
+      chiefGearLevels: "대장 장비 레벨",
+      chiefGearMaterials: "보유 재료",
+      chiefCharmLevels: "대장 부적 레벨",
+      chiefCharmMaterials: "보유 재료"
     },
     labels: {
       building: "건물",
@@ -1569,10 +1561,10 @@ const TRANSLATIONS = {
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
-      charm: "Charm",
-      charmDesigns: "チャーム設計図",
-      charmGuides: "チャームガイド",
-      jewelSecrets: "ジュエルの秘密"
+      charm: "부적",
+      charmDesigns: "부적 도안",
+      charmGuides: "부적 가이드",
+      jewelSecrets: "보석 비밀"
     },
     buttons: {
       addBuilding: "+ 건물 추가",
@@ -1732,11 +1724,10 @@ const TRANSLATIONS = {
       requiredBuildings: "必要建物",
       optionalAdditionalBuildings: "任意の追加建物",
       bearHuntMail: "熊狩りメール",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "Mga Antas ng Pangunahing Anting-anting",
-      chiefCharmMaterials: "Iyong mga materyales"
+      chiefGearLevels: "チーフ装備レベル",
+      chiefGearMaterials: "所持材料",
+      chiefCharmLevels: "チーフチャームレベル",
+      chiefCharmMaterials: "所持材料"
     },
     labels: {
       building: "建物",
@@ -1778,10 +1769,10 @@ const TRANSLATIONS = {
       polishingSolution: "Polishing Solution",
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
-      charm: "Charm",
-      charmDesigns: "Mga Disenyo ng Anting-anting",
-      charmGuides: "Mga Gabay sa Anting-anting",
-      jewelSecrets: "Mga Lihim ng Hiyas"
+      charm: "チャーム",
+      charmDesigns: "チャーム設計図",
+      charmGuides: "チャームガイド",
+      jewelSecrets: "ジュエルの秘密"
     },
     buttons: {
       addBuilding: "+ 建物を追加",
@@ -1942,10 +1933,10 @@ const TRANSLATIONS = {
       requiredBuildings: "Kailangang Gusali",
       optionalAdditionalBuildings: "Opsyonal na Karagdagang Gusali",
       bearHuntMail: "Bear Hunt Mail",
-      chiefGearLevels: "Chief Gear Levels",
-      chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmMaterials: "Your Materials"
+      chiefGearLevels: "Mga Antas ng Chief Gear",
+      chiefGearMaterials: "Iyong mga materyales",
+      chiefCharmLevels: "Mga Antas ng Chief Charm",
+      chiefCharmMaterials: "Iyong mga materyales"
     },
     labels: {
       building: "Gusali",
@@ -1988,9 +1979,9 @@ const TRANSLATIONS = {
       designPlans: "Design Plans",
       lunarAmber: "Lunar Amber",
       charm: "Charm",
-      charmDesigns: "Charm Designs",
-      charmGuides: "Charm Guides",
-      jewelSecrets: "Jewel Secrets"
+      charmDesigns: "Mga Disenyo ng Charm",
+      charmGuides: "Mga Gabay sa Charm",
+      jewelSecrets: "Mga Lihim ng Hiyas"
     },
     buttons: {
       addBuilding: "+ Magdagdag ng Gusali",
