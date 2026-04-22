@@ -1,3 +1,9 @@
+// Ensure info icons always display the "i" character, even if inner text is missing
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.info-icon').forEach(function(el) {
+    if (!el.textContent.trim()) el.textContent = 'i';
+  });
+});
 // ============================================================
 // WOS Calculator — Main Script
 // Handles building cost calculation, account management,
