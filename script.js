@@ -2937,6 +2937,8 @@ function calculateCharmOptimizedPlan(currentLevels, targetLevels, materials) {
       resources.jewelSecrets -= bestCost.jewelSecrets || 0;
       plan.push({ slot: bestSlot.slotKey, to: nextLevelKey, label: bestCost.label });
       upgradesMade = true;
+    } else {
+      upgradesMade = false;
     }
   }
   return { optimizedLevels, resources, plan };
