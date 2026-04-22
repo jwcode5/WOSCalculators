@@ -236,6 +236,83 @@
     <!-- script.js replaces this placeholder with generated result cards -->
     <section id="result" class="result" data-i18n="results.loading">Loading building data...</section>
     </div>
+
+  <!-- Chief Gear Calculator Panel -->
+  <div id="chiefGearPanel" style="display: none;">
+
+    <!-- Gear current & target levels -->
+    <fieldset>
+      <legend data-i18n="sections.chiefGearLevels">Chief Gear Levels</legend>
+      <div class="gear-table">
+        <div class="gear-table-header">
+          <span></span>
+          <span data-i18n="labels.currentLevel">Current Level</span>
+          <span data-i18n="labels.targetLevel">Target Level</span>
+        </div>
+        <div class="gear-table-row">
+          <span class="gear-piece-label" data-i18n="labels.hat">Hat (Lancer)</span>
+          <select id="hatCurrent"></select>
+          <select id="hatTarget"></select>
+        </div>
+        <div class="gear-table-row">
+          <span class="gear-piece-label" data-i18n="labels.watch">Watch (Lancer)</span>
+          <select id="watchCurrent"></select>
+          <select id="watchTarget"></select>
+        </div>
+        <div class="gear-table-row">
+          <span class="gear-piece-label" data-i18n="labels.coat">Coat (Infantry)</span>
+          <select id="coatCurrent"></select>
+          <select id="coatTarget"></select>
+        </div>
+        <div class="gear-table-row">
+          <span class="gear-piece-label" data-i18n="labels.pants">Pants (Infantry)</span>
+          <select id="pantsCurrent"></select>
+          <select id="pantsTarget"></select>
+        </div>
+        <div class="gear-table-row">
+          <span class="gear-piece-label" data-i18n="labels.ring">Ring (Marksman)</span>
+          <select id="ringCurrent"></select>
+          <select id="ringTarget"></select>
+        </div>
+        <div class="gear-table-row">
+          <span class="gear-piece-label" data-i18n="labels.shortStaff">Short Staff (Marksman)</span>
+          <select id="shortStaffCurrent"></select>
+          <select id="shortStaffTarget"></select>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Available materials -->
+    <fieldset>
+      <legend data-i18n="sections.chiefGearMaterials">Your Materials</legend>
+      <div class="gear-materials-grid">
+        <div class="gear-material-field">
+          <label for="gearHardenedAlloy" data-i18n="labels.hardenedAlloy">Hardened Alloy</label>
+          <input id="gearHardenedAlloy" type="number" min="0" value="0" />
+        </div>
+        <div class="gear-material-field">
+          <label for="gearPolishingSolution" data-i18n="labels.polishingSolution">Polishing Solution</label>
+          <input id="gearPolishingSolution" type="number" min="0" value="0" />
+        </div>
+        <div class="gear-material-field">
+          <label for="gearDesignPlans" data-i18n="labels.designPlans">Design Plans</label>
+          <input id="gearDesignPlans" type="number" min="0" value="0" />
+        </div>
+        <div class="gear-material-field">
+          <label for="gearLunarAmber" data-i18n="labels.lunarAmber">Lunar Amber</label>
+          <input id="gearLunarAmber" type="number" min="0" value="0" />
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="gear-button-row">
+      <button id="gearCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+      <button id="gearSmartUpgradeBtn" type="button" data-i18n="buttons.smartUpgrade">Smart Upgrade</button>
+    </div>
+
+    <section id="gearResult" class="result"></section>
+  </div>
+
   </main>
 </body>
 </html>

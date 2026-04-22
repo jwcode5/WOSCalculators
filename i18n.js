@@ -55,7 +55,9 @@ const TRANSLATIONS = {
       constructionBuffs: "Construction Buffs (%)",
       requiredBuildings: "Required Buildings",
       optionalAdditionalBuildings: "Optional Additional Buildings",
-      bearHuntMail: "Bear Hunt Mail"
+      bearHuntMail: "Bear Hunt Mail",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "Building",
@@ -86,7 +88,17 @@ const TRANSLATIONS = {
       damageTier: "Damage Tier",
       mail: "Mail",
       setAllCurrentLevels: "Set all current levels",
-      requiredLevel: "Required Level"
+      requiredLevel: "Required Level",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ Add Building",
@@ -95,7 +107,9 @@ const TRANSLATIONS = {
       remove: "Remove",
       setAll: "Set All",
       refresh: "Refresh",
-      reset: "Reset"
+      reset: "Reset",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "None (0%)"
@@ -236,7 +250,9 @@ const TRANSLATIONS = {
       constructionBuffs: "Bonificaciones de construccion (%)",
       requiredBuildings: "Edificios requeridos",
       optionalAdditionalBuildings: "Edificios adicionales opcionales",
-      bearHuntMail: "Correo de Caza del Oso"
+      bearHuntMail: "Correo de Caza del Oso",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "Edificio",
@@ -267,7 +283,17 @@ const TRANSLATIONS = {
       damageTier: "Rango de dano",
       mail: "Correo",
       setAllCurrentLevels: "Asignar todos los niveles actuales",
-      requiredLevel: "Nivel requerido"
+      requiredLevel: "Nivel requerido",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ Agregar edificio",
@@ -417,7 +443,9 @@ const TRANSLATIONS = {
       constructionBuffs: "Bau-Buffs (%)",
       requiredBuildings: "Erforderliche Gebäude",
       optionalAdditionalBuildings: "Optionale zusätzliche Gebäude",
-      bearHuntMail: "Bärenjagd-Mail"
+      bearHuntMail: "Bärenjagd-Mail",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "Gebäude",
@@ -448,7 +476,17 @@ const TRANSLATIONS = {
       damageTier: "Schadensstufe",
       mail: "Mail",
       setAllCurrentLevels: "Alle aktuellen Level setzen",
-      requiredLevel: "Erforderliches Level"
+      requiredLevel: "Erforderliches Level",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ Gebäude hinzufügen",
@@ -457,7 +495,9 @@ const TRANSLATIONS = {
       remove: "Entfernen",
       setAll: "Alle setzen",
       refresh: "Aktualisieren",
-      reset: "Zurücksetzen"
+      reset: "Zurücksetzen",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "Keine (0%)"
@@ -598,7 +638,9 @@ const TRANSLATIONS = {
       constructionBuffs: "Bonus de construction (%)",
       requiredBuildings: "Bâtiments requis",
       optionalAdditionalBuildings: "Bâtiments supplémentaires optionnels",
-      bearHuntMail: "Courrier de chasse à l'ours"
+      bearHuntMail: "Courrier de chasse à l'ours",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "Bâtiment",
@@ -629,7 +671,17 @@ const TRANSLATIONS = {
       damageTier: "Palier de dégâts",
       mail: "Courrier",
       setAllCurrentLevels: "Définir tous les niveaux actuels",
-      requiredLevel: "Niveau requis"
+      requiredLevel: "Niveau requis",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ Ajouter un bâtiment",
@@ -638,7 +690,9 @@ const TRANSLATIONS = {
       remove: "Retirer",
       setAll: "Tout appliquer",
       refresh: "Actualiser",
-      reset: "Réinitialiser"
+      reset: "Réinitialiser",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "Aucun (0%)"
@@ -779,7 +833,9 @@ const TRANSLATIONS = {
       constructionBuffs: "Bônus de construção (%)",
       requiredBuildings: "Edifícios necessários",
       optionalAdditionalBuildings: "Edifícios adicionais opcionais",
-      bearHuntMail: "Correio de Caça ao Urso"
+      bearHuntMail: "Correio de Caça ao Urso",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "Edifício",
@@ -810,7 +866,17 @@ const TRANSLATIONS = {
       damageTier: "Faixa de dano",
       mail: "Correio",
       setAllCurrentLevels: "Definir todos os níveis atuais",
-      requiredLevel: "Nível necessário"
+      requiredLevel: "Nível necessário",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ Adicionar edifício",
@@ -819,7 +885,9 @@ const TRANSLATIONS = {
       remove: "Remover",
       setAll: "Aplicar a todos",
       refresh: "Atualizar",
-      reset: "Redefinir"
+      reset: "Redefinir",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "Nenhum (0%)"
@@ -960,7 +1028,9 @@ const TRANSLATIONS = {
       constructionBuffs: "建造加成 (%)",
       requiredBuildings: "必需建筑",
       optionalAdditionalBuildings: "可选附加建筑",
-      bearHuntMail: "熊狩邮件"
+      bearHuntMail: "熊狩邮件",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "建筑",
@@ -991,7 +1061,17 @@ const TRANSLATIONS = {
       damageTier: "伤害档位",
       mail: "邮件",
       setAllCurrentLevels: "设置所有当前等级",
-      requiredLevel: "需求等级"
+      requiredLevel: "需求等级",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ 添加建筑",
@@ -1000,7 +1080,9 @@ const TRANSLATIONS = {
       remove: "移除",
       setAll: "全部设置",
       refresh: "刷新",
-      reset: "重置"
+      reset: "重置",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "无 (0%)"
@@ -1141,7 +1223,9 @@ const TRANSLATIONS = {
       constructionBuffs: "Premie budowy (%)",
       requiredBuildings: "Wymagane budynki",
       optionalAdditionalBuildings: "Opcjonalne dodatkowe budynki",
-      bearHuntMail: "Poczta polowania na niedźwiedzia"
+      bearHuntMail: "Poczta polowania na niedźwiedzia",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "Budynek",
@@ -1172,7 +1256,17 @@ const TRANSLATIONS = {
       damageTier: "Poziom obrażeń",
       mail: "Poczta",
       setAllCurrentLevels: "Ustaw wszystkie aktualne poziomy",
-      requiredLevel: "Wymagany poziom"
+      requiredLevel: "Wymagany poziom",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ Dodaj budynek",
@@ -1181,7 +1275,9 @@ const TRANSLATIONS = {
       remove: "Usuń",
       setAll: "Ustaw wszystko",
       refresh: "Odśwież",
-      reset: "Resetuj"
+      reset: "Resetuj",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "Brak (0%)"
@@ -1322,7 +1418,9 @@ const TRANSLATIONS = {
       constructionBuffs: "건설 버프 (%)",
       requiredBuildings: "필수 건물",
       optionalAdditionalBuildings: "선택 추가 건물",
-      bearHuntMail: "곰 사냥 메일"
+      bearHuntMail: "곰 사냥 메일",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "건물",
@@ -1353,7 +1451,17 @@ const TRANSLATIONS = {
       damageTier: "피해 구간",
       mail: "메일",
       setAllCurrentLevels: "모든 현재 레벨 설정",
-      requiredLevel: "필요 레벨"
+      requiredLevel: "필요 레벨",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ 건물 추가",
@@ -1362,7 +1470,9 @@ const TRANSLATIONS = {
       remove: "제거",
       setAll: "모두 적용",
       refresh: "새로 고침",
-      reset: "초기화"
+      reset: "초기화",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "없음 (0%)"
@@ -1502,7 +1612,9 @@ const TRANSLATIONS = {
       constructionBuffs: "建設バフ (%)",
       requiredBuildings: "必要建物",
       optionalAdditionalBuildings: "任意の追加建物",
-      bearHuntMail: "熊狩りメール"
+      bearHuntMail: "熊狩りメール",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "建物",
@@ -1533,7 +1645,17 @@ const TRANSLATIONS = {
       damageTier: "ダメージ階層",
       mail: "メール",
       setAllCurrentLevels: "すべての現在レベルを設定",
-      requiredLevel: "必要レベル"
+      requiredLevel: "必要レベル",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ 建物を追加",
@@ -1542,7 +1664,9 @@ const TRANSLATIONS = {
       remove: "削除",
       setAll: "すべて設定",
       refresh: "更新",
-      reset: "リセット"
+      reset: "リセット",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "なし (0%)"
@@ -1683,7 +1807,9 @@ const TRANSLATIONS = {
       constructionBuffs: "Construction Buffs (%)",
       requiredBuildings: "Kailangang Gusali",
       optionalAdditionalBuildings: "Opsyonal na Karagdagang Gusali",
-      bearHuntMail: "Bear Hunt Mail"
+      bearHuntMail: "Bear Hunt Mail",
+      chiefGearLevels: "Chief Gear Levels",
+      chiefGearMaterials: "Your Materials"
     },
     labels: {
       building: "Gusali",
@@ -1714,7 +1840,17 @@ const TRANSLATIONS = {
       damageTier: "Damage Tier",
       mail: "Mail",
       setAllCurrentLevels: "I-set ang lahat ng kasalukuyang antas",
-      requiredLevel: "Kailangang Antas"
+      requiredLevel: "Kailangang Antas",
+      hat: "Hat (Lancer)",
+      watch: "Watch (Lancer)",
+      coat: "Coat (Infantry)",
+      pants: "Pants (Infantry)",
+      ring: "Ring (Marksman)",
+      shortStaff: "Short Staff (Marksman)",
+      hardenedAlloy: "Hardened Alloy",
+      polishingSolution: "Polishing Solution",
+      designPlans: "Design Plans",
+      lunarAmber: "Lunar Amber"
     },
     buttons: {
       addBuilding: "+ Magdagdag ng Gusali",
@@ -1723,7 +1859,9 @@ const TRANSLATIONS = {
       remove: "Alisin",
       setAll: "I-set ang Lahat",
       refresh: "I-refresh",
-      reset: "I-reset"
+      reset: "I-reset",
+      calculateCost: "Calculate Cost",
+      smartUpgrade: "Smart Upgrade"
     },
     options: {
       none0: "Wala (0%)"

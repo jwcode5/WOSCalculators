@@ -14,6 +14,7 @@
 
 let BUILDING_COSTS = null;      // Loaded from data/buildings.json
 let PREREQUISITES = null;       // Loaded from data/prerequisites.json
+let CHIEF_GEAR_DATA = null;     // Loaded from data/chiefGear.json
 let optionalBuildings = [];     // Extra buildings the user added manually
 let bearHuntMails = [];         // Bear Hunt Mail reward rows
 let accounts = [];              // All saved accounts (Option B blob model)
@@ -45,6 +46,10 @@ function escapeHtml(value) {
 
 function escapeAttr(value) {
   return escapeHtml(value);
+}
+
+function formatNumber(num) {
+  return (num || 0).toLocaleString();
 }
 
 function prettifyBuildingName(buildingName) {
@@ -113,6 +118,30 @@ const CUSTOM_CHEST_VALUES = {
 // ============================================================
 
 const BASIC_RESOURCES = ["meat", "wood", "coal", "iron"];
+
+// ============================================================
+// CONSTANTS — CHIEF GEAR CONFIGURATION
+// Defines the 6 gear slots and their corresponding HTML input IDs,
+// plus the material field IDs used in the Chief Gear calculator.
+// ============================================================
+
+const GEAR_SLOTS = ["hat", "watch", "coat", "pants", "ring", "shortStaff"];
+
+const GEAR_SLOT_FIELDS = {
+  hat: { current: "hatCurrent", target: "hatTarget" },
+  watch: { current: "watchCurrent", target: "watchTarget" },
+  coat: { current: "coatCurrent", target: "coatTarget" },
+  pants: { current: "pantsCurrent", target: "pantsTarget" },
+  ring: { current: "ringCurrent", target: "ringTarget" },
+  shortStaff: { current: "shortStaffCurrent", target: "shortStaffTarget" }
+};
+
+const GEAR_MATERIAL_FIELDS = [
+  "gearHardenedAlloy",
+  "gearPolishingSolution",
+  "gearDesignPlans",
+  "gearLunarAmber"
+];
 
 // ============================================================
 // CONSTANTS — BEAR HUNT TIERS
@@ -529,6 +558,8 @@ function setActiveCalculator(calculatorKey) {
 
   if (activeCalculator === CALCULATOR_KEYS.UPGRADE && safeKey !== CALCULATOR_KEYS.UPGRADE) {
     captureCurrentStateToAccount();
+  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR && safeKey !== CALCULATOR_KEYS.CHIEF_GEAR) {
+    saveChiefGearState();
   }
 
   activeCalculator = safeKey;
@@ -541,14 +572,23 @@ function setActiveCalculator(calculatorKey) {
   });
 
   const upgradePanel = document.getElementById("upgradeCalculatorPanel");
+  const chiefGearPanel = document.getElementById("chiefGearPanel");
   const comingSoonPanel = document.getElementById("comingSoonPanel");
 
   if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
     if (upgradePanel) upgradePanel.style.display = "block";
+    if (chiefGearPanel) chiefGearPanel.style.display = "none";
     if (comingSoonPanel) comingSoonPanel.style.display = "none";
     loadAllStateFromAccount();
+  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR) {
+    if (upgradePanel) upgradePanel.style.display = "none";
+    if (chiefGearPanel) chiefGearPanel.style.display = "block";
+    if (comingSoonPanel) comingSoonPanel.style.display = "none";
+    initChiefGearPanel();
+    loadChiefGearState();
   } else {
     if (upgradePanel) upgradePanel.style.display = "none";
+    if (chiefGearPanel) chiefGearPanel.style.display = "none";
     if (comingSoonPanel) comingSoonPanel.style.display = "block";
     renderComingSoonPanel(activeCalculator);
   }
@@ -1808,6 +1848,516 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, 
 }
 
 // ============================================================
+// CHIEF GEAR CALCULATOR HELPERS
+// Functions for managing Chief Gear state, calculations,
+// and the Smart Upgrade feature.
+// ============================================================
+
+function buildGearLevelDropdown(selectEl) {
+  if (!CHIEF_GEAR_DATA || !CHIEF_GEAR_DATA.levelOrder) return;
+  selectEl.innerHTML = "";
+  CHIEF_GEAR_DATA.levelOrder.forEach(levelKey => {
+    const opt = document.createElement("option");
+    opt.value = levelKey;
+    const levelInfo = CHIEF_GEAR_DATA.levels[levelKey];
+    opt.textContent = levelInfo && levelInfo.label ? levelInfo.label : levelKey;
+    selectEl.appendChild(opt);
+  });
+}
+
+function clampChiefGearTargetToCurrent(slot) {
+  if (!CHIEF_GEAR_DATA || !CHIEF_GEAR_DATA.levelOrder || !GEAR_SLOT_FIELDS[slot]) return;
+
+  const currentEl = document.getElementById(GEAR_SLOT_FIELDS[slot].current);
+  const targetEl = document.getElementById(GEAR_SLOT_FIELDS[slot].target);
+  if (!currentEl || !targetEl) return;
+
+  const currentIdx = CHIEF_GEAR_DATA.levelOrder.indexOf(currentEl.value || "none");
+  const targetIdx = CHIEF_GEAR_DATA.levelOrder.indexOf(targetEl.value || "none");
+
+  if (currentIdx >= 0 && targetIdx >= 0 && targetIdx < currentIdx) {
+    targetEl.value = currentEl.value;
+  }
+}
+
+function clampAllChiefGearTargets() {
+  GEAR_SLOTS.forEach(slot => {
+    clampChiefGearTargetToCurrent(slot);
+  });
+}
+
+function initChiefGearPanel() {
+  // Populate all gear level dropdowns
+  GEAR_SLOTS.forEach(slot => {
+    const currentId = GEAR_SLOT_FIELDS[slot].current;
+    const targetId = GEAR_SLOT_FIELDS[slot].target;
+    const currentEl = document.getElementById(currentId);
+    const targetEl = document.getElementById(targetId);
+    if (currentEl) buildGearLevelDropdown(currentEl);
+    if (targetEl) buildGearLevelDropdown(targetEl);
+
+    if (currentEl) {
+      currentEl.removeEventListener("change", handleChiefGearCurrentChange);
+      currentEl.addEventListener("change", handleChiefGearCurrentChange);
+    }
+    if (targetEl) {
+      targetEl.removeEventListener("change", handleChiefGearTargetChange);
+      targetEl.addEventListener("change", handleChiefGearTargetChange);
+    }
+  });
+
+  GEAR_MATERIAL_FIELDS.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+
+    el.removeEventListener("input", saveChiefGearState);
+    el.removeEventListener("change", saveChiefGearState);
+    el.addEventListener("input", saveChiefGearState);
+    el.addEventListener("change", saveChiefGearState);
+  });
+
+  // Wire up button listeners
+  const calculateBtn = document.getElementById("gearCalculateBtn");
+  const smartUpgradeBtn = document.getElementById("gearSmartUpgradeBtn");
+
+  if (calculateBtn) {
+    calculateBtn.removeEventListener("click", onGearCalculateClick);
+    calculateBtn.addEventListener("click", onGearCalculateClick);
+  }
+  if (smartUpgradeBtn) {
+    smartUpgradeBtn.removeEventListener("click", onGearSmartUpgradeClick);
+    smartUpgradeBtn.addEventListener("click", onGearSmartUpgradeClick);
+  }
+}
+
+function handleChiefGearCurrentChange(event) {
+  const slot = GEAR_SLOTS.find(candidate => GEAR_SLOT_FIELDS[candidate].current === event.target.id);
+  if (!slot) return;
+
+  clampChiefGearTargetToCurrent(slot);
+  saveChiefGearState();
+}
+
+function handleChiefGearTargetChange(event) {
+  const slot = GEAR_SLOTS.find(candidate => GEAR_SLOT_FIELDS[candidate].target === event.target.id);
+  if (!slot) return;
+
+  clampChiefGearTargetToCurrent(slot);
+  saveChiefGearState();
+}
+
+function saveChiefGearState() {
+  if (!activeAccountId) return;
+  const account = accounts.find(a => a.id === activeAccountId);
+  if (!account) return;
+  if (!account.calculators) account.calculators = {};
+  if (!account.calculators.chiefGear) account.calculators.chiefGear = {};
+
+  const state = account.calculators.chiefGear;
+  
+  // Save gear levels
+  state.levels = {};
+  GEAR_SLOTS.forEach(slot => {
+    const currentEl = document.getElementById(GEAR_SLOT_FIELDS[slot].current);
+    const targetEl = document.getElementById(GEAR_SLOT_FIELDS[slot].target);
+    state.levels[slot] = {
+      current: currentEl ? currentEl.value : "none",
+      target: targetEl ? targetEl.value : "none"
+    };
+  });
+
+  // Save materials
+  state.materials = {};
+  GEAR_MATERIAL_FIELDS.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    state.materials[fieldId] = el ? (parseResourceAmount(el.value) || 0) : 0;
+  });
+
+  localStorage.setItem("wosCalc_accounts", JSON.stringify(accounts));
+}
+
+function loadChiefGearState() {
+  if (!activeAccountId) return;
+  const account = accounts.find(a => a.id === activeAccountId);
+  if (!account || !account.calculators || !account.calculators.chiefGear) {
+    // Initialize defaults if not yet set
+    initializeChiefGearDefaults();
+    return;
+  }
+
+  const state = account.calculators.chiefGear;
+
+  // Load gear levels
+  if (state.levels) {
+    GEAR_SLOTS.forEach(slot => {
+      const currentEl = document.getElementById(GEAR_SLOT_FIELDS[slot].current);
+      const targetEl = document.getElementById(GEAR_SLOT_FIELDS[slot].target);
+      if (currentEl) currentEl.value = state.levels[slot]?.current || "none";
+      if (targetEl) targetEl.value = state.levels[slot]?.target || "none";
+    });
+  }
+
+  clampAllChiefGearTargets();
+
+  // Load materials
+  if (state.materials) {
+    GEAR_MATERIAL_FIELDS.forEach(fieldId => {
+      const el = document.getElementById(fieldId);
+      if (el && fieldId in state.materials) {
+        el.value = String(state.materials[fieldId] ?? 0);
+      }
+    });
+  }
+}
+
+function initializeChiefGearDefaults() {
+  GEAR_SLOTS.forEach(slot => {
+    const currentEl = document.getElementById(GEAR_SLOT_FIELDS[slot].current);
+    const targetEl = document.getElementById(GEAR_SLOT_FIELDS[slot].target);
+    if (currentEl) currentEl.value = "none";
+    if (targetEl) targetEl.value = "none";
+  });
+  GEAR_MATERIAL_FIELDS.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    if (el) el.value = "0";
+  });
+}
+
+function getGearBadgeClass(levelKey) {
+  if (!levelKey || levelKey === "none") return "gear-badge-none";
+  if (levelKey.startsWith("green")) return "gear-badge-green";
+  if (levelKey.startsWith("blue")) return "gear-badge-blue";
+  if (levelKey.startsWith("purple")) return "gear-badge-purple";
+  if (levelKey.startsWith("gold")) return "gear-badge-gold";
+  if (levelKey.startsWith("pink")) return "gear-badge-pink";
+  if (levelKey.startsWith("red")) return "gear-badge-red";
+  return "gear-badge-none";
+}
+
+function getGearBonusStatus(levelMap) {
+  if (!CHIEF_GEAR_DATA || !CHIEF_GEAR_DATA.levelOrder) {
+    return { defenseActive: false, attackActive: false, defenseThreshold: -1, attackThreshold: -1 };
+  }
+
+  // Create a map of level key to its index for easy comparison
+  const levelKeyToIndex = {};
+  CHIEF_GEAR_DATA.levelOrder.forEach((key, idx) => {
+    levelKeyToIndex[key] = idx;
+  });
+
+  // For each possible threshold level (in order), check how many pieces meet or exceed it
+  let defenseThreshold = -1;
+  let attackThreshold = -1;
+  let maxDefenseGearCount = 0;
+  let maxAttackGearCount = 0;
+
+  for (let i = 0; i < CHIEF_GEAR_DATA.levelOrder.length; i++) {
+    const thresholdLevel = CHIEF_GEAR_DATA.levelOrder[i];
+    const thresholdIndex = i;
+
+    // Count how many pieces have level >= thresholdIndex
+    let countAtThreshold = 0;
+    GEAR_SLOTS.forEach(slot => {
+      const levelKey = levelMap[slot] || "none";
+      const levelIndex = levelKeyToIndex[levelKey] || -1;
+      if (levelIndex >= thresholdIndex) countAtThreshold++;
+    });
+
+    if (countAtThreshold >= 3 && defenseThreshold === -1) {
+      defenseThreshold = i;
+      maxDefenseGearCount = countAtThreshold;
+    }
+
+    if (countAtThreshold === 6 && attackThreshold === -1) {
+      attackThreshold = i;
+      maxAttackGearCount = 6;
+    }
+  }
+
+  return {
+    defenseActive: defenseThreshold !== -1,
+    attackActive: attackThreshold !== -1,
+    defenseThreshold,
+    attackThreshold
+  };
+}
+
+function calculateGearCost(currentLevels, targetLevels) {
+  if (!CHIEF_GEAR_DATA) return null;
+
+  const costs = {
+    hardenedAlloy: 0,
+    polishingSolution: 0,
+    designPlans: 0,
+    lunarAmber: 0,
+    shortfall: {}
+  };
+
+  const levelKeyToIndex = {};
+  CHIEF_GEAR_DATA.levelOrder.forEach((key, idx) => {
+    levelKeyToIndex[key] = idx;
+  });
+
+  GEAR_SLOTS.forEach(slot => {
+    const currentKey = currentLevels[slot] || "none";
+    const targetKey = targetLevels[slot] || "none";
+
+    const currentIdx = levelKeyToIndex[currentKey] || -1;
+    const targetIdx = levelKeyToIndex[targetKey] || -1;
+
+    // Iterate from current+1 to target (inclusive)
+    for (let i = currentIdx + 1; i <= targetIdx; i++) {
+      const levelKey = CHIEF_GEAR_DATA.levelOrder[i];
+      const levelData = CHIEF_GEAR_DATA.levels[levelKey];
+      if (levelData) {
+        costs.hardenedAlloy += levelData.hardenedAlloy || 0;
+        costs.polishingSolution += levelData.polishingSolution || 0;
+        costs.designPlans += levelData.designPlans || 0;
+        costs.lunarAmber += levelData.lunarAmber || 0;
+      }
+    }
+  });
+
+  return costs;
+}
+
+function canAffordGearUpgrade(materials, cost) {
+  return materials.hardenedAlloy >= (cost.hardenedAlloy || 0)
+    && materials.polishingSolution >= (cost.polishingSolution || 0)
+    && materials.designPlans >= (cost.designPlans || 0)
+    && materials.lunarAmber >= (cost.lunarAmber || 0);
+}
+
+function getAffordableGearBatchCount(materials, cost, maxCount) {
+  if (!cost || maxCount <= 0) return 0;
+
+  const limits = [
+    cost.hardenedAlloy > 0 ? Math.floor(materials.hardenedAlloy / cost.hardenedAlloy) : maxCount,
+    cost.polishingSolution > 0 ? Math.floor(materials.polishingSolution / cost.polishingSolution) : maxCount,
+    cost.designPlans > 0 ? Math.floor(materials.designPlans / cost.designPlans) : maxCount,
+    cost.lunarAmber > 0 ? Math.floor(materials.lunarAmber / cost.lunarAmber) : maxCount
+  ];
+
+  return Math.max(0, Math.min(maxCount, ...limits));
+}
+
+function runSmartUpgrade(currentLevels, materials) {
+  if (!CHIEF_GEAR_DATA) {
+    return {
+      finalLevels: currentLevels,
+      upgradeLog: [],
+      materialsRemaining: materials,
+      totalPiecesUpgraded: 0
+    };
+  }
+
+  const levelKeyToIndex = {};
+  const indexToLevelKey = {};
+  CHIEF_GEAR_DATA.levelOrder.forEach((key, idx) => {
+    levelKeyToIndex[key] = idx;
+    indexToLevelKey[idx] = key;
+  });
+
+  // Make a copy to work with
+  const finalLevels = { ...currentLevels };
+  const remainingMaterials = { ...materials };
+  const upgradeLog = [];
+  let totalPiecesUpgraded = 0;
+
+  let changed = true;
+  while (changed) {
+    changed = false;
+
+    // Find the lowest level piece
+    let lowestSlot = null;
+    let lowestIndex = Infinity;
+    GEAR_SLOTS.forEach(slot => {
+      const levelKey = finalLevels[slot] || "none";
+      const idx = levelKeyToIndex[levelKey] || -1;
+      if (idx < lowestIndex) {
+        lowestIndex = idx;
+        lowestSlot = slot;
+      }
+    });
+
+    if (!lowestSlot || lowestIndex >= CHIEF_GEAR_DATA.levelOrder.length - 1) {
+      break; // All pieces at max level
+    }
+
+    // Find all pieces at lowestIndex level
+    const piecesAtLowest = GEAR_SLOTS.filter(slot => {
+      const levelKey = finalLevels[slot] || "none";
+      return (levelKeyToIndex[levelKey] || -1) === lowestIndex;
+    });
+
+    // Try to upgrade all pieces at lowest level by one level
+    const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[lowestIndex + 1];
+    if (!nextLevelKey) break;
+
+    const costPerPiece = CHIEF_GEAR_DATA.levels[nextLevelKey];
+    if (!costPerPiece) break;
+
+    const affordableCount = getAffordableGearBatchCount(
+      remainingMaterials,
+      costPerPiece,
+      piecesAtLowest.length
+    );
+
+    if (affordableCount <= 0 || !canAffordGearUpgrade(remainingMaterials, costPerPiece)) {
+      break;
+    }
+
+    const slotsToUpgrade = piecesAtLowest.slice(0, affordableCount);
+    slotsToUpgrade.forEach(slot => {
+      finalLevels[slot] = nextLevelKey;
+      remainingMaterials.hardenedAlloy -= costPerPiece.hardenedAlloy || 0;
+      remainingMaterials.polishingSolution -= costPerPiece.polishingSolution || 0;
+      remainingMaterials.designPlans -= costPerPiece.designPlans || 0;
+      remainingMaterials.lunarAmber -= costPerPiece.lunarAmber || 0;
+    });
+
+    totalPiecesUpgraded += slotsToUpgrade.length;
+    upgradeLog.push(`Upgraded ${slotsToUpgrade.length} gear piece${slotsToUpgrade.length === 1 ? "" : "s"} to ${costPerPiece.label}`);
+    changed = true;
+  }
+
+  return {
+    finalLevels,
+    upgradeLog,
+    materialsRemaining: remainingMaterials,
+    totalPiecesUpgraded
+  };
+}
+
+function renderChiefGearResult(html) {
+  const resultEl = document.getElementById("gearResult");
+  if (resultEl) {
+    resultEl.innerHTML = html;
+    resultEl.setAttribute("data-has-results", "true");
+  }
+}
+
+function onGearCalculateClick() {
+  clampAllChiefGearTargets();
+
+  const currentLevels = {};
+  const targetLevels = {};
+
+  GEAR_SLOTS.forEach(slot => {
+    const currentEl = document.getElementById(GEAR_SLOT_FIELDS[slot].current);
+    const targetEl = document.getElementById(GEAR_SLOT_FIELDS[slot].target);
+    currentLevels[slot] = currentEl ? currentEl.value : "none";
+    targetLevels[slot] = targetEl ? targetEl.value : "none";
+  });
+
+  const costs = calculateGearCost(currentLevels, targetLevels);
+  if (!costs) {
+    renderChiefGearResult("<p>Error: Gear data not loaded.</p>");
+    return;
+  }
+
+  // Get materials available
+  const materials = {};
+  GEAR_MATERIAL_FIELDS.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    materials[fieldId] = el ? (parseResourceAmount(el.value) || 0) : 0;
+  });
+
+  const remainingMaterials = {
+    hardenedAlloy: materials.gearHardenedAlloy - costs.hardenedAlloy,
+    polishingSolution: materials.gearPolishingSolution - costs.polishingSolution,
+    designPlans: materials.gearDesignPlans - costs.designPlans,
+    lunarAmber: materials.gearLunarAmber - costs.lunarAmber
+  };
+
+  const hasDeficit = Object.values(remainingMaterials).some(value => value < 0);
+  const hardenedAlloyLabel = escapeHtml(translateText("labels.hardenedAlloy", {}, "Hardened Alloy"));
+  const polishingSolutionLabel = escapeHtml(translateText("labels.polishingSolution", {}, "Polishing Solution"));
+  const designPlansLabel = escapeHtml(translateText("labels.designPlans", {}, "Design Plans"));
+  const lunarAmberLabel = escapeHtml(translateText("labels.lunarAmber", {}, "Lunar Amber"));
+
+  let html = "";
+  html += `
+    <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
+      <strong>COST SUMMARY</strong><br>
+      ${hardenedAlloyLabel}: ${formatNumber(costs.hardenedAlloy)} | 
+      ${polishingSolutionLabel}: ${formatNumber(costs.polishingSolution)} | 
+      ${designPlansLabel}: ${formatNumber(costs.designPlans)} | 
+      ${lunarAmberLabel}: ${formatNumber(costs.lunarAmber)}
+    </div>
+  `;
+
+  html += `
+    <div class="card-panel" style="margin-top: 15px;">
+      <strong>AFTER UPGRADE (MATERIAL BALANCE)</strong><br>
+      ${hardenedAlloyLabel}: ${formatNumber(remainingMaterials.hardenedAlloy)} | 
+      ${polishingSolutionLabel}: ${formatNumber(remainingMaterials.polishingSolution)} | 
+      ${designPlansLabel}: ${formatNumber(remainingMaterials.designPlans)} | 
+      ${lunarAmberLabel}: ${formatNumber(remainingMaterials.lunarAmber)}
+    </div>
+  `;
+
+  renderChiefGearResult(html);
+  saveChiefGearState();
+}
+
+function onGearSmartUpgradeClick() {
+  clampAllChiefGearTargets();
+
+  const currentLevels = {};
+  const materials = {};
+
+  GEAR_SLOTS.forEach(slot => {
+    const currentEl = document.getElementById(GEAR_SLOT_FIELDS[slot].current);
+    currentLevels[slot] = currentEl ? currentEl.value : "none";
+  });
+
+  GEAR_MATERIAL_FIELDS.forEach(fieldId => {
+    const el = document.getElementById(fieldId);
+    materials[fieldId] = el ? (parseResourceAmount(el.value) || 0) : 0;
+  });
+
+  // Rename materials keys to match upgrade result keys
+  const materialsForUpgrade = {
+    hardenedAlloy: materials.gearHardenedAlloy || 0,
+    polishingSolution: materials.gearPolishingSolution || 0,
+    designPlans: materials.gearDesignPlans || 0,
+    lunarAmber: materials.gearLunarAmber || 0
+  };
+
+  const result = runSmartUpgrade(currentLevels, materialsForUpgrade);
+
+  // Update the UI with final levels
+  GEAR_SLOTS.forEach(slot => {
+    const targetEl = document.getElementById(GEAR_SLOT_FIELDS[slot].target);
+    if (targetEl) targetEl.value = result.finalLevels[slot] || "none";
+  });
+
+  // Build HTML result
+  let html = `<div class="gear-result-container">`;
+  html += `<div class="gear-result-row"><strong>Smart Upgrade Complete</strong></div>`;
+  if (result.upgradeLog.length > 0) {
+    html += `<div class="gear-result-row">Gear pieces upgraded: ${formatNumber(result.totalPiecesUpgraded)}</div>`;
+    html += `<div class="gear-upgrade-log">`;
+    result.upgradeLog.forEach(logEntry => {
+      html += `<div class="gear-log-entry">• ${logEntry}</div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<p>No upgrades possible with current materials.</p>`;
+  }
+  html += `<div class="gear-result-row"><strong>Materials Remaining</strong></div>`;
+  html += `<div class="gear-result-row">Hardened Alloy: ${formatNumber(result.materialsRemaining.hardenedAlloy)}</div>`;
+  html += `<div class="gear-result-row">Polishing Solution: ${formatNumber(result.materialsRemaining.polishingSolution)}</div>`;
+  html += `<div class="gear-result-row">Design Plans: ${formatNumber(result.materialsRemaining.designPlans)}</div>`;
+  html += `<div class="gear-result-row">Lunar Amber: ${formatNumber(result.materialsRemaining.lunarAmber)}</div>`;
+  html += `</div>`;
+
+  renderChiefGearResult(html);
+  saveChiefGearState();
+}
+
+// ============================================================
 // DATA LOADING
 // Fetches buildings.json and prerequisites.json, then
 // initializes accounts and restores all saved state.
@@ -1826,7 +2376,11 @@ async function loadData() {
     const preqData = await preqResponse.json();
     PREREQUISITES = preqData.prerequisites;
 
-    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES });
+    const gearResponse = await fetch("data/chiefGear.json");
+    const gearData = await gearResponse.json();
+    CHIEF_GEAR_DATA = gearData;
+
+    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA });
 
     // Initialize accounts (migrates legacy flat keys on first run)
     initAccounts();
@@ -2430,7 +2984,7 @@ function showUpdateToast(registration) {
 // Register the service worker for PWA (installable app) support.
 // The service worker caches files so the app works offline.
 if ('serviceWorker' in navigator) {
-  const SW_VERSION = '13';
+  const SW_VERSION = '14';
 
   window.addEventListener('load', () => {
     const swUrl = `service-worker.js?v=${SW_VERSION}`;

@@ -1,5 +1,5 @@
 // Increment this cache name whenever cached files change so old caches are replaced.
-const CACHE_NAME = 'wos-calculator-v13';
+const CACHE_NAME = 'wos-calculator-v14';
 
 // These are the app shell files needed for offline use.
 const urlsToCache = [
@@ -9,7 +9,8 @@ const urlsToCache = [
   './script.js',
   './manifest.json',
   './data/buildings.json',
-  './data/prerequisites.json'
+  './data/prerequisites.json',
+  './data/chiefGear.json'
   // Add icon paths when available
 ];
 
