@@ -59,8 +59,7 @@ const TRANSLATIONS = {
       chiefGearLevels: "Chief Gear Levels",
       chiefGearMaterials: "Your Materials",
       chiefCharmLevels: "Chief Charm Levels",
-      chiefCharmLevels: "Niveles de Talismán del Jefe",
-      chiefCharmMaterials: "Tus materiales"
+      chiefCharmMaterials: "Your Materials"
     },
     labels: {
       building: "Building",
