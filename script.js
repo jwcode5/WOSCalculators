@@ -2296,7 +2296,12 @@ function runSmartUpgrade(currentLevels, materials) {
   let changed = true;
   while (changed) {
     changed = false;
-    // Track which slots were upgraded this pass
+
+    // If all materials are zero or negative, break to avoid infinite loop
+    if ((remainingMaterials.hardenedAlloy <= 0) && (remainingMaterials.polishingSolution <= 0) && (remainingMaterials.designPlans <= 0) && (remainingMaterials.lunarAmber <= 0)) {
+      break;
+    }
+
     let slotsUpgradedThisPass = [];
     // For each slot, try to upgrade if possible
     GEAR_SLOTS.forEach(slot => {
@@ -2306,6 +2311,10 @@ function runSmartUpgrade(currentLevels, materials) {
       const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[currentIdx + 1];
       const cost = CHIEF_GEAR_DATA.levels[nextLevelKey];
       if (!cost) return;
+      // If all costs are zero, break to avoid infinite loop
+      if ((cost.hardenedAlloy || 0) === 0 && (cost.polishingSolution || 0) === 0 && (cost.designPlans || 0) === 0 && (cost.lunarAmber || 0) === 0) {
+        return;
+      }
       // Check if we can afford this upgrade for this slot
       if (
         remainingMaterials.hardenedAlloy >= (cost.hardenedAlloy || 0) &&
@@ -2842,9 +2851,15 @@ function runSmartCharmUpgrade(currentLevels, materials) {
   const upgradeLog = [];
   let totalPiecesUpgraded = 0;
 
+
   let changed = true;
   while (changed) {
     changed = false;
+
+    // If all materials are zero or negative, break to avoid infinite loop
+    if ((remainingMaterials.charmDesigns <= 0) && (remainingMaterials.charmGuides <= 0) && (remainingMaterials.jewelSecrets <= 0)) {
+      break;
+    }
 
     let lowestIndex = Infinity;
     CHARM_SLOT_DEFINITIONS.forEach(slot => {
@@ -2865,6 +2880,11 @@ function runSmartCharmUpgrade(currentLevels, materials) {
 
     const costPerPiece = CHIEF_CHARM_DATA.levels[nextLevelKey];
     if (!costPerPiece) break;
+
+    // If all costs are zero, break to avoid infinite loop
+    if ((costPerPiece.charmDesigns || 0) === 0 && (costPerPiece.charmGuides || 0) === 0 && (costPerPiece.jewelSecrets || 0) === 0) {
+      break;
+    }
 
     const affordableCount = getAffordableCharmBatchCount(remainingMaterials, costPerPiece, piecesAtLowest.length);
     if (affordableCount <= 0 || !canAffordCharmUpgrade(remainingMaterials, costPerPiece)) break;
@@ -2988,6 +3008,7 @@ function onCharmCalculateClick() {
   const costSummaryLabel = translateText("results.charmCostSummary", {}, "COST SUMMARY");
   const afterUpgradeLabel = translateText("results.charmAfterUpgradeBalance", {}, "AFTER UPGRADE (MATERIAL BALANCE)");
 
+
   let html = `
     <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
       <strong>${costSummaryLabel}</strong><br>
@@ -3002,6 +3023,7 @@ function onCharmCalculateClick() {
       ${jewelSecretsLabel}: ${formatNumber(remaining.jewelSecrets)}
     </div>
   `;
+
 
   // --- Optimized Plan for Chief Charm ---
   const optimized = calculateCharmOptimizedPlan(currentLevels, targetLevels, materials);

@@ -12,13 +12,7 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="i18n.js" defer></script>
   <script src="script.js" defer></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('service-worker.v19.js');
-      });
-    }
-  </script>
+  <script src="sw-register.js" defer></script>
 </head>
 <body>
   <!--

@@ -16,11 +16,18 @@ const urlsToCache = [
 ];
 
 // Pre-cache core files during installation so the app can start offline.
+// On install, pre-cache and activate immediately
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
   );
+});
+
+// On activate, take control of all clients immediately
+self.addEventListener('activate', event => {
+  self.clients.claim();
 });
 
 // Allow the page to request immediate activation of a waiting worker.
