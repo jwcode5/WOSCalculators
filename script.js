@@ -1,3 +1,52 @@
+// ============================================================
+// SVS POINTS — Chief Charm & Chief Gear Level Up
+// Loads and parses SVS points from CSV for use in calculations
+// Chief Gear uses Sheet2.csv, Chief Charm uses Sheet4.csv
+// ============================================================
+
+let SVS_POINTS_LOOKUP = {};
+let GEAR_SVS_POINTS_LOOKUP = {};
+
+async function loadSvsPointsCsv() {
+  // Chief Charm (Sheet4.csv)
+  const response = await fetch('data/WOS%20Calculator%20-%20Sheet4.csv');
+  const text = await response.text();
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  for (let i = 1; i < lines.length; ++i) {
+    const [level, status, score] = lines[i].split(',');
+    if (!level || !score) continue;
+    if (!SVS_POINTS_LOOKUP[level]) SVS_POINTS_LOOKUP[level] = {};
+    SVS_POINTS_LOOKUP[level][status] = parseInt(score, 10);
+  }
+  // Chief Gear (Sheet2.csv)
+  const gearResp = await fetch('data/WOS%20Calculator%20-%20Sheet2.csv');
+  const gearText = await gearResp.text();
+  const gearLines = gearText.split(/\r?\n/).filter(Boolean);
+  const header = gearLines[0].split(',');
+  const tierIdx = header.indexOf('Tier');
+  const starsIdx = header.indexOf('Stars');
+  const scoreIdx = header.indexOf('level up score');
+  for (let i = 1; i < gearLines.length; ++i) {
+    const cols = gearLines[i].split(',');
+    const tier = cols[tierIdx];
+    const stars = cols[starsIdx];
+    const score = cols[scoreIdx];
+    if (!tier || !stars || !score || score === '-') continue;
+    GEAR_SVS_POINTS_LOOKUP[`${tier},${stars}`] = parseInt(score, 10);
+  }
+}
+
+function getSvsPointsForUpgrade(level, stage = '-') {
+  if (SVS_POINTS_LOOKUP[level] && SVS_POINTS_LOOKUP[level][stage]) {
+    return SVS_POINTS_LOOKUP[level][stage] * 70;
+  }
+  return 0;
+}
+
+function getGearSvsPoints(tier, stars) {
+  const key = `${tier},${stars}`;
+  return GEAR_SVS_POINTS_LOOKUP[key] || 0;
+}
 // Show info icon tooltips on tap/click for mobile users
 document.addEventListener("DOMContentLoaded", function() {
   document.querySelectorAll('.info-icon').forEach(function(icon) {
@@ -2504,7 +2553,31 @@ function onGearCalculateClick() {
   }
   optimizedHtml += "</div>";
 
-  renderChiefGearResult(html + optimizedHtml);
+  // --- SVS Points Calculation for Chief Gear ---
+  let totalSvsPoints = 0;
+  GEAR_SLOTS.forEach(slot => {
+    const current = currentLevels[slot] || "none";
+    const target = targetLevels[slot] || "none";
+    if (!CHIEF_GEAR_DATA || !CHIEF_GEAR_DATA.levelOrder) return;
+    const levelOrder = CHIEF_GEAR_DATA.levelOrder;
+    const levelKeyToIndex = {};
+    levelOrder.forEach((key, idx) => { levelKeyToIndex[key] = idx; });
+    const currentIdx = levelKeyToIndex[current] || -1;
+    const targetIdx = levelKeyToIndex[target] || -1;
+    for (let i = currentIdx + 1; i <= targetIdx; i++) {
+      const levelKey = levelOrder[i];
+      const levelInfo = CHIEF_GEAR_DATA.levels[levelKey];
+      if (!levelInfo) continue;
+      // Exclude charm slots if any (per user request)
+      if (levelInfo.isCharm) continue;
+      const tier = levelInfo.tier;
+      const stars = levelInfo.stars;
+      const score = getGearSvsPoints(tier, stars);
+      totalSvsPoints += score * 36;
+    }
+  });
+  let svsPointsHtml = `<div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">\n      <strong>SVS Points Gained:</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>\n    </div>`;
+  renderChiefGearResult(html + svsPointsHtml + optimizedHtml);
   saveChiefGearState();
 }
 
@@ -2558,8 +2631,32 @@ function onGearSmartUpgradeClick() {
   html += `<div class="gear-result-row">Polishing Solution: ${formatNumber(result.materialsRemaining.polishingSolution)}</div>`;
   html += `<div class="gear-result-row">Design Plans: ${formatNumber(result.materialsRemaining.designPlans)}</div>`;
   html += `<div class="gear-result-row">Lunar Amber: ${formatNumber(result.materialsRemaining.lunarAmber)}</div>`;
+  // --- SVS Points Calculation for Chief Gear Smart Upgrade ---
+  let totalSvsPoints = 0;
+  GEAR_SLOTS.forEach(slot => {
+    const start = currentLevels[slot] || "none";
+    const end = result.finalLevels[slot] || start;
+    if (!CHIEF_GEAR_DATA || !CHIEF_GEAR_DATA.levelOrder) return;
+    const levelOrder = CHIEF_GEAR_DATA.levelOrder;
+    const levelKeyToIndex = {};
+    levelOrder.forEach((key, idx) => { levelKeyToIndex[key] = idx; });
+    const startIdx = levelKeyToIndex[start] || -1;
+    const endIdx = levelKeyToIndex[end] || -1;
+    for (let i = startIdx + 1; i <= endIdx; i++) {
+      const levelKey = levelOrder[i];
+      const levelInfo = CHIEF_GEAR_DATA.levels[levelKey];
+      if (!levelInfo) continue;
+      // Exclude charm slots if any (per user request)
+      if (levelInfo.isCharm) continue;
+      const tier = levelInfo.tier;
+      const stars = levelInfo.stars;
+      const score = getGearSvsPoints(tier, stars);
+      totalSvsPoints += score * 36;
+    }
+  });
+  let svsPointsHtml = `<div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">\n      <strong>SVS Points Gained:</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>\n    </div>`;
+  html += svsPointsHtml;
   html += `</div>`;
-
   renderChiefGearResult(html);
   saveChiefGearState();
 }
@@ -3009,21 +3106,54 @@ function onCharmCalculateClick() {
   const afterUpgradeLabel = translateText("results.charmAfterUpgradeBalance", {}, "AFTER UPGRADE (MATERIAL BALANCE)");
 
 
-  let html = `
-    <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
-      <strong>${costSummaryLabel}</strong><br>
-      ${charmDesignsLabel}: ${formatNumber(costs.charmDesigns)} |
-      ${charmGuidesLabel}: ${formatNumber(costs.charmGuides)} |
-      ${jewelSecretsLabel}: ${formatNumber(costs.jewelSecrets)}
-    </div>
-    <div class="card-panel" style="margin-top: 15px;">
-      <strong>${afterUpgradeLabel}</strong><br>
-      ${charmDesignsLabel}: ${formatNumber(remaining.charmDesigns)} |
-      ${charmGuidesLabel}: ${formatNumber(remaining.charmGuides)} |
-      ${jewelSecretsLabel}: ${formatNumber(remaining.jewelSecrets)}
-    </div>
-  `;
+  // --- SVS Points Calculation ---
+  let totalSvsPoints = 0;
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const currentKey = currentLevels[slot.slotKey] || "none";
+    const targetKey = targetLevels[slot.slotKey] || "none";
+    const levelKeyToIndex = {};
+    if (CHIEF_CHARM_DATA && CHIEF_CHARM_DATA.levelOrder) {
+      CHIEF_CHARM_DATA.levelOrder.forEach((key, idx) => { levelKeyToIndex[key] = idx; });
+      const currentIdx = levelKeyToIndex[currentKey] || -1;
+      const targetIdx = levelKeyToIndex[targetKey] || -1;
+      for (let i = currentIdx + 1; i <= targetIdx; i++) {
+        const levelKey = CHIEF_CHARM_DATA.levelOrder[i];
+        totalSvsPoints += getSvsPointsForUpgrade(levelKey);
+      }
+    }
+  });
 
+  // Render SVS Points container
+  const svsPointsEl = document.getElementById("charmSvsPoints");
+  if (svsPointsEl) {
+    if (totalSvsPoints > 0) {
+      svsPointsEl.style.display = "block";
+      svsPointsEl.innerHTML = `<div class="card-panel" style="margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;">
+        <strong>SVS Points Gained:</strong> <span style="font-size:1.2em;">${formatNumber(totalSvsPoints)}</span>
+      </div>`;
+    } else {
+      svsPointsEl.style.display = "none";
+      svsPointsEl.innerHTML = "";
+    }
+  }
+
+        let html = `
+          <div class=\"card-panel\" style=\"margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);\">
+            <strong>${costSummaryLabel}</strong><br>
+            ${charmDesignsLabel}: ${formatNumber(costs.charmDesigns)} |
+            ${charmGuidesLabel}: ${formatNumber(costs.charmGuides)} |
+            ${jewelSecretsLabel}: ${formatNumber(costs.jewelSecrets)}
+          </div>
+          <div class=\"card-panel\" style=\"margin-top: 15px;\">
+            <strong>${afterUpgradeLabel}</strong><br>
+            ${charmDesignsLabel}: ${formatNumber(remaining.charmDesigns)} |
+            ${charmGuidesLabel}: ${formatNumber(remaining.charmGuides)} |
+            ${jewelSecretsLabel}: ${formatNumber(remaining.jewelSecrets)}
+          </div>
+          <div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">
+            <strong>SVS Points Gained:</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>
+          </div>
+        `;
 
   // --- Optimized Plan for Chief Charm ---
   const optimized = calculateCharmOptimizedPlan(currentLevels, targetLevels, materials);
@@ -3081,6 +3211,23 @@ function onCharmSmartUpgradeClick() {
   const charmGuidesLabel = translateText("labels.charmGuides", {}, "Charm Guides");
   const jewelSecretsLabel = translateText("labels.jewelSecrets", {}, "Jewel Secrets");
 
+  // --- SVS Points Calculation for Smart Upgrade ---
+  let totalSvsPoints = 0;
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const startKey = currentLevels[slot.slotKey] || "none";
+    const endKey = result.finalLevels[slot.slotKey] || startKey;
+    const levelKeyToIndex = {};
+    if (CHIEF_CHARM_DATA && CHIEF_CHARM_DATA.levelOrder) {
+      CHIEF_CHARM_DATA.levelOrder.forEach((key, idx) => { levelKeyToIndex[key] = idx; });
+      const startIdx = levelKeyToIndex[startKey] || -1;
+      const endIdx = levelKeyToIndex[endKey] || -1;
+      for (let i = startIdx + 1; i <= endIdx; i++) {
+        const levelKey = CHIEF_CHARM_DATA.levelOrder[i];
+        totalSvsPoints += getSvsPointsForUpgrade(levelKey);
+      }
+    }
+  });
+
   let html = `<div class="gear-result-container">`;
   html += `<div class="gear-result-row"><strong>${smartUpgradeCompleteLabel}</strong></div>`;
   if (result.upgradeLog.length > 0) {
@@ -3098,6 +3245,7 @@ function onCharmSmartUpgradeClick() {
   html += `<div class="gear-result-row">${charmDesignsLabel}: ${formatNumber(result.materialsRemaining.charmDesigns)}</div>`;
   html += `<div class="gear-result-row">${charmGuidesLabel}: ${formatNumber(result.materialsRemaining.charmGuides)}</div>`;
   html += `<div class="gear-result-row">${jewelSecretsLabel}: ${formatNumber(result.materialsRemaining.jewelSecrets)}</div>`;
+  html += `<div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">\n      <strong>SVS Points Gained:</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>\n    </div>`;
   html += `</div>`;
 
   renderChiefCharmResult(html);
@@ -3115,23 +3263,28 @@ function onCharmSmartUpgradeClick() {
 // Load both buildings and prerequisites data on page open
 async function loadData() {
   try {
-    const buildingsResponse = await fetch("data/buildings.json");
+    // Load all data files and SVS points CSV in parallel
+    const [buildingsResponse, preqResponse, gearResponse, charmResponse] = await Promise.all([
+      fetch("data/buildings.json"),
+      fetch("data/prerequisites.json"),
+      fetch("data/chiefGear.json"),
+      fetch("data/chiefCharm.json")
+    ]);
+    await loadSvsPointsCsv();
+
     const buildingsData = await buildingsResponse.json();
     BUILDING_COSTS = buildingsData.buildings;
 
-    const preqResponse = await fetch("data/prerequisites.json");
     const preqData = await preqResponse.json();
     PREREQUISITES = preqData.prerequisites;
 
-    const gearResponse = await fetch("data/chiefGear.json");
     const gearData = await gearResponse.json();
     CHIEF_GEAR_DATA = gearData;
 
-    const charmResponse = await fetch("data/chiefCharm.json");
     const charmData = await charmResponse.json();
     CHIEF_CHARM_DATA = charmData;
 
-    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA, CHIEF_CHARM_DATA });
+    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA, CHIEF_CHARM_DATA, SVS_POINTS_LOOKUP });
 
     // Initialize accounts (migrates legacy flat keys on first run)
     initAccounts();
