@@ -63,7 +63,6 @@
         { "level": 59, "petFood": 3440, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
         { "level": 60, "petFood": 3560, "tamingManual": 175, "energizingPotion": 50, "strengtheningSerum": 20, "svsPoints": 275000 }
       ]
-      ]
     },
     "R": {
       "upgrades": [
@@ -137,15 +136,6 @@
         { "level": 68, "petFood": 6780, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
         { "level": 69, "petFood": 6960, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
         { "level": 70, "petFood": 7140, "tamingManual": 255, "energizingPotion": 80, "strengtheningSerum": 40, "svsPoints": 325000 }
-      ]
-        { "level": 43, "petFood": 2940, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
-        { "level": 44, "petFood": 3060, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
-        { "level": 45, "petFood": 3180, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
-        { "level": 46, "petFood": 3300, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
-        { "level": 47, "petFood": 3420, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
-        { "level": 48, "petFood": 3540, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
-        { "level": 49, "petFood": 3660, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
-        { "level": 50, "petFood": 3810, "tamingManual": 155, "energizingPotion": 30, "strengtheningSerum": 10, "svsPoints": 225000 }
       ]
     },
     "SR": {
@@ -230,7 +220,6 @@
         { "level": 78, "petFood": 11440, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
         { "level": 79, "petFood": 11680, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
         { "level": 80, "petFood": 12000, "tamingManual": 380, "energizingPotion": 100, "strengtheningSerum": 60, "svsPoints": 400000 }
-      ]
       ]
     },
     "SSR": {
@@ -336,11 +325,9 @@
         { "level": 99, "petFood": 22600, "tamingManual": 0, "energizingPotion": 0, "strengtheningSerum": 0, "svsPoints": 0 },
         { "level": 100, "petFood": 23100, "tamingManual": 730, "energizingPotion": 135, "strengtheningSerum": 100, "svsPoints": 600000 }
       ]
-      ]
     }
   },
   "pets": {
-    "Cave Hyena": { "tier": "", "customUpgrades": true },
     "Cave Hyena": {
       "tier": "",
       "customUpgrades": [
