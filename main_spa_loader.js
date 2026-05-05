@@ -272,12 +272,14 @@ async function renderUpgradeCalculatorPanel() {
 }
 
 function renderPlaceholderPanel(panelName) {
-  const i18nKey = `calculator.${panelName.charAt(0).toLowerCase() + panelName.slice(1).replace(/ /g, '')}`;
   document.getElementById('spaPanel').innerHTML = `
-    <section class="coming-soon-panel">
-      <h2 style="margin-top:2em;" data-i18n="comingSoon.heading" data-i18n-vals='{"calculator": "${panelName}"}'>${panelName} Calculator Coming Soon</h2>
-      <p data-i18n="comingSoon.placeholderIntro">This calculator tab is visible now as a placeholder so users can see what is planned next.</p>
-      <p data-i18n="comingSoon.placeholderOutro">Once this calculator is live, this message can be removed and replaced with the full tool.</p>
+    <section class="coming-soon-panel" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 2em 1em; text-align:center;">
+      <img
+        src="Images/ComingSoon.png"
+        alt="Coming Soon — Page Under Construction"
+        style="max-width: 700px; width: 100%; height: auto; border-radius: 12px;"
+      />
+      <p style="margin-top: 1em; font-size: 1.05em; color: var(--muted, #aaa);" data-i18n="comingSoon.heading" data-i18n-vals='{"calculator": "${panelName}"}'>${panelName} — Coming Soon</p>
     </section>
   `;
 }
