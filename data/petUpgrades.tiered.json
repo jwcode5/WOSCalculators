@@ -77,6 +77,14 @@
         {
           "level": 10,
           "petFood": 370,
+          "tamingManual": 0,
+          "energizingPotion": 0,
+          "strengtheningSerum": 0,
+          "svsPoints": 0
+        },
+        {
+          "level": "10A",
+          "petFood": 0,
           "tamingManual": 20,
           "energizingPotion": 0,
           "strengtheningSerum": 0,
