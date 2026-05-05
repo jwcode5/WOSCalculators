@@ -525,10 +525,37 @@ function captureCurrentStateToAccount() {
     // Checkboxes store true/false; everything else stores the string value
     supplies[id] = el.type === "checkbox" ? !!el.checked : el.value;
   });
+
+  // Capture prerequisite state from the DOM to ensure everything is saved
+  const prereqState = {};
+  const prereqContainer = document.getElementById("prerequisitesContainer");
+  if (prereqContainer && building) {
+    prereqContainer.querySelectorAll("select[data-building]").forEach(sel => {
+      const b = sel.dataset.building;
+      if (!b) return;
+      if (!prereqState[b]) prereqState[b] = {};
+      if (sel.id.endsWith("CurrentLevel")) {
+        prereqState[b].currentLevel = sel.value;
+      } else if (sel.id.endsWith("Level")) {
+        prereqState[b].targetLevel = sel.value;
+      }
+    });
+  }
+
   // The spread [...array] creates a shallow copy so we're not storing
   // a reference to the live array (which could change later)
   const account = getActiveAccount();
   const existingUpgrade = getUpgradeStateFromAccount(account);
+  
+  // Merge the captured prereqState into the account's existing state for this building
+  const nextFullPrereqState = {
+    ...(existingUpgrade.prereqState || {}),
+    [building]: {
+      ...(existingUpgrade.prereqState?.[building] || {}),
+      ...prereqState
+    }
+  };
+
   updateActiveAccount({
     calculators: {
       ...(account?.calculators || {}),
@@ -539,7 +566,8 @@ function captureCurrentStateToAccount() {
         targetLevel,
         supplies,
         optionalBuildings: [...optionalBuildings],
-        bearHuntMails: [...bearHuntMails]
+        bearHuntMails: [...bearHuntMails],
+        prereqState: nextFullPrereqState
       }
     }
   });
@@ -611,7 +639,8 @@ function loadAllStateFromAccount() {
   if (targetBuildingSelect && currentLevelSelect && targetLevelSelect) {
     const currentLevelKey = currentLevelSelect.value;
     const targetLevelKey = targetLevelSelect.value;
-    updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
+    // When loading from account, force ignore UI values to avoid stale cross-account data
+    updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, false, true);
     updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey);
   }
 
@@ -1757,7 +1786,7 @@ function updateMainLevelSelectors(selectedBuilding) {
 // Pass resetTargetsToRequired = true to force all prereq target levels
 // back to their minimum required level (used when the main building or
 // goal level changes).
-function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, resetTargetsToRequired = false) {
+function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, resetTargetsToRequired = false, ignoreUI = false) {
   const prereqsFieldset = document.getElementById("prerequisitesSection");
   const prereqsContainer = document.getElementById("prerequisitesContainer");
 
@@ -1836,8 +1865,8 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, 
       const savedState = savedPrereqState[buildingName] || {};
       const savedCurrentLevel = String(savedState.currentLevel || "");
       const savedTargetLevel = String(savedState.targetLevel || "");
-      const existingCurrentLevel = existingCurrentInput ? String(existingCurrentInput.value) : savedCurrentLevel;
-      const existingTargetLevel = existingTargetInput ? String(existingTargetInput.value) : savedTargetLevel;
+      const existingCurrentLevel = (existingCurrentInput && !ignoreUI) ? String(existingCurrentInput.value) : savedCurrentLevel;
+      const existingTargetLevel = (existingTargetInput && !ignoreUI) ? String(existingTargetInput.value) : savedTargetLevel;
       const requiredLevelKey = String(requiredLevel);
       const fallbackCurrent = levelOptions[0] || "1";
       const fallbackTarget = levelOptions.includes(requiredLevelKey) ? requiredLevelKey : (levelOptions[levelOptions.length - 1] || requiredLevelKey);
