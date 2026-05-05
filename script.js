@@ -116,17 +116,16 @@ document.addEventListener("DOMContentLoaded", function() {
 // loaded yet"; arrays start empty and get filled on page load.
 // ============================================================
 
-let BUILDING_COSTS = null;      // Loaded from data/buildings.json
-let PREREQUISITES = null;       // Loaded from data/prerequisites.json
-let CHIEF_GEAR_DATA = null;     // Loaded from data/chiefGear.json
-let CHIEF_CHARM_DATA = null;    // Loaded from data/chiefCharm.json
-let optionalBuildings = [];     // Extra buildings the user added manually
-let bearHuntMails = [];         // Bear Hunt Mail reward rows
-let accounts = [];              // All saved accounts (Option B blob model)
-let activeAccountId = null;     // ID of the currently selected account
-let activeCalculator = localStorage.getItem("wosCalc_activeCalculator") || "upgrade";
+var BUILDING_COSTS = null;      // Loaded from data/buildings.json
+var PREREQUISITES = null;       // Loaded from data/prerequisites.json
+var CHIEF_GEAR_DATA = null;     // Loaded from data/chiefGear.json
+var CHIEF_CHARM_DATA = null;    // Loaded from data/chiefCharm.json
+var optionalBuildings = [];     // Extra buildings the user added manually
+var bearHuntMails = [];         // Bear Hunt Mail reward rows
+var accounts = [];              // All saved accounts (Option B blob model)
+var activeAccountId = null;     // ID of the currently selected account
 
-const CALCULATOR_KEYS = {
+var CALCULATOR_KEYS = {
   UPGRADE: "upgrade",
   CHIEF_GEAR: "chiefGear",
   CHIEF_CHARM: "chiefCharm",
@@ -592,31 +591,39 @@ function loadAllStateFromAccount() {
   if (!account || !BUILDING_COSTS) return;
 
   const targetBuildingSelect = document.getElementById("targetBuilding");
-  if (upgradeState.building && [...targetBuildingSelect.options].map(o => o.value).includes(upgradeState.building)) {
+  if (targetBuildingSelect && upgradeState.building && [...targetBuildingSelect.options].map(o => o.value).includes(upgradeState.building)) {
     targetBuildingSelect.value = upgradeState.building;
   }
-  const selectedBuilding = targetBuildingSelect.value;
-  updateMainLevelSelectors(selectedBuilding);
+  const selectedBuilding = targetBuildingSelect?.value;
+  if (selectedBuilding) {
+    updateMainLevelSelectors(selectedBuilding);
+  }
 
   const currentLevelSelect = document.getElementById("currentLevel");
   const targetLevelSelect = document.getElementById("targetLevel");
-  if (upgradeState.currentLevel && [...currentLevelSelect.options].map(o => o.value).includes(upgradeState.currentLevel)) {
+  if (currentLevelSelect && upgradeState.currentLevel && [...currentLevelSelect.options].map(o => o.value).includes(upgradeState.currentLevel)) {
     currentLevelSelect.value = upgradeState.currentLevel;
   }
-  if (upgradeState.targetLevel && [...targetLevelSelect.options].map(o => o.value).includes(upgradeState.targetLevel)) {
+  if (targetLevelSelect && upgradeState.targetLevel && [...targetLevelSelect.options].map(o => o.value).includes(upgradeState.targetLevel)) {
     targetLevelSelect.value = upgradeState.targetLevel;
   }
 
-  const currentLevelKey = currentLevelSelect.value;
-  const targetLevelKey = targetLevelSelect.value;
-  updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
-  updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey);
+  if (targetBuildingSelect && currentLevelSelect && targetLevelSelect) {
+    const currentLevelKey = currentLevelSelect.value;
+    const targetLevelKey = targetLevelSelect.value;
+    updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey);
+    updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelKey);
+  }
 
-  optionalBuildings = Array.isArray(upgradeState.optionalBuildings) ? [...upgradeState.optionalBuildings] : [];
-  renderOptionalBuildings();
+  if (document.getElementById("optionalBuildingsContainer")) {
+    optionalBuildings = Array.isArray(upgradeState.optionalBuildings) ? [...upgradeState.optionalBuildings] : [];
+    renderOptionalBuildings();
+  }
 
-  bearHuntMails = Array.isArray(upgradeState.bearHuntMails) ? [...upgradeState.bearHuntMails] : [];
-  renderBearHuntMails();
+  if (document.getElementById("bearHuntMailsContainer")) {
+    bearHuntMails = Array.isArray(upgradeState.bearHuntMails) ? [...upgradeState.bearHuntMails] : [];
+    renderBearHuntMails();
+  }
 
   const supplies = upgradeState.supplies || {};
   SUPPLY_FIELD_IDS.forEach(id => {
@@ -628,7 +635,10 @@ function loadAllStateFromAccount() {
       el.value = supplies[id];
     }
   });
-  updateCustomChestVisibility();
+
+  if (document.getElementById("useCustomChests")) {
+    updateCustomChestVisibility();
+  }
   renderAccountSelector();
 }
 
@@ -699,8 +709,11 @@ function ensureCalculatorBucketForActiveAccount(calculatorKey) {
 }
 
 function setActiveCalculator(calculatorKey) {
-  const safeKey = Object.values(CALCULATOR_KEYS).includes(calculatorKey)
-    ? calculatorKey
+  const currentSaved = localStorage.getItem("wosCalc_activeCalculator");
+  const keyToUse = calculatorKey || currentSaved || CALCULATOR_KEYS.UPGRADE;
+  
+  const safeKey = Object.values(CALCULATOR_KEYS).includes(keyToUse)
+    ? keyToUse
     : CALCULATOR_KEYS.UPGRADE;
 
   if (activeCalculator === CALCULATOR_KEYS.UPGRADE && safeKey !== CALCULATOR_KEYS.UPGRADE) {
@@ -708,49 +721,17 @@ function setActiveCalculator(calculatorKey) {
   } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR && safeKey !== CALCULATOR_KEYS.CHIEF_GEAR) {
     saveChiefGearState();
   } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM && safeKey !== CALCULATOR_KEYS.CHIEF_CHARM) {
-    saveChiefCharmState();
+    if (typeof saveChiefCharmState === "function") saveChiefCharmState();
   }
 
-  activeCalculator = safeKey;
-  localStorage.setItem("wosCalc_activeCalculator", activeCalculator);
+  window.activeCalculator = safeKey;
+  localStorage.setItem("wosCalc_activeCalculator", window.activeCalculator);
+  ensureCalculatorBucketForActiveAccount(window.activeCalculator);
 
-  ensureCalculatorBucketForActiveAccount(activeCalculator);
-
-  document.querySelectorAll(".calculator-tab").forEach(tab => {
-    tab.classList.toggle("active", tab.dataset.calculator === activeCalculator);
-  });
-
-  const upgradePanel = document.getElementById("upgradeCalculatorPanel");
-  const chiefGearPanel = document.getElementById("chiefGearPanel");
-  const chiefCharmPanel = document.getElementById("chiefCharmPanel");
-  const comingSoonPanel = document.getElementById("comingSoonPanel");
-
-  if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
-    if (upgradePanel) upgradePanel.style.display = "block";
-    if (chiefGearPanel) chiefGearPanel.style.display = "none";
-    if (chiefCharmPanel) chiefCharmPanel.style.display = "none";
-    if (comingSoonPanel) comingSoonPanel.style.display = "none";
-    loadAllStateFromAccount();
-  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR) {
-    if (upgradePanel) upgradePanel.style.display = "none";
-    if (chiefGearPanel) chiefGearPanel.style.display = "block";
-    if (chiefCharmPanel) chiefCharmPanel.style.display = "none";
-    if (comingSoonPanel) comingSoonPanel.style.display = "none";
-    initChiefGearPanel();
-    loadChiefGearState();
-  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM) {
-    if (upgradePanel) upgradePanel.style.display = "none";
-    if (chiefGearPanel) chiefGearPanel.style.display = "none";
-    if (chiefCharmPanel) chiefCharmPanel.style.display = "block";
-    if (comingSoonPanel) comingSoonPanel.style.display = "none";
-    initChiefCharmPanel();
-    loadChiefCharmState();
-  } else {
-    if (upgradePanel) upgradePanel.style.display = "none";
-    if (chiefGearPanel) chiefGearPanel.style.display = "none";
-    if (chiefCharmPanel) chiefCharmPanel.style.display = "none";
-    if (comingSoonPanel) comingSoonPanel.style.display = "block";
-    renderComingSoonPanel(activeCalculator);
+  const dropdown = document.getElementById("calculatorDropdown");
+  if (dropdown && dropdown.value !== safeKey) {
+    dropdown.value = safeKey;
+    dropdown.dispatchEvent(new Event('change'));
   }
 }
 
@@ -1178,6 +1159,7 @@ function getAllBuildingOptionsHTML(selectedValue) {
 // re-attached because the old DOM nodes were replaced.
 function renderOptionalBuildings() {
   const container = document.getElementById("optionalBuildingsContainer");
+  if (!container) return; // Safety check for SPA
   if (optionalBuildings.length === 0) {
     container.innerHTML = "";
     return;
@@ -1211,13 +1193,13 @@ function renderOptionalBuildings() {
           <button type="button" class="removeOptionalBtn inlineActionBtn inlineActionBtnDanger" data-index="${index}">${removeLabel}</button>
         </div>
         <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-          <div style="flex: 1 1 150px; min-width: 130px;">
+          <div style="flex: 1 1 180px; min-width: 180px;">
             <label for="optionalCurrent_${index}">${currentLevelLabel}</label>
             <select id="optionalCurrent_${index}" class="optionalCurrentLevel" data-index="${index}">
               ${currentOptions}
             </select>
           </div>
-          <div style="flex: 1 1 150px; min-width: 130px;">
+          <div style="flex: 1 1 180px; min-width: 180px;">
             <label for="optionalTarget_${index}">${targetLevelLabel}</label>
             <select id="optionalTarget_${index}" class="optionalTargetLevel" data-index="${index}">
               ${targetOptions}
@@ -2099,6 +2081,9 @@ function initChiefGearPanel() {
     smartUpgradeBtn.removeEventListener("click", onGearSmartUpgradeClick);
     smartUpgradeBtn.addEventListener("click", onGearSmartUpgradeClick);
   }
+
+  // Restore saved state
+  loadChiefGearState();
 }
 
 function handleChiefGearCurrentChange(event) {
@@ -2607,11 +2592,13 @@ function onGearSmartUpgradeClick() {
 
   const result = runSmartUpgrade(currentLevels, materialsForUpgrade);
 
-  // Update the UI with final levels
+  // Update the UI with final levels (Optional: we keep user targets now per request)
+  /*
   GEAR_SLOTS.forEach(slot => {
     const targetEl = document.getElementById(GEAR_SLOT_FIELDS[slot].target);
     if (targetEl) targetEl.value = result.finalLevels[slot] || "none";
   });
+  */
 
   // Build HTML result
   let html = `<div class="gear-result-container">`;
@@ -2678,10 +2665,8 @@ function renderChiefCharmRows() {
     html += `
       <div class="gear-table-block">
         <span class="gear-piece-label">${pieceLabel} ${charmLabel}</span>
-        <div class="gear-table-row">
-          <select id="${escapeAttr(slot.currentId)}"></select>
-          <select id="${escapeAttr(slot.targetId)}"></select>
-        </div>
+        <select id="${escapeAttr(slot.currentId)}"></select>
+        <select id="${escapeAttr(slot.targetId)}"></select>
       </div>
     `;
   });
@@ -2787,6 +2772,9 @@ function initChiefCharmPanel() {
     smartUpgradeBtn.removeEventListener("click", onCharmSmartUpgradeClick);
     smartUpgradeBtn.addEventListener("click", onCharmSmartUpgradeClick);
   }
+
+  // Restore saved state
+  loadChiefCharmState();
 }
 
 function onCharmSlotCurrentChange(event) {
@@ -3198,10 +3186,12 @@ function onCharmSmartUpgradeClick() {
 
   const result = runSmartCharmUpgrade(currentLevels, materials);
 
+  /*
   CHARM_SLOT_DEFINITIONS.forEach(slot => {
     const targetEl = document.getElementById(slot.targetId);
     if (targetEl) targetEl.value = result.finalLevels[slot.slotKey] || "none";
   });
+  */
 
   const smartUpgradeCompleteLabel = translateText("results.charmSmartUpgradeComplete", {}, "Smart Upgrade Complete");
   const charmsUpgradedLabel = translateText("results.charmsUpgraded", {}, "Charms upgraded");
@@ -3292,8 +3282,6 @@ async function loadData() {
     // Load all state from the active account
     loadAllStateFromAccount();
 
-    setActiveCalculator(activeCalculator);
-
     applyTheme(loadThemePreference());
   } catch (error) {
     console.error("Error loading data:", error);
@@ -3301,56 +3289,7 @@ async function loadData() {
   }
 }
 
-// ============================================================
-// EVENT LISTENERS — BUILDING SELECTION DROPDOWNS
-// These run immediately when the page loads (not inside a
-// function) so they're always attached.
-// ============================================================
-
-// When the target building changes, rebuild level dropdowns,
-// prerequisites panel, and FC visibility, then save.
-document.getElementById("targetBuilding").addEventListener("change", function() {
-  updateMainLevelSelectors(this.value);
-  const currentLevelKey = document.getElementById("currentLevel").value;
-  const targetLevelKey = document.getElementById("targetLevel").value;
-  updatePrerequisites(this.value, currentLevelKey, targetLevelKey, true);
-  updateFireCrystalSuppliesVisibility(this.value, currentLevelKey, targetLevelKey);
-  saveTargetBuildingState();
-});
-
-// When current level changes, clamp target if needed, refresh prerequisites.
-document.getElementById("currentLevel").addEventListener("change", function() {
-  const selectedBuilding = document.getElementById("targetBuilding").value;
-  const currentLevelKey = this.value;
-  const targetLevelSelect = document.getElementById("targetLevel");
-  const orderedLevels = getBuildingLevelOrder(selectedBuilding);
-  const currentIdx = orderedLevels.indexOf(currentLevelKey);
-  const targetIdx = orderedLevels.indexOf(targetLevelSelect.value);
-  if (targetIdx < currentIdx) {
-    targetLevelSelect.value = currentLevelKey; // Push target up to match current
-  }
-  updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelSelect.value);
-  updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, targetLevelSelect.value);
-  saveTargetBuildingState();
-});
-
-// When target level changes, clamp if below current, refresh prerequisites.
-document.getElementById("targetLevel").addEventListener("change", function() {
-  const selectedBuilding = document.getElementById("targetBuilding").value;
-  const currentLevelKey = document.getElementById("currentLevel").value;
-  const orderedLevels = getBuildingLevelOrder(selectedBuilding);
-  const currentIdx = orderedLevels.indexOf(currentLevelKey);
-  const targetIdx = orderedLevels.indexOf(this.value);
-  if (targetIdx < currentIdx) {
-    this.value = currentLevelKey;
-  }
-  updatePrerequisites(selectedBuilding, currentLevelKey, this.value, true);
-  updateFireCrystalSuppliesVisibility(selectedBuilding, currentLevelKey, this.value);
-  saveTargetBuildingState();
-});
-
-// Attach save-on-change listeners to all supply/buff fields
-attachSupplyPersistenceListeners();
+// (Upgrade Calculator event listeners have been moved to main_spa_loader.js inside initUpgradeCalculatorPanel)
 
 
 // ============================================================
@@ -3438,17 +3377,7 @@ if (themeToggleBtn) {
     saveThemePreference(nextTheme);
   });
 }
-// "Add Building" button
-document.getElementById("addBuildingBtn").addEventListener("click", function() {
-  addOptionalBuilding();
-});
-
-const addBearHuntMailBtn = document.getElementById("addBearHuntMailBtn");
-if (addBearHuntMailBtn) {
-  addBearHuntMailBtn.addEventListener("click", function() {
-    addBearHuntMail();
-  });
-}
+// (Add Building and Bear Hunt Mail event listeners moved to main_spa_loader.js)
 
 // ============================================================
 // CALCULATE BUTTON
@@ -3463,7 +3392,7 @@ if (addBearHuntMailBtn) {
 //   7. Outputs the full results as HTML
 // ============================================================
 
-document.getElementById("calculateBtn").addEventListener("click", function() {
+function onUpgradeCalculateClick() {
   // Guard: bail out if data hasn't loaded yet
   if (!BUILDING_COSTS || !PREREQUISITES) {
     alert(translateText("alerts.dataStillLoading", {}, "Data is still loading. Please wait and try again."));
@@ -3814,7 +3743,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
   const resultEl = document.getElementById("result");
   resultEl.dataset.hasResults = "true";
   resultEl.innerHTML = resultsHTML;
-});
+}
 
 
 // ============================================================
@@ -3824,7 +3753,7 @@ document.getElementById("calculateBtn").addEventListener("click", function() {
 // Kick off the data load as soon as the script runs.
 // Because loadData is async, the rest of the page stays
 // interactive while it fetches the JSON files.
-loadData();
+window.dataReadyPromise = loadData();
 
 document.addEventListener("wos:languagechange", () => {
   applyTheme(document.body.dataset.theme || localStorage.getItem(THEME_STORAGE_KEY) || "wos");
@@ -3887,29 +3816,18 @@ function showUpdateToast(registration) {
 
 // Register the service worker for PWA (installable app) support.
 // The service worker caches files so the app works offline.
-if ('serviceWorker' in navigator) {
-  const SW_VERSION = '16';
+// Register the service worker for PWA (installable app) support.
+// The service worker caches files so the app works offline.
+if ('serviceWorker' in navigator && 
+    !window.location.hostname.includes('localhost') && 
+    !window.location.hostname.includes('127.0.0.1')) {
+  const SW_VERSION = '17';
 
   window.addEventListener('load', () => {
     const swUrl = `service-worker.js?v=${SW_VERSION}`;
     navigator.serviceWorker.register(swUrl, { scope: './', updateViaCache: 'none' })
       .then(registration => {
         console.log('Service Worker registered:', registration);
-
-        // Remove stale registrations that can keep old cached assets active.
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-          registrations.forEach(reg => {
-            const isCurrentScope = reg.scope === registration.scope;
-            const isCurrentScript = reg.active && reg.active.scriptURL.includes(`v=${SW_VERSION}`);
-            if (!isCurrentScope || !isCurrentScript) {
-              reg.unregister();
-            }
-          });
-        });
-
-        // Trigger an immediate update check so newly deployed files are
-        // discovered quickly on mobile/installed clients.
-        registration.update();
 
         if (registration.waiting) {
           showUpdateToast(registration);
@@ -3940,7 +3858,12 @@ if ('serviceWorker' in navigator) {
 
   // When the service worker updates (new version deployed), reload the
   // page automatically so the user always gets the latest version.
+  let refreshing = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    // Only reload if there was an old controller (i.e., we are updating, not first-time installing)
+    if (!navigator.serviceWorker.controller) return;
+    refreshing = true;
     window.location.reload();
   });
 }

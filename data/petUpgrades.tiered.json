@@ -393,6 +393,8 @@
     "Snow Ape": { "tier": "SSR" },
     "Iron Rhino": { "tier": "SSR" },
     "Saber-Tooth Tiger": { "tier": "SSR" },
-    "Mammoth": { "tier": "SSR" }
+    "Mammoth": { "tier": "SSR" },
+    "Frost Gorilla": { "tier": "SSR"},
+    "Frostscale Chameleon": { "tier": "SSR"}
   }
 }
