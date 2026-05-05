@@ -120,6 +120,7 @@ var BUILDING_COSTS = null;      // Loaded from data/buildings.json
 var PREREQUISITES = null;       // Loaded from data/prerequisites.json
 var CHIEF_GEAR_DATA = null;     // Loaded from data/chiefGear.json
 var CHIEF_CHARM_DATA = null;    // Loaded from data/chiefCharm.json
+var PET_UPGRADES = null;        // Loaded from data/petUpgrades.tiered.json
 var optionalBuildings = [];     // Extra buildings the user added manually
 var bearHuntMails = [];         // Bear Hunt Mail reward rows
 var accounts = [];              // All saved accounts (Option B blob model)
@@ -129,6 +130,7 @@ var CALCULATOR_KEYS = {
   UPGRADE: "upgrade",
   CHIEF_GEAR: "chiefGear",
   CHIEF_CHARM: "chiefCharm",
+  PETS: "pets",
   WHAT_IF: "whatIf"
 };
 
@@ -380,6 +382,7 @@ function ensureAccountCalculatorShape(account) {
   calculators.upgrade = mergedUpgrade;
   calculators.chiefGear = (calculators.chiefGear && typeof calculators.chiefGear === "object") ? calculators.chiefGear : {};
   calculators.chiefCharm = (calculators.chiefCharm && typeof calculators.chiefCharm === "object") ? calculators.chiefCharm : {};
+  calculators.pets = (calculators.pets && typeof calculators.pets === "object") ? calculators.pets : {};
   calculators.whatIf = (calculators.whatIf && typeof calculators.whatIf === "object") ? calculators.whatIf : {};
 
   account.calculators = calculators;
@@ -403,6 +406,7 @@ function createDefaultAccount(name) {
       upgrade: { ...upgradeDefaults },
       chiefGear: {},
       chiefCharm: {},
+      pets: {},
       whatIf: {}
     }
   };
@@ -586,6 +590,8 @@ function switchAccount(id) {
     saveChiefGearState();
   } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM) {
     if (typeof saveChiefCharmState === "function") saveChiefCharmState();
+  } else if (activeCalculator === CALCULATOR_KEYS.PETS) {
+    if (typeof savePetsState === "function") savePetsState();
   }
 
   activeAccountId = id;
@@ -602,6 +608,10 @@ function switchAccount(id) {
     renderAccountSelector();
     if (typeof initChiefCharmPanel === "function") initChiefCharmPanel();
     if (typeof loadChiefCharmState === "function") loadChiefCharmState();
+  } else if (activeCalculator === CALCULATOR_KEYS.PETS) {
+    renderAccountSelector();
+    if (typeof initPetsPanel === "function") initPetsPanel();
+    if (typeof loadPetsState === "function") loadPetsState();
   } else {
     renderAccountSelector();
     renderComingSoonPanel(activeCalculator);
@@ -3271,6 +3281,430 @@ function onCharmSmartUpgradeClick() {
   saveChiefCharmState();
 }
 
+
+// ============================================================
+// PET CALCULATOR LOGIC
+// ============================================================
+
+const PET_ORDER = [
+  "Cave Hyena", "Arctic Wolf", "Musk Ox", "Giant Tapir", "Titan Roc",
+  "Giant Elk", "Snow Leopard", "Cave Lion", "Snow Ape", "Iron Rhino",
+  "Saber-Tooth Tiger", "Mammoth", "Frost Gorilla", "Frostscale Chameleon",
+  "Abyssal Shelldragon"
+];
+
+function initPetsPanel() {
+  const container = document.getElementById("petCollectionContainer");
+  if (!container || !PET_UPGRADES) return;
+
+  // Render all pet rows
+  let html = "";
+  PET_ORDER.forEach((name, index) => {
+    const petData = PET_UPGRADES.pets[name];
+    if (!petData) return;
+
+    const key = name.charAt(0).toLowerCase() + name.slice(1).replace(/ /g, '').replace(/-/g, '');
+    const localizedName = translateText(`building.${key}`, {}, name);
+    const tier = (petData.tier !== undefined) ? petData.tier : "N";
+    
+    // Check for acquisition requirements (informational only)
+    if (index > 0) {
+      const prevName = PET_ORDER[index - 1];
+      const prevData = PET_UPGRADES.pets[prevName];
+      const reqLevel = (prevData.tier === "SSR") ? 30 : 15;
+      const reqLabel = `Reach Lv.${reqLevel} to unlock next`;
+      
+      html += `
+        <div class="pet-requirement-line">
+          <span class="pet-requirement-text">${reqLabel}</span>
+        </div>
+      `;
+    }
+
+    html += `
+      <div class="pet-row" data-pet="${name}">
+        <div class="pet-name-cell">
+          <span class="pet-name-text">${localizedName}</span>
+          ${tier ? `<span class="pet-tier-tag">${tier}</span>` : ''}
+        </div>
+        <select class="pet-current-select" data-pet="${name}"></select>
+        <select class="pet-target-select" data-pet="${name}"></select>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+
+  // Populate level selectors for each row
+  PET_ORDER.forEach(name => {
+    const petData = PET_UPGRADES.pets[name];
+    let upgrades = [];
+    if (petData.customUpgrades) {
+      upgrades = petData.customUpgrades;
+    } else if (PET_UPGRADES.tiers[petData.tier]) {
+      upgrades = PET_UPGRADES.tiers[petData.tier].upgrades;
+    }
+
+    const curSel = container.querySelector(`.pet-current-select[data-pet="${name}"]`);
+    const tgtSel = container.querySelector(`.pet-target-select[data-pet="${name}"]`);
+    
+    const options = upgrades.map((u, i) => `<option value="${i}">${u.level}</option>`).join('');
+    curSel.innerHTML = options;
+    tgtSel.innerHTML = options;
+
+    curSel.addEventListener("change", () => {
+      const startIdx = parseInt(curSel.value);
+      const endIdx = parseInt(tgtSel.value);
+      if (endIdx < startIdx) tgtSel.value = curSel.value;
+      savePetsState();
+    });
+    tgtSel.addEventListener("change", () => {
+      const startIdx = parseInt(curSel.value);
+      const endIdx = parseInt(tgtSel.value);
+      if (endIdx < startIdx) curSel.value = tgtSel.value;
+      savePetsState();
+    });
+  });
+
+  // Populate "Set All" selectors
+  const setAllCur = document.getElementById("setAllPetCurrent");
+  const setAllTgt = document.getElementById("setAllPetTarget");
+  if (setAllCur && setAllTgt) {
+    const maxLevels = 100; // General max, refined by specific pet data
+    let options = "";
+    for (let i = 0; i <= maxLevels; i++) {
+      options += `<option value="${i}">${i}</option>`;
+    }
+    setAllCur.innerHTML = options;
+    setAllTgt.innerHTML = options;
+    
+    document.getElementById("setAllPetCurrentBtn").addEventListener("click", () => {
+      const val = setAllCur.value;
+      container.querySelectorAll(".pet-current-select").forEach(sel => {
+        // Find index for this level
+        const opts = Array.from(sel.options);
+        const match = opts.find(o => o.text === val);
+        if (match) sel.value = match.value;
+        // Ensure target is not below current
+        const tgt = sel.closest(".pet-row").querySelector(".pet-target-select");
+        if (parseInt(tgt.value) < parseInt(sel.value)) tgt.value = sel.value;
+      });
+      savePetsState();
+    });
+
+    document.getElementById("setAllPetTargetBtn").addEventListener("click", () => {
+      const val = setAllTgt.value;
+      container.querySelectorAll(".pet-target-select").forEach(sel => {
+        const opts = Array.from(sel.options);
+        const match = opts.find(o => o.text === val);
+        if (match) sel.value = match.value;
+        // Ensure current is not above target
+        const cur = sel.closest(".pet-row").querySelector(".pet-current-select");
+        if (parseInt(cur.value) > parseInt(sel.value)) cur.value = sel.value;
+      });
+      savePetsState();
+    });
+  }
+
+  ["petFoodInput", "tamingManualInput", "energizingPotionInput", "strengtheningSerumInput"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", savePetsState);
+  });
+
+  const calcBtn = document.getElementById("petsCalculateBtn");
+  if (calcBtn) calcBtn.addEventListener("click", onPetsCalculateClick);
+
+  const smartBtn = document.getElementById("petsSmartUpgradeBtn");
+  if (smartBtn) smartBtn.addEventListener("click", onPetsSmartUpgradeClick);
+
+  // Load state or default
+  loadPetsState();
+}
+
+function savePetsState() {
+  const account = getActiveAccount();
+  if (!account) return;
+
+  const collection = {};
+  PET_ORDER.forEach(name => {
+    const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+    if (row) {
+      collection[name] = {
+        currentIdx: row.querySelector(".pet-current-select").value,
+        targetIdx: row.querySelector(".pet-target-select").value
+      };
+    }
+  });
+
+  const state = {
+    collection: collection,
+    materials: {
+      petFood: document.getElementById("petFoodInput")?.value,
+      tamingManual: document.getElementById("tamingManualInput")?.value,
+      energizingPotion: document.getElementById("energizingPotionInput")?.value,
+      strengtheningSerum: document.getElementById("strengtheningSerumInput")?.value
+    }
+  };
+
+  updateActiveAccount({
+    calculators: {
+      ...account.calculators,
+      pets: state
+    }
+  });
+}
+
+function loadPetsState() {
+  const account = getActiveAccount();
+  if (!account || !account.calculators.pets) return;
+
+  const state = account.calculators.pets;
+  if (state.collection) {
+    Object.entries(state.collection).forEach(([name, levels]) => {
+      const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+      if (row) {
+        row.querySelector(".pet-current-select").value = levels.currentIdx;
+        row.querySelector(".pet-target-select").value = levels.targetIdx;
+      }
+    });
+  }
+
+  if (state.materials) {
+    if (document.getElementById("petFoodInput")) document.getElementById("petFoodInput").value = state.materials.petFood || 0;
+    if (document.getElementById("tamingManualInput")) document.getElementById("tamingManualInput").value = state.materials.tamingManual || 0;
+    if (document.getElementById("energizingPotionInput")) document.getElementById("energizingPotionInput").value = state.materials.energizingPotion || 0;
+    if (document.getElementById("strengtheningSerumInput")) document.getElementById("strengtheningSerumInput").value = state.materials.strengtheningSerum || 0;
+  }
+}
+
+function onPetsCalculateClick() {
+  const targets = [];
+  PET_ORDER.forEach(name => {
+    const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+    if (row) {
+      const startIdx = parseInt(row.querySelector(".pet-current-select").value);
+      const endIdx = parseInt(row.querySelector(".pet-target-select").value);
+      if (endIdx > startIdx) {
+        targets.push({ name, startIdx, endIdx });
+      }
+    }
+  });
+
+  if (targets.length === 0) {
+    alert("Please set at least one target level higher than current.");
+    return;
+  }
+
+  const result = calculateMultiPetUpgrade(targets);
+  renderPetsResult(result);
+}
+
+function calculateMultiPetUpgrade(targets) {
+  const grandTotal = {
+    petFood: 0,
+    tamingManual: 0,
+    energizingPotion: 0,
+    strengtheningSerum: 0,
+    svsPoints: 0
+  };
+  const petBreakdown = [];
+
+  targets.forEach(t => {
+    const petData = PET_UPGRADES.pets[t.name];
+    let upgrades = [];
+    if (petData.customUpgrades) {
+      upgrades = petData.customUpgrades;
+    } else if (PET_UPGRADES.tiers[petData.tier]) {
+      upgrades = PET_UPGRADES.tiers[petData.tier].upgrades;
+    }
+
+    const subTotal = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+    for (let i = t.startIdx + 1; i <= t.endIdx; i++) {
+      const u = upgrades[i];
+      subTotal.petFood += (u.petFood || 0);
+      subTotal.tamingManual += (u.tamingManual || 0);
+      subTotal.energizingPotion += (u.energizingPotion || 0);
+      subTotal.strengtheningSerum += (u.strengtheningSerum || 0);
+      subTotal.svsPoints += (u.svsPoints || 0);
+    }
+
+    grandTotal.petFood += subTotal.petFood;
+    grandTotal.tamingManual += subTotal.tamingManual;
+    grandTotal.energizingPotion += subTotal.energizingPotion;
+    grandTotal.strengtheningSerum += subTotal.strengtheningSerum;
+    grandTotal.svsPoints += subTotal.svsPoints;
+
+    petBreakdown.push({
+      name: t.name,
+      startLevel: upgrades[t.startIdx].level,
+      endLevel: upgrades[t.endIdx].level,
+      totals: subTotal
+    });
+  });
+
+  return { grandTotal, petBreakdown };
+}
+
+function onPetsSmartUpgradeClick() {
+  const materials = {
+    petFood: parseInt(document.getElementById("petFoodInput").value) || 0,
+    tamingManual: parseInt(document.getElementById("tamingManualInput").value) || 0,
+    energizingPotion: parseInt(document.getElementById("energizingPotionInput").value) || 0,
+    strengtheningSerum: parseInt(document.getElementById("strengtheningSerumInput").value) || 0
+  };
+
+  // Build a list of all possible "next steps" across all pets
+  // Strategy: Greedy - always pick the "cheapest" next upgrade across the entire collection.
+  // This maximizes levels/svs points per resource.
+  
+  const currentStates = [];
+  PET_ORDER.forEach(name => {
+    const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+    if (row) {
+      const petData = PET_UPGRADES.pets[name];
+      let upgrades = [];
+      if (petData.customUpgrades) {
+        upgrades = petData.customUpgrades;
+      } else if (PET_UPGRADES.tiers[petData.tier]) {
+        upgrades = PET_UPGRADES.tiers[petData.tier].upgrades;
+      }
+      currentStates.push({
+        name,
+        upgrades,
+        startIndex: parseInt(row.querySelector(".pet-current-select").value),
+        currentIndex: parseInt(row.querySelector(".pet-current-select").value)
+      });
+    }
+  });
+
+  const used = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+  const upgradeLog = [];
+
+  while (true) {
+    let bestPet = null;
+    let minCostValue = Infinity;
+
+    // Find the cheapest upgrade available right now
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        // Heuristic for "cost": weight the materials.
+        // Food is common, serums are rare.
+        const costValue = (next.petFood || 0) + (next.tamingManual || 0) * 10 + (next.energizingPotion || 0) * 50 + (next.strengtheningSerum || 0) * 200;
+        
+        if (costValue < minCostValue &&
+            materials.petFood >= (next.petFood || 0) &&
+            materials.tamingManual >= (next.tamingManual || 0) &&
+            materials.energizingPotion >= (next.energizingPotion || 0) &&
+            materials.strengtheningSerum >= (next.strengtheningSerum || 0)) {
+          minCostValue = costValue;
+          bestPet = state;
+        }
+      }
+    });
+
+    if (bestPet) {
+      const next = bestPet.upgrades[bestPet.currentIndex + 1];
+      materials.petFood -= (next.petFood || 0);
+      materials.tamingManual -= (next.tamingManual || 0);
+      materials.energizingPotion -= (next.energizingPotion || 0);
+      materials.strengtheningSerum -= (next.strengtheningSerum || 0);
+
+      used.petFood += (next.petFood || 0);
+      used.tamingManual += (next.tamingManual || 0);
+      used.energizingPotion += (next.energizingPotion || 0);
+      used.strengtheningSerum += (next.strengtheningSerum || 0);
+      used.svsPoints += (next.svsPoints || 0);
+
+      bestPet.currentIndex++;
+    } else {
+      break;
+    }
+  }
+
+  const upgradedPets = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgradedPets.length > 0) {
+    upgradedPets.forEach(s => {
+      const row = document.querySelector(`.pet-row[data-pet="${s.name}"]`);
+      row.querySelector(".pet-target-select").value = s.currentIndex;
+    });
+    savePetsState();
+    
+    const breakdown = upgradedPets.map(s => {
+      const subTotal = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+      for (let i = s.startIndex + 1; i <= s.currentIndex; i++) {
+        const u = s.upgrades[i];
+        subTotal.petFood += (u.petFood || 0);
+        subTotal.tamingManual += (u.tamingManual || 0);
+        subTotal.energizingPotion += (u.energizingPotion || 0);
+        subTotal.strengtheningSerum += (u.strengtheningSerum || 0);
+        subTotal.svsPoints += (u.svsPoints || 0);
+      }
+      return { name: s.name, startLevel: s.upgrades[s.startIndex].level, endLevel: s.upgrades[s.currentIndex].level, totals: subTotal };
+    });
+
+    renderPetsResult({ grandTotal: used, petBreakdown: breakdown });
+  } else {
+    alert(translateText("results.charmNoUpgradesPossible", {}, "No upgrades possible with current materials."));
+  }
+}
+
+function renderPetsResult(result) {
+  const resEl = document.getElementById("petsResult");
+  if (!resEl) return;
+
+  if (!result) {
+    resEl.innerHTML = "";
+    return;
+  }
+
+  const { grandTotal, petBreakdown } = result;
+
+  const petFoodOwned = parseInt(document.getElementById("petFoodInput").value) || 0;
+  const tamingManualOwned = parseInt(document.getElementById("tamingManualInput").value) || 0;
+  const energizingPotionOwned = parseInt(document.getElementById("energizingPotionInput").value) || 0;
+  const strengtheningSerumOwned = parseInt(document.getElementById("strengtheningSerumInput").value) || 0;
+
+  const petFoodDiff = petFoodOwned - grandTotal.petFood;
+  const tamingManualDiff = tamingManualOwned - grandTotal.tamingManual;
+  const energizingPotionDiff = energizingPotionOwned - grandTotal.energizingPotion;
+  const strengtheningSerumDiff = strengtheningSerumOwned - grandTotal.strengtheningSerum;
+
+  let html = `
+    <div class="card-panel">
+      <h3 style="margin-top:0; color:#ffe08a;">${translateText("results.grandTotal", {}, "GRAND TOTAL")}</h3>
+      ${translateText("labels.petFood", {}, "Pet Food")}: ${formatNumber(grandTotal.petFood)} | 
+      ${translateText("labels.tamingManual", {}, "Taming Manual")}: ${formatNumber(grandTotal.tamingManual)}<br>
+      ${translateText("labels.energizingPotion", {}, "Energizing Potion")}: ${formatNumber(grandTotal.energizingPotion)} | 
+      ${translateText("labels.strengtheningSerum", {}, "Strengthening Serum")}: ${formatNumber(grandTotal.strengtheningSerum)}
+    </div>
+    <div class="card-panel" style="margin-top: 10px;">
+      <strong>${translateText("results.afterUpgradeBalance", {}, "After Upgrade (Material Balance)")}</strong><br>
+      ${translateText("labels.petFood", {}, "Pet Food")}: <span style="color: ${petFoodDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(petFoodDiff)}</span><br>
+      ${translateText("labels.tamingManual", {}, "Taming Manual")}: <span style="color: ${tamingManualDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(tamingManualDiff)}</span><br>
+      ${translateText("labels.energizingPotion", {}, "Energizing Potion")}: <span style="color: ${energizingPotionDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(energizingPotionDiff)}</span><br>
+      ${translateText("labels.strengtheningSerum", {}, "Strengthening Serum")}: <span style="color: ${strengtheningSerumDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(strengtheningSerumDiff)}</span>
+    </div>
+    <div class="card-panel" style="margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;">
+      <strong>SVS Points Gained:</strong> <span style="font-size:1.2em;">${formatNumber(grandTotal.svsPoints)}</span>
+    </div>
+
+    <h4 style="margin: 15px 0 10px;">${translateText("results.breakdown", {}, "Breakdown")}</h4>
+  `;
+
+  petBreakdown.forEach(p => {
+    html += `
+      <div class="card-panel" style="margin-bottom: 10px; border-left: 3px solid #ffe08a;">
+        <strong>${escapeHtml(p.name)}</strong> (${p.startLevel} → ${p.endLevel})<br>
+        <span style="font-size:0.9em; opacity:0.8;">
+          Food: ${formatNumber(p.totals.petFood)} | Manuals: ${formatNumber(p.totals.tamingManual)} | Potions: ${formatNumber(p.totals.energizingPotion)} | Serums: ${formatNumber(p.totals.strengtheningSerum)}
+        </span>
+      </div>
+    `;
+  });
+
+  resEl.innerHTML = html;
+}
+
 // ============================================================
 // DATA LOADING
 // Fetches buildings.json and prerequisites.json, then
@@ -3283,11 +3717,12 @@ function onCharmSmartUpgradeClick() {
 async function loadData() {
   try {
     // Load all data files and SVS points CSV in parallel
-    const [buildingsResponse, preqResponse, gearResponse, charmResponse] = await Promise.all([
+    const [buildingsResponse, preqResponse, gearResponse, charmResponse, petsResponse] = await Promise.all([
       fetch("data/buildings.json"),
       fetch("data/prerequisites.json"),
       fetch("data/chiefGear.json"),
-      fetch("data/chiefCharm.json")
+      fetch("data/chiefCharm.json"),
+      fetch("data/petUpgrades.tiered.json")
     ]);
     await loadSvsPointsCsv();
 
@@ -3303,7 +3738,10 @@ async function loadData() {
     const charmData = await charmResponse.json();
     CHIEF_CHARM_DATA = charmData;
 
-    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA, CHIEF_CHARM_DATA, SVS_POINTS_LOOKUP });
+    const petsData = await petsResponse.json();
+    PET_UPGRADES = petsData;
+
+    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA, CHIEF_CHARM_DATA, PET_UPGRADES, SVS_POINTS_LOOKUP });
 
     // Initialize accounts (migrates legacy flat keys on first run)
     initAccounts();
@@ -3782,7 +4220,7 @@ function onUpgradeCalculateClick() {
 // Kick off the data load as soon as the script runs.
 // Because loadData is async, the rest of the page stays
 // interactive while it fetches the JSON files.
-window.dataReadyPromise = loadData();
+// window.dataReadyPromise = loadData();
 
 document.addEventListener("wos:languagechange", () => {
   applyTheme(document.body.dataset.theme || localStorage.getItem(THEME_STORAGE_KEY) || "wos");

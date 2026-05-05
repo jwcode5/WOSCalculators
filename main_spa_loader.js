@@ -7,9 +7,18 @@ function ensureCalculatorDropdown(selectedKey) {
     { key: 'chiefGear', label: 'Chief Gear' },
     { key: 'chiefCharm', label: 'Chief Charm' },
     { key: 'pets', label: 'Pets' },
-    { key: 'whatIf', label: 'What If' }
+    { key: 'experts', label: 'Experts Calculator' },
+    { key: 'heroGear', label: 'Hero Gear' },
+    { key: 'koi', label: 'KoI Calculator' },
+    { key: 'research', label: 'Research Upgrades' },
+    { key: 'svs', label: 'SvS Calculator' },
+    { key: 'troopTraining', label: 'Troop Training' },
+    { key: 'warAcademy', label: 'War Academy' },
+    { key: 'whatIf', label: 'What If' },
+    { key: 'about', label: 'About' },
+    { key: 'contact', label: 'Contact' }
   ];
-  dropdown.innerHTML = calculators.map(c => `<option value="${c.key}">${c.label}</option>`).join('');
+  dropdown.innerHTML = calculators.map(c => `<option value="${c.key}" data-i18n="calculator.${c.key}">${c.label}</option>`).join('');
   dropdown.value = selectedKey || dropdown.value || 'upgrade';
 }
 // Dedicated SPA initializer for Upgrade calculator panel
@@ -263,7 +272,34 @@ async function renderUpgradeCalculatorPanel() {
 }
 
 function renderPlaceholderPanel(panelName) {
-  document.getElementById('spaPanel').innerHTML = `<section class="coming-soon-panel"><h2 style="margin-top:2em;">${panelName} Calculator Coming Soon</h2></section>`;
+  const i18nKey = `calculator.${panelName.charAt(0).toLowerCase() + panelName.slice(1).replace(/ /g, '')}`;
+  document.getElementById('spaPanel').innerHTML = `
+    <section class="coming-soon-panel">
+      <h2 style="margin-top:2em;" data-i18n="comingSoon.heading" data-i18n-vals='{"calculator": "${panelName}"}'>${panelName} Calculator Coming Soon</h2>
+      <p data-i18n="comingSoon.placeholderIntro">This calculator tab is visible now as a placeholder so users can see what is planned next.</p>
+      <p data-i18n="comingSoon.placeholderOutro">Once this calculator is live, this message can be removed and replaced with the full tool.</p>
+    </section>
+  `;
+}
+
+function renderAboutPanel() {
+  document.getElementById('spaPanel').innerHTML = `
+    <div class="card-panel" style="padding:2em 1.5em; background:var(--panel); box-shadow:var(--shadow); max-width:600px; margin:2em auto;">
+      <h1 data-i18n="aboutPage.heading">About</h1>
+      <p data-i18n="aboutPage.placeholderOne">This About page is a placeholder and will be expanded later.</p>
+      <p data-i18n="aboutPage.placeholderTwo">The calculator architecture is being prepared first so new tools can ship without data loss between accounts.</p>
+    </div>
+  `;
+}
+
+function renderContactPanel() {
+  document.getElementById('spaPanel').innerHTML = `
+    <div class="card-panel" style="padding:2em 1.5em; background:var(--panel); box-shadow:var(--shadow); max-width:600px; margin:2em auto;">
+      <h1 data-i18n="contactPage.heading">Contact</h1>
+      <p data-i18n="contactPage.placeholderOne">This Contact page is a placeholder and will be expanded later.</p>
+      <p data-i18n="contactPage.placeholderTwo">You can keep adding calculator features first and plug in final contact details when ready.</p>
+    </div>
+  `;
 }
 
 async function renderChiefGearCalculatorPanel() {
@@ -353,6 +389,81 @@ async function renderChiefGearCalculatorPanel() {
   }
 }
 
+async function renderPetsCalculatorPanel() {
+  console.log('[SPA] renderPetsCalculatorPanel called');
+  if (window.dataReadyPromise) {
+    await window.dataReadyPromise;
+  }
+  document.getElementById('spaPanel').innerHTML = `
+    <!-- Pets Collection Dashboard -->
+    <div id="petsPanel">
+      <fieldset>
+        <legend data-i18n="sections.petLevels">Pet Collection</legend>
+        
+        <div class="pet-batch-controls">
+          <div class="pet-batch-group">
+            <label data-i18n="labels.setAllCurrentLevels">Set all current levels</label>
+            <div class="pet-batch-inline">
+              <select id="setAllPetCurrent"></select>
+              <button type="button" id="setAllPetCurrentBtn" class="small-btn" data-i18n="buttons.setAll">Set All</button>
+            </div>
+          </div>
+          <div class="pet-batch-group">
+            <label data-i18n="labels.setAllTargetLevels">Set all target levels</label>
+            <div class="pet-batch-inline">
+              <select id="setAllPetTarget"></select>
+              <button type="button" id="setAllPetTargetBtn" class="small-btn" data-i18n="buttons.setAll">Set All</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pet-collection-grid">
+          <div class="pet-row-header">
+            <span data-i18n="labels.pet">Pet</span>
+            <span data-i18n="labels.currentLevel">Current</span>
+            <span data-i18n="labels.targetLevel">Target</span>
+          </div>
+          <div id="petCollectionContainer">
+            <!-- Rows injected by script.js -->
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.petMaterials">Your Materials</legend>
+        <div class="gear-materials-grid">
+          <div class="gear-material-field">
+            <label for="petFoodInput" data-i18n="labels.petFood">Pet Food</label>
+            <input id="petFoodInput" type="number" min="0" value="0" />
+          </div>
+          <div class="gear-material-field">
+            <label for="tamingManualInput" data-i18n="labels.tamingManual">Taming Manual</label>
+            <input id="tamingManualInput" type="number" min="0" value="0" />
+          </div>
+          <div class="gear-material-field">
+            <label for="energizingPotionInput" data-i18n="labels.energizingPotion">Energizing Potion</label>
+            <input id="energizingPotionInput" type="number" min="0" value="0" />
+          </div>
+          <div class="gear-material-field">
+            <label for="strengtheningSerumInput" data-i18n="labels.strengtheningSerum">Strengthening Serum</label>
+            <input id="strengtheningSerumInput" type="number" min="0" value="0" />
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="gear-button-row">
+        <button id="petsCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+        <button id="petsSmartUpgradeBtn" type="button" data-i18n="buttons.smartUpgrade">Smart Upgrade</button>
+      </div>
+
+      <section id="petsResult" class="result"></section>
+    </div>
+  `;
+  if (typeof initPetsPanel === 'function') {
+    initPetsPanel();
+  }
+}
+
 async function renderChiefCharmCalculatorPanel() {
   console.log('[SPA] renderChiefCharmCalculatorPanel called');
   if (window.dataReadyPromise) {
@@ -434,10 +545,37 @@ function spaLoaderInit() {
         renderChiefCharmCalculatorPanel();
         break;
       case 'pets':
-        renderPlaceholderPanel('Pets');
+        renderPetsCalculatorPanel();
         break;
       case 'whatIf':
         renderPlaceholderPanel('What If');
+        break;
+      case 'experts':
+        renderPlaceholderPanel('Experts');
+        break;
+      case 'heroGear':
+        renderPlaceholderPanel('Hero Gear');
+        break;
+      case 'koi':
+        renderPlaceholderPanel('KoI');
+        break;
+      case 'research':
+        renderPlaceholderPanel('Research Upgrades');
+        break;
+      case 'svs':
+        renderPlaceholderPanel('SvS');
+        break;
+      case 'troopTraining':
+        renderPlaceholderPanel('Troop Training');
+        break;
+      case 'warAcademy':
+        renderPlaceholderPanel('War Academy');
+        break;
+      case 'about':
+        renderAboutPanel();
+        break;
+      case 'contact':
+        renderContactPanel();
         break;
       default:
         renderPlaceholderPanel('Unknown');
