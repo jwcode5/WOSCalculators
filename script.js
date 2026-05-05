@@ -3867,3 +3867,6 @@ if ('serviceWorker' in navigator &&
     window.location.reload();
   });
 }
+
+// Initialize the data loading and store the promise globally so the SPA loader can wait for it
+window.dataReadyPromise = loadData();
