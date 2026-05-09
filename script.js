@@ -2034,6 +2034,19 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, 
 // and the Smart Upgrade feature.
 // ============================================================
 
+function translateGearLabel(label) {
+  if (!label) return "";
+  if (label === "Not Crafted") return translateText("gearLevel.notCrafted", {}, "Not Crafted");
+  let translated = label;
+  translated = translated.replace("Green", translateText("gearColor.green", {}, "Green"));
+  translated = translated.replace("Blue", translateText("gearColor.blue", {}, "Blue"));
+  translated = translated.replace("Purple", translateText("gearColor.purple", {}, "Purple"));
+  translated = translated.replace("Gold", translateText("gearColor.gold", {}, "Gold"));
+  translated = translated.replace("Red", translateText("gearColor.red", {}, "Red"));
+  translated = translated.replace("Level", translateText("gearLevel.level", {}, "Level"));
+  return translated;
+}
+
 function buildGearLevelDropdown(selectEl) {
   if (!CHIEF_GEAR_DATA || !CHIEF_GEAR_DATA.levelOrder) return;
   selectEl.innerHTML = "";
@@ -2041,7 +2054,7 @@ function buildGearLevelDropdown(selectEl) {
     const opt = document.createElement("option");
     opt.value = levelKey;
     const levelInfo = CHIEF_GEAR_DATA.levels[levelKey];
-    opt.textContent = levelInfo && levelInfo.label ? levelInfo.label : levelKey;
+    opt.textContent = levelInfo && levelInfo.label ? translateGearLabel(levelInfo.label) : levelKey;
     selectEl.appendChild(opt);
   });
 }
@@ -2412,7 +2425,7 @@ function runSmartUpgrade(currentLevels, materials) {
         labelGroups[label] = (labelGroups[label] || 0) + 1;
       });
       Object.entries(labelGroups).forEach(([label, count]) => {
-        upgradeLog.push(`Upgraded ${count} gear piece${count === 1 ? "" : "s"} to ${label}`);
+        upgradeLog.push(translateText("results.upgradedPiecesTo", { count, label }, `Upgraded ${count} gear piece${count === 1 ? "" : "s"} to ${label}`));
         totalPiecesUpgraded += count;
       });
     }
@@ -2449,7 +2462,8 @@ function onGearCalculateClick() {
 
   const costs = calculateGearCost(currentLevels, targetLevels);
   if (!costs) {
-    renderChiefGearResult("<p>Error: Gear data not loaded.</p>");
+    const errorLabel = escapeHtml(translateText("alerts.dataLoadingError", {}, "Error loading calculator data. Please refresh the page."));
+    renderChiefGearResult(`<p>${errorLabel}</p>`);
     return;
   }
 
@@ -2473,10 +2487,10 @@ function onGearCalculateClick() {
   const designPlansLabel = escapeHtml(translateText("labels.designPlans", {}, "Design Plans"));
   const lunarAmberLabel = escapeHtml(translateText("labels.lunarAmber", {}, "Lunar Amber"));
 
-  let html = "";
-  html += `
+  const costSummaryLabel = escapeHtml(translateText("results.charmCostSummary", {}, "COST SUMMARY"));
+  let html = `
     <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
-      <strong>COST SUMMARY</strong><br>
+      <strong>${costSummaryLabel}</strong><br>
       ${hardenedAlloyLabel}: ${formatNumber(costs.hardenedAlloy)} | 
       ${polishingSolutionLabel}: ${formatNumber(costs.polishingSolution)} | 
       ${designPlansLabel}: ${formatNumber(costs.designPlans)} | 
@@ -2484,9 +2498,10 @@ function onGearCalculateClick() {
     </div>
   `;
 
+  const afterUpgradeBalanceLabel = escapeHtml(translateText("results.afterUpgradeBalance", {}, "After Upgrade (Backpack Balance)"));
   html += `
     <div class="card-panel" style="margin-top: 15px;">
-      <strong>AFTER UPGRADE (MATERIAL BALANCE)</strong><br>
+      <strong>${afterUpgradeBalanceLabel}</strong><br>
       ${hardenedAlloyLabel}: ${formatNumber(remainingMaterials.hardenedAlloy)} | 
       ${polishingSolutionLabel}: ${formatNumber(remainingMaterials.polishingSolution)} | 
       ${designPlansLabel}: ${formatNumber(remainingMaterials.designPlans)} | 
@@ -2556,9 +2571,15 @@ function onGearCalculateClick() {
   const optimized = calculateOptimizedPlan(currentLevels, targetLevels, availableMaterials);
 
   // Render Optimized Plan results
-  let optimizedHtml = "<div class='card-panel' style='margin-top:15px;'><strong>OPTIMIZED PLAN</strong><br>";
+  const optimizedPlanLabel = escapeHtml(translateText("results.optimizedPlan", {}, "OPTIMIZED PLAN"));
+  const gearPieceLabel = escapeHtml(translateText("results.gearPiece", {}, "Gear Piece"));
+  const finalLevelLabel = escapeHtml(translateText("results.finalLevel", {}, "Final Level"));
+  const materialsRemainingLabel = escapeHtml(translateText("results.materialsRemaining", {}, "Materials Remaining:"));
+  const noUpgradesPossibleLabel = escapeHtml(translateText("results.charmNoUpgradesPossible", {}, "No upgrades possible with current materials."));
+
+  let optimizedHtml = `<div class='card-panel' style='margin-top:15px;'><strong>${optimizedPlanLabel}</strong><br>`;
   if (optimized && optimized.plan.length > 0) {
-    optimizedHtml += "<table class='optimized-plan-table'><thead><tr><th>Gear Piece</th><th>Final Level</th></tr></thead><tbody>";
+    optimizedHtml += `<table class='optimized-plan-table'><thead><tr><th>${gearPieceLabel}</th><th>${finalLevelLabel}</th></tr></thead><tbody>`;
     GEAR_SLOTS.forEach(slot => {
       const finalLevel = optimized.optimizedLevels[slot] || currentLevels[slot] || "none";
       const levelLabel = CHIEF_GEAR_DATA.levels[finalLevel]?.label || finalLevel;
@@ -2566,14 +2587,14 @@ function onGearCalculateClick() {
       optimizedHtml += `<tr><td>${escapeHtml(pieceLabel)}</td><td>${escapeHtml(levelLabel)}</td></tr>`;
     });
     optimizedHtml += "</tbody></table>";
-    optimizedHtml += `<div style='margin-top:10px;'><strong>Materials Remaining:</strong><br>
-      Hardened Alloy: ${formatNumber(optimized.resources.hardenedAlloy)} | 
-      Polishing Solution: ${formatNumber(optimized.resources.polishingSolution)} | 
-      Design Plans: ${formatNumber(optimized.resources.designPlans)} | 
-      Lunar Amber: ${formatNumber(optimized.resources.lunarAmber)}
+    optimizedHtml += `<div style='margin-top:10px;'><strong>${materialsRemainingLabel}</strong><br>
+      ${hardenedAlloyLabel}: ${formatNumber(optimized.resources.hardenedAlloy)} | 
+      ${polishingSolutionLabel}: ${formatNumber(optimized.resources.polishingSolution)} | 
+      ${designPlansLabel}: ${formatNumber(optimized.resources.designPlans)} | 
+      ${lunarAmberLabel}: ${formatNumber(optimized.resources.lunarAmber)}
     </div>`;
   } else {
-    optimizedHtml += "<em>No upgrades possible with current resources.</em>";
+    optimizedHtml += `<em>${noUpgradesPossibleLabel}</em>`;
   }
   optimizedHtml += "</div>";
 
@@ -2600,7 +2621,8 @@ function onGearCalculateClick() {
       totalSvsPoints += score * 36;
     }
   });
-  let svsPointsHtml = `<div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">\n      <strong>SVS Points Gained:</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>\n    </div>`;
+  const svsPointsGainedLabel = escapeHtml(translateText("results.svsPointsGained", {}, "SVS Points Gained:"));
+  let svsPointsHtml = `<div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">\n      <strong>${svsPointsGainedLabel}</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>\n    </div>`;
   renderChiefGearResult(html + svsPointsHtml + optimizedHtml);
   saveChiefGearState();
 }
@@ -2640,23 +2662,33 @@ function onGearSmartUpgradeClick() {
   */
 
   // Build HTML result
+  const smartUpgradeCompleteLabel = escapeHtml(translateText("results.smartUpgradeComplete", {}, "Smart Upgrade Complete"));
+  const gearPiecesUpgradedLabel = escapeHtml(translateText("results.upgradedPiecesTo", { count: result.totalPiecesUpgraded, label: "" }, "Gear pieces upgraded").replace(": ", ""));
+  const materialsRemainingLabel = escapeHtml(translateText("results.materialsRemaining", {}, "Materials Remaining"));
+  const noUpgradesPossibleLabel = escapeHtml(translateText("results.charmNoUpgradesPossible", {}, "No upgrades possible with current materials."));
+
+  const hardenedAlloyLabel = escapeHtml(translateText("labels.hardenedAlloy", {}, "Hardened Alloy"));
+  const polishingSolutionLabel = escapeHtml(translateText("labels.polishingSolution", {}, "Polishing Solution"));
+  const designPlansLabel = escapeHtml(translateText("labels.designPlans", {}, "Design Plans"));
+  const lunarAmberLabel = escapeHtml(translateText("labels.lunarAmber", {}, "Lunar Amber"));
+
   let html = `<div class="gear-result-container">`;
-  html += `<div class="gear-result-row"><strong>Smart Upgrade Complete</strong></div>`;
+  html += `<div class="gear-result-row"><strong>${smartUpgradeCompleteLabel}</strong></div>`;
   if (result.upgradeLog.length > 0) {
-    html += `<div class="gear-result-row">Gear pieces upgraded: ${formatNumber(result.totalPiecesUpgraded)}</div>`;
+    html += `<div class="gear-result-row">${gearPiecesUpgradedLabel}: ${formatNumber(result.totalPiecesUpgraded)}</div>`;
     html += `<div class="gear-upgrade-log">`;
     result.upgradeLog.forEach(logEntry => {
       html += `<div class="gear-log-entry">• ${logEntry}</div>`;
     });
     html += `</div>`;
   } else {
-    html += `<p>No upgrades possible with current materials.</p>`;
+    html += `<p>${noUpgradesPossibleLabel}</p>`;
   }
-  html += `<div class="gear-result-row"><strong>Materials Remaining</strong></div>`;
-  html += `<div class="gear-result-row">Hardened Alloy: ${formatNumber(result.materialsRemaining.hardenedAlloy)}</div>`;
-  html += `<div class="gear-result-row">Polishing Solution: ${formatNumber(result.materialsRemaining.polishingSolution)}</div>`;
-  html += `<div class="gear-result-row">Design Plans: ${formatNumber(result.materialsRemaining.designPlans)}</div>`;
-  html += `<div class="gear-result-row">Lunar Amber: ${formatNumber(result.materialsRemaining.lunarAmber)}</div>`;
+  html += `<div class="gear-result-row"><strong>${materialsRemainingLabel}</strong></div>`;
+  html += `<div class="gear-result-row">${hardenedAlloyLabel}: ${formatNumber(result.materialsRemaining.hardenedAlloy)}</div>`;
+  html += `<div class="gear-result-row">${polishingSolutionLabel}: ${formatNumber(result.materialsRemaining.polishingSolution)}</div>`;
+  html += `<div class="gear-result-row">${designPlansLabel}: ${formatNumber(result.materialsRemaining.designPlans)}</div>`;
+  html += `<div class="gear-result-row">${lunarAmberLabel}: ${formatNumber(result.materialsRemaining.lunarAmber)}</div>`;
   // --- SVS Points Calculation for Chief Gear Smart Upgrade ---
   let totalSvsPoints = 0;
   GEAR_SLOTS.forEach(slot => {
@@ -2680,7 +2712,7 @@ function onGearSmartUpgradeClick() {
       totalSvsPoints += score * 36;
     }
   });
-  let svsPointsHtml = `<div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">\n      <strong>SVS Points Gained:</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>\n    </div>`;
+  let svsPointsHtml = `<div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">\n      <strong>${escapeHtml(translateText("results.svsPointsGained", {}, "SVS Points Gained:"))}</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>\n    </div>`;
   html += svsPointsHtml;
   html += `</div>`;
   renderChiefGearResult(html);
@@ -2720,7 +2752,7 @@ function buildCharmLevelDropdown(selectEl) {
     const opt = document.createElement("option");
     opt.value = levelKey;
     const levelInfo = CHIEF_CHARM_DATA.levels[levelKey];
-    opt.textContent = levelInfo && levelInfo.label ? levelInfo.label : levelKey;
+    opt.textContent = levelInfo && levelInfo.label ? translateGearLabel(levelInfo.label) : levelKey;
     selectEl.appendChild(opt);
   });
 }
@@ -3156,7 +3188,7 @@ function onCharmCalculateClick() {
     if (totalSvsPoints > 0) {
       svsPointsEl.style.display = "block";
       svsPointsEl.innerHTML = `<div class="card-panel" style="margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;">
-        <strong>SVS Points Gained:</strong> <span style="font-size:1.2em;">${formatNumber(totalSvsPoints)}</span>
+        <strong>${escapeHtml(translateText("results.svsPointsGained", {}, "SVS Points Gained:"))}</strong> <span style="font-size:1.2em;">${formatNumber(totalSvsPoints)}</span>
       </div>`;
     } else {
       svsPointsEl.style.display = "none";
@@ -3178,7 +3210,7 @@ function onCharmCalculateClick() {
             ${jewelSecretsLabel}: ${formatNumber(remaining.jewelSecrets)}
           </div>
           <div class=\"card-panel\" style=\"margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;\">
-            <strong>SVS Points Gained:</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>
+            <strong>${escapeHtml(translateText("results.svsPointsGained", {}, "SVS Points Gained:"))}</strong> <span style=\"font-size:1.2em;\">${formatNumber(totalSvsPoints)}</span>
           </div>
         `;
 
@@ -3312,11 +3344,11 @@ function initPetsPanel() {
       const prevName = PET_ORDER[index - 1];
       const prevData = PET_UPGRADES.pets[prevName];
       const reqLevel = (prevData.tier === "SSR") ? 30 : 15;
-      const reqLabel = `Reach Lv.${reqLevel} to unlock next`;
+      const reqLabel = translateText("comingSoon.unlockRequirement", { level: reqLevel }, `Reach Lv.${reqLevel} to unlock next`);
       
       html += `
         <div class="pet-requirement-line">
-          <span class="pet-requirement-text">${reqLabel}</span>
+          <span class="pet-requirement-text">${escapeHtml(reqLabel)}</span>
         </div>
       `;
     }
@@ -3490,7 +3522,7 @@ function onPetsCalculateClick() {
   });
 
   if (targets.length === 0) {
-    alert("Please set at least one target level higher than current.");
+    alert(translateText("results.setTargetHigher", {}, "Please set at least one target level higher than current."));
     return;
   }
 
@@ -3685,7 +3717,7 @@ function renderPetsResult(result) {
       ${translateText("labels.strengtheningSerum", {}, "Strengthening Serum")}: <span style="color: ${strengtheningSerumDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(strengtheningSerumDiff)}</span>
     </div>
     <div class="card-panel" style="margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;">
-      <strong>SVS Points Gained:</strong> <span style="font-size:1.2em;">${formatNumber(grandTotal.svsPoints)}</span>
+      <strong>${translateText("results.svsPointsGained", {}, "SVS Points Gained:")}</strong> <span style="font-size:1.2em;">${formatNumber(grandTotal.svsPoints)}</span>
     </div>
 
     <h4 style="margin: 15px 0 10px;">${translateText("results.breakdown", {}, "Breakdown")}</h4>
@@ -3694,9 +3726,12 @@ function renderPetsResult(result) {
   petBreakdown.forEach(p => {
     html += `
       <div class="card-panel" style="margin-bottom: 10px; border-left: 3px solid #ffe08a;">
-        <strong>${escapeHtml(p.name)}</strong> (${p.startLevel} → ${p.endLevel})<br>
+        <strong>${escapeHtml(translateText(`pet.${p.name}`, {}, p.name))}</strong> (${p.startLevel} → ${p.endLevel})<br>
         <span style="font-size:0.9em; opacity:0.8;">
-          Food: ${formatNumber(p.totals.petFood)} | Manuals: ${formatNumber(p.totals.tamingManual)} | Potions: ${formatNumber(p.totals.energizingPotion)} | Serums: ${formatNumber(p.totals.strengtheningSerum)}
+          ${translateText("labels.meat", {}, "Food")}: ${formatNumber(p.totals.petFood)} | 
+          ${translateText("labels.tamingManual", {}, "Manuals")}: ${formatNumber(p.totals.tamingManual)} | 
+          ${translateText("labels.energizingPotion", {}, "Potions")}: ${formatNumber(p.totals.energizingPotion)} | 
+          ${translateText("labels.strengtheningSerum", {}, "Serums")}: ${formatNumber(p.totals.strengtheningSerum)}
         </span>
       </div>
     `;
@@ -4131,12 +4166,22 @@ function onUpgradeCalculateClick() {
   // Bear Hunt Mail summary block
   if (bearHuntMails.length > 0) {
     const totalBearMails = bearHuntMails.reduce((sum, m) => sum + Math.max(0, m.count || 0), 0);
+    const summaryLabel = translateText("results.bearHuntMailSummary", { count: totalBearMails.toLocaleString() }, `BEAR HUNT MAIL (+${totalBearMails.toLocaleString()} mail added to backpack)`);
+    
+    const meatLabel = translateText("labels.meat", {}, "Meat");
+    const woodLabel = translateText("labels.wood", {}, "Wood");
+    const coalLabel = translateText("labels.coal", {}, "Coal");
+    const ironLabel = translateText("labels.iron", {}, "Iron");
+    const essenceStonesLabel = translateText("labels.essenceStones", {}, "Essence Stones");
+    const luckyChestsLabel = translateText("labels.luckyHeroGearChests", {}, "Lucky Hero Gear Chests");
+    const allianceTokensLabel = translateText("labels.allianceTokens", {}, "Alliance Tokens");
+
     resultsHTML += `
       <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,165,0,0.7);">
-        <strong>BEAR HUNT MAIL (+${totalBearMails.toLocaleString()} mail added to backpack)</strong><br>
-        Meat: +${bearHuntTotals.meat.toLocaleString()} | Wood: +${bearHuntTotals.wood.toLocaleString()} | Coal: +${bearHuntTotals.coal.toLocaleString()} | Iron: +${bearHuntTotals.iron.toLocaleString()}<br>
-        Essence Stones: +${bearHuntTotals.essenceStones.toLocaleString()} | Lucky Hero Gear Chests: +${bearHuntTotals.luckyHeroGearChest.toLocaleString()}<br>
-        XP Components: +${bearHuntTotals.xp10.toLocaleString()} \xd7 10XP, +${bearHuntTotals.xp100.toLocaleString()} \xd7 100XP | Alliance Tokens: +${bearHuntTotals.allianceToken.toLocaleString()}
+        <strong>${escapeHtml(summaryLabel)}</strong><br>
+        ${escapeHtml(meatLabel)}: +${bearHuntTotals.meat.toLocaleString()} | ${escapeHtml(woodLabel)}: +${bearHuntTotals.wood.toLocaleString()} | ${escapeHtml(coalLabel)}: +${bearHuntTotals.coal.toLocaleString()} | ${escapeHtml(ironLabel)}: +${bearHuntTotals.iron.toLocaleString()}<br>
+        ${escapeHtml(essenceStonesLabel)}: +${bearHuntTotals.essenceStones.toLocaleString()} | ${escapeHtml(luckyChestsLabel)}: +${bearHuntTotals.luckyHeroGearChest.toLocaleString()}<br>
+        XP Components: +${bearHuntTotals.xp10.toLocaleString()} \xd7 10XP, +${bearHuntTotals.xp100.toLocaleString()} \xd7 100XP | ${escapeHtml(allianceTokensLabel)}: +${bearHuntTotals.allianceToken.toLocaleString()}
       </div>
     `;
   }
@@ -4222,36 +4267,7 @@ function onUpgradeCalculateClick() {
 // interactive while it fetches the JSON files.
 // window.dataReadyPromise = loadData();
 
-document.addEventListener("wos:languagechange", () => {
-  applyTheme(document.body.dataset.theme || localStorage.getItem(THEME_STORAGE_KEY) || "wos");
-
-  if (activeCalculator !== CALCULATOR_KEYS.UPGRADE) {
-    renderComingSoonPanel(activeCalculator);
-  }
-
-  if (BUILDING_COSTS && PREREQUISITES) {
-    const targetBuilding = document.getElementById("targetBuilding")?.value || "furnace";
-    const currentLevelKey = document.getElementById("currentLevel")?.value || "1";
-    const targetLevelKey = document.getElementById("targetLevel")?.value || currentLevelKey;
-
-    renderOptionalBuildings();
-    renderBearHuntMails();
-    updatePrerequisites(targetBuilding, currentLevelKey, targetLevelKey);
-
-    const resultEl = document.getElementById("result");
-    if (resultEl?.dataset.hasResults === "true") {
-      document.getElementById("calculateBtn")?.click();
-    }
-  }
-
-  const updateToast = document.getElementById("swUpdateToast");
-  if (updateToast) {
-    const label = updateToast.querySelector("span");
-    const button = updateToast.querySelector("button");
-    if (label) label.textContent = translateText("update.ready", {}, "A new version is ready.");
-    if (button) button.textContent = translateText("buttons.refresh", {}, "Refresh");
-  }
-});
+// Language change is now handled by main_spa_loader.js to fully re-render the active panel.
 
 function showUpdateToast(registration) {
   const existingToast = document.getElementById("swUpdateToast");

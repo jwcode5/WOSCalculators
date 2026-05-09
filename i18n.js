@@ -36,6 +36,7 @@ const TRANSLATIONS = {
       calculatorTabs: "Calculator tabs",
       siteLinks: "Site links",
       calculator: "Calculator",
+      selectCalculator: "Select Calculator",
       about: "About",
       contact: "Contact"
     },
@@ -171,7 +172,8 @@ const TRANSLATIONS = {
       placeholderIntro: "This calculator tab is visible now as a placeholder so users can see what is planned next.",
       placeholderOutro: "Once this calculator is live, this message can be removed and replaced with the full tool.",
       heading: "{calculator} - Coming Soon",
-      accountStructured: "Account data is already structured for {account}. When {calculator} goes live, its values will be saved under this same account and will switch with your account selector."
+      accountStructured: "Account data is already structured for {account}. When {calculator} goes live, its values will be saved under this same account and will switch with your account selector.",
+      unlockRequirement: "Reach Lv.{level} to unlock next"
     },
     aboutPage: {
       heading: "About",
@@ -235,13 +237,29 @@ const TRANSLATIONS = {
       charmNoUpgradesPossible: "No upgrades possible with current materials.",
       charmMaterialsRemaining: "Materials Remaining",
       charmsUpgraded: "Charms upgraded",
-      charmBatchUpgrade: "Upgraded {count} charms to {level}"
+      charmBatchUpgrade: "Upgraded {count} charms to {level}",
+      optimizedPlan: "OPTIMIZED PLAN",
+      gearPiece: "Gear Piece",
+      finalLevel: "Final Level",
+      svsPointsGained: "SVS Points Gained:",
+      materialsRemaining: "Materials Remaining:"
     },
     resource: {
       meat: "Meat",
       wood: "Wood",
       coal: "Coal",
       iron: "Iron"
+    },
+    gearColor: {
+      green: "Green",
+      blue: "Blue",
+      purple: "Purple",
+      gold: "Gold",
+      red: "Red"
+    },
+    gearLevel: {
+      notCrafted: "Not Crafted",
+      level: "Level"
     }
   },
   es: {
@@ -278,6 +296,7 @@ const TRANSLATIONS = {
       calculatorTabs: "Pestanas de calculadora",
       siteLinks: "Enlaces del sitio",
       calculator: "Calculadora",
+      selectCalculator: "Seleccionar Calculadora",
       about: "Acerca de",
       contact: "Contacto"
     },
@@ -413,7 +432,8 @@ const TRANSLATIONS = {
       placeholderIntro: "Esta pestana de calculadora esta visible ahora como marcador para que los usuarios puedan ver lo que sigue.",
       placeholderOutro: "Cuando esta calculadora este lista, este mensaje podra eliminarse y reemplazarse por la herramienta completa.",
       heading: "{calculator} - Proximamente",
-      accountStructured: "Los datos de la cuenta ya estan preparados para {account}. Cuando {calculator} este disponible, sus valores se guardaran bajo esta misma cuenta y cambiaran con tu selector de cuenta."
+      accountStructured: "Los datos de la cuenta ya estan preparados para {account}. Cuando {calculator} este disponible, sus valores se guardaran bajo esta misma cuenta y cambiaran con tu selector de cuenta.",
+      unlockRequirement: "Alcanza el Nv.{level} para desbloquear el siguiente"
     },
     aboutPage: {
       heading: "Acerca de",
@@ -477,7 +497,12 @@ const TRANSLATIONS = {
       charmNoUpgradesPossible: "No es posible realizar mejoras con los materiales actuales.",
       charmMaterialsRemaining: "Materiales restantes",
       charmsUpgraded: "Talismanes mejorados",
-      charmBatchUpgrade: "Se mejoraron {count} talismanes al nivel {level}"
+      charmBatchUpgrade: "Se mejoraron {count} talismanes al nivel {level}",
+      optimizedPlan: "PLAN OPTIMIZADO",
+      gearPiece: "Pieza de equipo",
+      finalLevel: "Nivel final",
+      svsPointsGained: "Puntos de SVS ganados:",
+      materialsRemaining: "Materiales restantes:"
     },
     resource: {
       meat: "Carne",
@@ -520,6 +545,7 @@ const TRANSLATIONS = {
       calculatorTabs: "Rechner-Tabs",
       siteLinks: "Website-Links",
       calculator: "Rechner",
+      selectCalculator: "Rechner auswählen",
       about: "Über",
       contact: "Kontakt"
     },
@@ -655,7 +681,8 @@ const TRANSLATIONS = {
       placeholderIntro: "Dieser Rechner-Tab ist derzeit als Platzhalter sichtbar, damit Nutzer sehen können, was als Nächstes geplant ist.",
       placeholderOutro: "Sobald dieser Rechner live ist, kann diese Nachricht entfernt und durch das vollständige Tool ersetzt werden.",
       heading: "{calculator} - Demnächst",
-      accountStructured: "Kontodaten sind bereits für {account} vorbereitet. Wenn {calculator} live geht, werden die Werte unter demselben Konto gespeichert und mit deiner Kontoauswahl umgeschaltet."
+      accountStructured: "Kontodaten sind bereits für {account} vorbereitet. Wenn {calculator} live geht, werden die Werte unter demselben Konto gespeichert und mit deiner Kontoauswahl umgeschaltet.",
+      unlockRequirement: "Erreiche Stufe {level}, um das nächste freizuschalten"
     },
     aboutPage: {
       heading: "Über",
@@ -719,7 +746,12 @@ const TRANSLATIONS = {
       charmNoUpgradesPossible: "Mit den aktuellen Materialien sind keine Upgrades möglich.",
       charmMaterialsRemaining: "Verbleibende Materialien",
       charmsUpgraded: "Talismane verbessert",
-      charmBatchUpgrade: "{count} Talismane auf {level} verbessert"
+      charmBatchUpgrade: "{count} Talismane auf {level} verbessert",
+      optimizedPlan: "OPTIMIERTER PLAN",
+      gearPiece: "Ausrüstungsstück",
+      finalLevel: "Endstufe",
+      svsPointsGained: "Gewonnene SVS-Punkte:",
+      materialsRemaining: "Verbleibende Materialien:"
     },
     resource: {
       meat: "Fleisch",
@@ -762,6 +794,7 @@ const TRANSLATIONS = {
       calculatorTabs: "Onglets de calculatrice",
       siteLinks: "Liens du site",
       calculator: "Calculatrice",
+      selectCalculator: "Sélectionner un calculateur",
       about: "À propos",
       contact: "Contact"
     },
@@ -897,7 +930,8 @@ const TRANSLATIONS = {
       placeholderIntro: "Cet onglet de calculatrice est visible comme emplacement réservé afin que les utilisateurs voient ce qui arrive ensuite.",
       placeholderOutro: "Une fois cette calculatrice disponible, ce message pourra être retiré et remplacé par l'outil complet.",
       heading: "{calculator} - Bientôt disponible",
-      accountStructured: "Les données du compte sont déjà structurées pour {account}. Lorsque {calculator} sera disponible, ses valeurs seront enregistrées sous ce même compte et changeront avec votre sélecteur de compte."
+      accountStructured: "Les données du compte sont déjà structurées pour {account}. Lorsque {calculator} sera disponible, ses valeurs seront enregistrées sous ce même compte et changeront avec votre sélecteur de compte.",
+      unlockRequirement: "Atteignez le Niv.{level} pour débloquer le suivant"
     },
     aboutPage: {
       heading: "À propos",
@@ -961,7 +995,12 @@ const TRANSLATIONS = {
       charmNoUpgradesPossible: "Aucune amélioration possible avec les matériaux actuels.",
       charmMaterialsRemaining: "Matériaux restants",
       charmsUpgraded: "Charmes améliorés",
-      charmBatchUpgrade: "{count} charmes améliorés au niveau {level}"
+      charmBatchUpgrade: "{count} charmes améliorés au niveau {level}",
+      optimizedPlan: "PLAN OPTIMISÉ",
+      gearPiece: "Pièce d'équipement",
+      finalLevel: "Niveau final",
+      svsPointsGained: "Points SVS gagnés :",
+      materialsRemaining: "Matériaux restants :"
     },
     resource: {
       meat: "Viande",
@@ -997,21 +1036,32 @@ const TRANSLATIONS = {
       namePrompt: "Nome da conta:",
       renamePrompt: "Renomear conta:",
       defaultName: "Conta {number}",
-      cannotDeleteOnly: "Nao e possivel excluir a unica conta.",
-      deleteConfirm: "Excluir \"{name}\"? Esta acao nao pode ser desfeita."
+      cannotDeleteOnly: "Não é possível excluir a única conta.",
+      deleteConfirm: "Excluir \"{name}\"? Esta ação não pode ser desfeita."
     },
     nav: {
       calculatorTabs: "Abas da calculadora",
       siteLinks: "Links do site",
       calculator: "Calculadora",
+      selectCalculator: "Selecionar Calculadora",
       about: "Sobre",
       contact: "Contato"
     },
     calculator: {
-      upgrade: "Upgrade",
+      upgrade: "Melhoria",
       chiefGear: "Equipamento do Chefe",
       chiefCharm: "Talismã do Chefe",
+      pets: "Mascotes",
       whatIf: "E se",
+      experts: "Calculadora de Especialistas",
+      heroGear: "Equipamento de Herói",
+      koi: "Calculadora de KoI",
+      research: "Upgrades de Pesquisa",
+      svs: "Calculadora de SvS",
+      troopTraining: "Treinamento de Tropas",
+      warAcademy: "Academia de Guerra",
+      about: "Sobre",
+      contact: "Contato",
       chiefGearFull: "Calculadora de Equipamento do Chefe",
       chiefCharmFull: "Calculadora de Talismã do Chefe",
       whatIfFull: "Calculadora E se",
@@ -1079,7 +1129,13 @@ const TRANSLATIONS = {
       charm: "Talismã",
       charmDesigns: "Desenhos de Talismã",
       charmGuides: "Guias de Talismã",
-      jewelSecrets: "Segredos de Joia"
+      jewelSecrets: "Segredos de Joia",
+      agnusProjectManagement: "Gestão de Projetos da Agnus",
+      essenceStones: "Pedras de Essência",
+      luckyHeroGearChests: "Baús de Equip. Heroico de Sorte",
+      allianceTokens: "Fichas de Aliança",
+      buffNote: "Nota: Se bônus de construção (ex: Hiena, Mercantilismo, VP) já estiverem ativos, eles já estão contados na sua velocidade atual. Não os adicione separadamente.",
+      hyenaNote: "O Ajudante do Construtor (Hiena) aplica-se apenas ao custo de recursos da Fornalha/QG e Muralha."
     },
     buttons: {
       addBuilding: "+ Adicionar edifício",
@@ -1098,21 +1154,39 @@ const TRANSLATIONS = {
     building: {
       furnace: "Fornalha",
       embassy: "Embaixada",
-      research_center: "Centro de pesquisa",
+      research_center: "Centro de Pesquisa",
       infirmary: "Enfermaria",
-      infantry_camp: "Acampamento de infantaria",
-      lancer_camp: "Acampamento de lanceiros",
-      marksman_camp: "Acampamento de atiradores",
+      infantry_camp: "Acampamento de Infantaria",
+      lancer_camp: "Acampamento de Lanceiros",
+      marksman_camp: "Acampamento de Atiradores",
       barricade: "Barricada",
-      command_center: "Centro de comando",
-      storehouse: "Armazém"
+      command_center: "Centro de Comando",
+      storehouse: "Armazém",
+      arcticWolf: "Lobo Ártico",
+      muskOx: "Boi Almiscarado",
+      giantTapir: "Anta Gigante",
+      titanRoc: "Roc Titã",
+      giantElk: "Alce Gigante",
+      snowLeopard: "Leopardo das Neves",
+      saberToothTiger: "Tigre Dente-de-Sabre",
+      lavaTurtles: "Tartaruga de Lava",
+      ironRhino: "Rinoceronte de Ferro",
+      iceDragon: "Dragão de Gelo",
+      caveLion: "Leão das Cavernas",
+      snowApe: "Macaco da Neve",
+      mammoth: "Mamute",
+      frostGorilla: "Gorila do Gelo",
+      frostscaleChameleon: "Camaleão de Escamas de Gelo",
+      abyssalShelldragon: "Dragão-casca Abissal",
+      caveHyena: "Hiena das Cavernas"
     },
     comingSoon: {
       title: "Em breve",
       placeholderIntro: "Esta aba da calculadora está visível como marcador para que os usuários possam ver o que vem a seguir.",
       placeholderOutro: "Quando esta calculadora estiver disponível, esta mensagem poderá ser removida e substituída pela ferramenta completa.",
       heading: "{calculator} - Em breve",
-      accountStructured: "Os dados da conta já estão estruturados para {account}. Quando {calculator} estiver ativo, seus valores serão salvos nesta mesma conta e mudarão com o seletor de conta."
+      accountStructured: "Os dados da conta já estão estruturados para {account}. Quando {calculator} estiver ativo, seus valores serão salvos nesta mesma conta e mudarão com o seletor de conta.",
+      unlockRequirement: "Alcance o Nv.{level} para desbloquear o próximo"
     },
     aboutPage: {
       heading: "Sobre",
@@ -1176,13 +1250,34 @@ const TRANSLATIONS = {
       charmNoUpgradesPossible: "Nenhum upgrade possível com os materiais atuais.",
       charmMaterialsRemaining: "Materiais Restantes",
       charmsUpgraded: "Talismãs aprimorados",
-      charmBatchUpgrade: "Aprimorado {count} talismãs para {level}"
+      charmBatchUpgrade: "Aprimorado {count} talismãs para {level}",
+      optimizedPlan: "PLANO OTIMIZADO",
+      gearPiece: "Peça de Equipamento",
+      finalLevel: "Nível Final",
+      svsPointsGained: "Pontos de SVS Ganhos:",
+      materialsRemaining: "Materiais Restantes:",
+      breakdown: "Detalhamento",
+      bearHuntMailSummary: "CORREIO DE CAÇA AO URSO (+{count} correios adicionados à mochila)",
+      setTargetHigher: "Por favor, defina pelo menos um nível alvo maior que o atual.",
+      upgradedPiecesTo: "Atualizou {count} peça(s) de equipamento para {label}",
+      smartUpgradeComplete: "Smart Upgrade Concluído"
     },
     resource: {
       meat: "Carne",
       wood: "Madeira",
       coal: "Carvão",
       iron: "Ferro"
+    },
+    gearColor: {
+      green: "Verde",
+      blue: "Azul",
+      purple: "Roxo",
+      gold: "Dourado",
+      red: "Vermelho"
+    },
+    gearLevel: {
+      notCrafted: "Não Fabricado",
+      level: "Nível"
     }
   },
   "zh-CN": {
@@ -1219,6 +1314,7 @@ const TRANSLATIONS = {
       calculatorTabs: "计算器选项卡",
       siteLinks: "站点链接",
       calculator: "计算器",
+      selectCalculator: "选择计算器",
       about: "关于",
       contact: "联系"
     },
@@ -1320,14 +1416,30 @@ const TRANSLATIONS = {
       marksman_camp: "射手营",
       barricade: "路障",
       command_center: "指挥中心",
-      storehouse: "仓库"
+      storehouse: "仓库",
+      arcticWolf: "北极狼",
+      muskOx: "麝牛",
+      giantTapir: "巨貘",
+      titanRoc: "泰坦大鹏",
+      giantElk: "巨驼鹿",
+      snowLeopard: "雪豹",
+      caveLion: "穴狮",
+      snowApe: "雪猿",
+      ironRhino: "铁犀",
+      saberToothTiger: "剑齿虎",
+      mammoth: "猛犸象",
+      frostGorilla: "霜原大猩猩",
+      frostscaleChameleon: "霜鳞变色龙",
+      abyssalShelldragon: "深渊甲壳龙",
+      caveHyena: "穴鬣狗"
     },
     comingSoon: {
       title: "即将推出",
       placeholderIntro: "此计算器标签当前作为占位符显示，方便用户查看后续计划。",
       placeholderOutro: "当该计算器上线后，此消息可移除并替换为完整工具。",
       heading: "{calculator} - 即将推出",
-      accountStructured: "{account} 的账号数据结构已准备完成。{calculator} 上线后，其数值将保存在同一账号下，并会随账号选择器切换。"
+      accountStructured: "{account} 的账号数据结构已准备完成。{calculator} 上线后，其数值将保存在同一账号下，并会随账号选择器切换。",
+      unlockRequirement: "达到 {level} 级解锁下一个"
     },
     aboutPage: {
       heading: "关于",
@@ -1434,6 +1546,7 @@ const TRANSLATIONS = {
       calculatorTabs: "Zakładki kalkulatora",
       siteLinks: "Linki strony",
       calculator: "Kalkulator",
+      selectCalculator: "Wybierz kalkulator",
       about: "O nas",
       contact: "Kontakt"
     },
@@ -1644,6 +1757,7 @@ const TRANSLATIONS = {
       calculatorTabs: "계산기 탭",
       siteLinks: "사이트 링크",
       calculator: "계산기",
+      selectCalculator: "계산기 선택",
       about: "소개",
       contact: "문의"
     },
@@ -1826,7 +1940,12 @@ const TRANSLATIONS = {
       charmNoUpgradesPossible: "현재 재료로는 업그레이드할 수 없습니다.",
       charmMaterialsRemaining: "남은 재료",
       charmsUpgraded: "부적 업그레이드 완료",
-      charmBatchUpgrade: "{count}개의 부적을 {level}(으)로 업그레이드함"
+      charmBatchUpgrade: "{count}개의 부적을 {level}(으)로 업그레이드함",
+      optimizedPlan: "최적화 계획",
+      gearPiece: "장비 조각",
+      finalLevel: "최종 레벨",
+      svsPointsGained: "획득한 SVS 포인트:",
+      materialsRemaining: "남은 재료:"
     },
     resource: {
       meat: "고기",
@@ -1869,6 +1988,7 @@ const TRANSLATIONS = {
       calculatorTabs: "計算機タブ",
       siteLinks: "サイトリンク",
       calculator: "計算機",
+      selectCalculator: "計算機を選択",
       about: "概要",
       contact: "連絡先"
     },
@@ -1876,6 +1996,7 @@ const TRANSLATIONS = {
       upgrade: "アップグレード",
       chiefGear: "チーフ装備",
       chiefCharm: "チーフチャーム",
+      pets: "ペット",
       whatIf: "もしもシミュレーション",
       chiefGearFull: "チーフ装備計算機",
       chiefCharmFull: "チーフチャーム計算機",
@@ -1970,7 +2091,22 @@ const TRANSLATIONS = {
       marksman_camp: "射手キャンプ",
       barricade: "バリケード",
       command_center: "司令センター",
-      storehouse: "倉庫"
+      storehouse: "倉庫",
+      arcticWolf: "ホッキョクオオカミ",
+      muskOx: "ジャコウウシ",
+      giantTapir: "巨バク",
+      titanRoc: "タイタンロック",
+      giantElk: "巨大ヘラジカ",
+      snowLeopard: "ユキヒョウ",
+      caveLion: "ホラアナライオン",
+      snowApe: "スノーエイプ",
+      ironRhino: "アイアンサイ",
+      saberToothTiger: "サーベルタイガー",
+      mammoth: "マンモス",
+      frostGorilla: "フロストゴリラ",
+      frostscaleChameleon: "フロストスケールカメレオン",
+      abyssalShelldragon: "アビサルシェルドラゴン",
+      caveHyena: "ホラアナハイエナ"
     },
     comingSoon: {
       title: "近日公開",
@@ -2025,7 +2161,12 @@ const TRANSLATIONS = {
       charmNoUpgradesPossible: "現在の材料ではアップグレードできません。",
       charmMaterialsRemaining: "残りの材料",
       charmsUpgraded: "チャームをアップグレードしました",
-      charmBatchUpgrade: "{count}個のチャームを{level}にアップグレード"
+      charmBatchUpgrade: "{count}個のチャームを{level}にアップグレード",
+      optimizedPlan: "最適化プラン",
+      gearPiece: "装備部位",
+      finalLevel: "最終レベル",
+      svsPointsGained: "獲得SVSポイント:",
+      materialsRemaining: "残り材料:"
     },
     resource: {
       meat: "肉",
@@ -2084,6 +2225,7 @@ const TRANSLATIONS = {
       calculatorTabs: "Mga tab ng calculator",
       siteLinks: "Mga link ng site",
       calculator: "Calculator",
+      selectCalculator: "Pumili ng Calculator",
       about: "Tungkol",
       contact: "Makipag-ugnayan"
     },
@@ -2091,6 +2233,7 @@ const TRANSLATIONS = {
       upgrade: "Upgrade",
       chiefGear: "Chief Gear",
       chiefCharm: "Chief Charm",
+      pets: "Mga Alagang Hayop",
       whatIf: "Paano kung",
       chiefGearFull: "Chief Gear Calculator",
       chiefCharmFull: "Chief Charm Calculator",

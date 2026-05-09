@@ -1,0 +1,29 @@
+[debug] [2026-05-09T22:21:09.446Z] ----------------------------------------------------------------------
+[debug] [2026-05-09T22:21:09.449Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\mecha\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2026-05-09T22:21:09.449Z] CLI Version:   15.17.0
+[debug] [2026-05-09T22:21:09.449Z] Platform:      win32
+[debug] [2026-05-09T22:21:09.450Z] Node Version:  v24.15.0
+[debug] [2026-05-09T22:21:09.450Z] Time:          Sat May 09 2026 17:21:09 GMT-0500 (Central Daylight Time)
+[debug] [2026-05-09T22:21:09.450Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-09T22:21:12.253Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-05-09T22:21:12.253Z] > authorizing via signed-in user (jwfire93@gmail.com)
+[debug] [2026-05-09T22:21:12.253Z] [iam] checking project embersmith-gaming for permissions ["firebase.projects.get"]
+[debug] [2026-05-09T22:21:12.254Z] Checked if tokens are valid: true, expires at: 1778367095081
+[debug] [2026-05-09T22:21:12.254Z] Checked if tokens are valid: true, expires at: 1778367095081
+[debug] [2026-05-09T22:21:12.255Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/embersmith-gaming:testIamPermissions [none]
+[debug] [2026-05-09T22:21:12.255Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/embersmith-gaming:testIamPermissions  x-goog-user-project=embersmith-gaming
+[debug] [2026-05-09T22:21:12.255Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/embersmith-gaming:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-05-09T22:21:12.486Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/embersmith-gaming:testIamPermissions 200
+[debug] [2026-05-09T22:21:12.486Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/embersmith-gaming:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-05-09T22:21:12.487Z] Checked if tokens are valid: true, expires at: 1778367095081
+[debug] [2026-05-09T22:21:12.487Z] Checked if tokens are valid: true, expires at: 1778367095081
+[debug] [2026-05-09T22:21:12.487Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/embersmith-gaming [none]
+[debug] [2026-05-09T22:21:12.579Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/embersmith-gaming 200
+[debug] [2026-05-09T22:21:12.579Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/embersmith-gaming {"projectNumber":"596014572252","projectId":"embersmith-gaming","lifecycleState":"ACTIVE","name":"Embersmith Gaming","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-05-09T20:45:08.085Z"}
+[info] 
+[info] === Serving from 'C:\Users\mecha\Documents\Coding Projects\WOSCalculators'...
+[info] 
+[debug] [2026-05-09T22:21:12.591Z] Checked if tokens are valid: true, expires at: 1778367095081
+[debug] [2026-05-09T22:21:12.591Z] Checked if tokens are valid: true, expires at: 1778367095081
+[debug] [2026-05-09T22:21:12.592Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/embersmith-gaming/sites 

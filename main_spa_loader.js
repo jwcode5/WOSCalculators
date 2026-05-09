@@ -32,7 +32,7 @@ async function initUpgradeCalculatorPanel() {
   if (window.BUILDING_COSTS && targetBuildingSelect) {
     const buildingKeys = Object.keys(window.BUILDING_COSTS);
     targetBuildingSelect.innerHTML = buildingKeys
-      .map(b => `<option value="${b}">${b.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`)
+      .map(b => `<option value="${b}" data-i18n="building.${b}">${b.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`)
       .join('');
   }
 
@@ -201,8 +201,9 @@ async function renderUpgradeCalculatorPanel() {
       </fieldset>
       <fieldset>
         <legend data-i18n="sections.constructionBuffs" style="margin: 0; padding: 0; border: none;">Construction Buffs (%)</legend>
-        <div style="margin-bottom: 8px; color: #ffe08a; font-size: 0.98em; font-style: italic;">
-          Note: If construction buffs, e.g. Builder's Aide (Hyena Pet), Mercantilism, and VP, are in use already then they are already counted in your current construction speed. So don't add separately in the buffs section.
+        <div style="margin-bottom: 8px; color: #ffe08a; font-size: 0.95em; font-style: italic; line-height: 1.4;">
+          <div data-i18n="labels.buffNote">Note: If construction buffs, e.g. Builder's Aide (Hyena Pet), Mercantilism, and VP, are in use already then they are already counted in your current construction speed. So don't add separately in the buffs section.</div>
+          <div data-i18n="labels.hyenaNote" style="margin-top: 4px; opacity: 0.9;">Builder's Aide (Hyena Pet) applies only to the resource cost of HQ/Furnace and Wall.</div>
         </div>
         <label for="doubleTimeEnabled" class="checkbox-row">
           <input id="doubleTimeEnabled" type="checkbox" />
@@ -235,9 +236,9 @@ async function renderUpgradeCalculatorPanel() {
           <option value="12">12%</option>
           <option value="15">15%</option>
         </select>
-        <label for="agnusProjectManagementHours">Agnus' Project Management Skill</label>
+        <label for="agnusProjectManagementHours" data-i18n="labels.agnusProjectManagement">Agnus' Project Management Skill</label>
         <select id="agnusProjectManagementHours">
-          <option value="" selected>None (0h)</option>
+          <option value="" selected data-i18n="options.none0">None (0h)</option>
           <option value="2">2h</option>
           <option value="3">3h</option>
           <option value="4">4h</option>
@@ -478,11 +479,11 @@ async function renderChiefCharmCalculatorPanel() {
       <fieldset>
         <legend data-i18n="sections.chiefCharmLevels">Chief Charm Levels</legend>
         <div class="charm-batch-row">
-          <div class="charm-batch-controls">
-            <label for="charmBatchCurrent" style="font-size: 0.95em;">Set all current levels</label>
-            <div class="charm-batch-inline">
-              <select id="charmBatchCurrent"></select>
-              <button id="setAllCharmCurrentBtn" type="button" class="inlineActionBtn inlineActionBtnSecondary">Set All</button>
+          <div class="charm-batch-controls" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+            <label for="charmBatchCurrent" style="font-size: 0.95em;" data-i18n="labels.setAllCurrentLevels">Set all current levels</label>
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
+              <select id="charmBatchCurrent" style="flex: 1;"></select>
+              <button id="setAllCharmCurrentBtn" type="button" class="inlineActionBtn inlineActionBtnSecondary" data-i18n="buttons.setAll">Set All</button>
             </div>
           </div>
         </div>
@@ -536,55 +537,60 @@ function spaLoaderInit() {
     if (typeof window !== 'undefined') {
       window.activeCalculator = key;
     }
-    switch (key) {
+    
+    // We wrap the switch in an async IIFE to ensure we wait for async renderers
+    // before applying translations
+    (async () => {
+      switch (key) {
       case 'upgrade':
-        renderUpgradeCalculatorPanel();
+        await renderUpgradeCalculatorPanel();
         break;
       case 'chiefGear':
-        renderChiefGearCalculatorPanel();
+        await renderChiefGearCalculatorPanel();
         break;
       case 'chiefCharm':
-        renderChiefCharmCalculatorPanel();
+        await renderChiefCharmCalculatorPanel();
         break;
       case 'pets':
-        renderPetsCalculatorPanel();
+        await renderPetsCalculatorPanel();
         break;
       case 'whatIf':
-        renderPlaceholderPanel('What If');
+        await renderPlaceholderPanel('What If');
         break;
       case 'experts':
-        renderPlaceholderPanel('Experts');
+        await renderPlaceholderPanel('Experts');
         break;
       case 'heroGear':
-        renderPlaceholderPanel('Hero Gear');
+        await renderPlaceholderPanel('Hero Gear');
         break;
       case 'koi':
-        renderPlaceholderPanel('KoI');
+        await renderPlaceholderPanel('KoI');
         break;
       case 'research':
-        renderPlaceholderPanel('Research Upgrades');
+        await renderPlaceholderPanel('Research Upgrades');
         break;
       case 'svs':
-        renderPlaceholderPanel('SvS');
+        await renderPlaceholderPanel('SvS');
         break;
       case 'troopTraining':
-        renderPlaceholderPanel('Troop Training');
+        await renderPlaceholderPanel('Troop Training');
         break;
       case 'warAcademy':
-        renderPlaceholderPanel('War Academy');
+        await renderPlaceholderPanel('War Academy');
         break;
       case 'about':
-        renderAboutPanel();
+        await renderAboutPanel();
         break;
       case 'contact':
-        renderContactPanel();
+        await renderContactPanel();
         break;
       default:
-        renderPlaceholderPanel('Unknown');
+        await renderPlaceholderPanel('Unknown');
     }
-    if (typeof applyTranslations === 'function') {
-      applyTranslations();
+    if (window.i18n && typeof window.i18n.translatePage === 'function') {
+      window.i18n.translatePage();
     }
+    })();
   }
   const savedKey = localStorage.getItem("wosCalc_activeCalculator");
   if (savedKey) {
@@ -601,6 +607,12 @@ function spaLoaderInit() {
   } else {
     handlePanelChange(savedKey || 'upgrade');
   }
+
+  document.addEventListener('wos:languagechange', function() {
+    if (window.activeCalculator) {
+      handlePanelChange(window.activeCalculator);
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', spaLoaderInit);
