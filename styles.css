@@ -211,6 +211,105 @@ body[data-theme="wos"] {
   background-attachment: fixed;
 }
 
+/* ────────────────────────────────────────────────────────────
+   KINGSHOT THEME
+   Warm gold-on-dark palette drawn from Kingshot's brand.
+   Applied when html[data-app="kingshot"] is set by domain
+   detection — overrides the default blue WOS palette.
+   ──────────────────────────────────────────────────────────── */
+html[data-app="kingshot"] {
+  --bg: #1a0a00;
+  --surface: rgba(50, 22, 0, 0.95);
+  --surface-alt: rgba(60, 28, 0, 0.97);
+  --panel: rgba(255, 200, 80, 0.07);
+  --panel-strong: rgba(255, 200, 80, 0.12);
+  --border: rgba(200, 140, 30, 0.30);
+  --text: #f5e6c8;
+  --muted: #c4a265;
+  --heading: #ffd87a;
+  --accent: #e8a020;
+  --accent-strong: #ffd060;
+  --button: #c07010;
+  --button-text: #fff8e8;
+  --input-bg: rgba(40, 18, 0, 0.85);
+  --input-border: rgba(200, 140, 30, 0.35);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+html[data-app="kingshot"] body {
+  background: linear-gradient(135deg, #1a0a00 0%, #2e1400 30%, #4a2200 50%, #2e1400 70%, #1a0a00 100%);
+  background-attachment: fixed;
+  color: var(--text);
+}
+
+/* Kingshot dark-mode variant */
+html[data-app="kingshot"] body[data-theme="dark"] {
+  --bg: #100600;
+  --surface: #1e0c00;
+  --surface-alt: #180900;
+  --panel: rgba(255, 200, 80, 0.05);
+  --panel-strong: rgba(255, 200, 80, 0.09);
+  --border: rgba(200, 140, 30, 0.18);
+  --text: #f5e6c8;
+  --muted: #8a6840;
+  --heading: #ffd87a;
+  --accent: #e8a020;
+  --accent-strong: #ffd060;
+  --button: #9e5c08;
+  --button-text: #fff8e8;
+  --input-bg: #120700;
+  --input-border: rgba(200, 140, 30, 0.25);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  background: #0a0300;
+}
+
+html[data-app="kingshot"] body[data-theme="dark"] {
+  background: #0a0300;
+}
+
+/* Kingshot fieldset backgrounds to match warm palette */
+html[data-app="kingshot"] #upgradeCalculatorPanel fieldset,
+html[data-app="kingshot"] #upgradeCalculatorPanel .card-panel,
+html[data-app="kingshot"] #upgradeCalculatorPanel .result,
+html[data-app="kingshot"] #chiefGearPanel fieldset,
+html[data-app="kingshot"] #chiefGearPanel .card-panel,
+html[data-app="kingshot"] #chiefGearPanel .result,
+html[data-app="kingshot"] #chiefCharmPanel fieldset,
+html[data-app="kingshot"] #chiefCharmPanel .card-panel,
+html[data-app="kingshot"] #chiefCharmPanel .result {
+  background: rgba(50, 22, 0, 0.97) !important;
+  border-color: rgba(200, 140, 30, 0.28) !important;
+}
+
+/* Kingshot calculate button gets the gold gradient */
+html[data-app="kingshot"] #addBuildingBtn,
+html[data-app="kingshot"] #calculateBtn,
+html[data-app="kingshot"] #gearCalculateBtn,
+html[data-app="kingshot"] #gearSmartUpgradeBtn,
+html[data-app="kingshot"] #petsCalculateBtn,
+html[data-app="kingshot"] #petsSmartUpgradeBtn,
+html[data-app="kingshot"] #charmCalculateBtn,
+html[data-app="kingshot"] #charmSmartUpgradeBtn {
+  background: linear-gradient(135deg, #e8a020, #c07010) !important;
+  color: #fff8e8;
+  border: none;
+}
+
+/* Kingshot select options use the warm dark surface */
+html[data-app="kingshot"] select,
+html[data-app="kingshot"] select option {
+  background-color: var(--input-bg) !important;
+  color: var(--text) !important;
+}
+
+/* Mobile Kingshot background */
+@media (max-width: 640px) {
+  html[data-app="kingshot"] body {
+    background: linear-gradient(135deg, #1a0a00 0%, #3a1a00 50%, #1a0a00 100%);
+    background-attachment: scroll;
+  }
+}
+
 body {
   margin: 0;
   font-family: Segoe UI, Tahoma, sans-serif;

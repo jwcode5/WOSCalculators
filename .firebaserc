@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "embersmith-gaming"
+  },
+  "targets": {
+    "embersmith-gaming": {
+      "hosting": {
+        "woscalculator": [
+          "woscalculator"
+        ],
+        "kscalculator": [
+          "kscalculator"
+        ]
+      }
+    }
   }
 }
