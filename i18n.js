@@ -47,6 +47,7 @@ const TRANSLATIONS = {
       pets: "Pets",
       whatIf: "What If",
       experts: "Experts Calculator",
+      expertSkills: "Expert Skills",
       heroGear: "Hero Gear",
       koi: "KoI Calculator",
       research: "Research Upgrades",
@@ -69,10 +70,13 @@ const TRANSLATIONS = {
       bearHuntMail: "Bear Hunt Mail",
       chiefGearLevels: "Chief Gear Levels",
       chiefGearMaterials: "Your Materials",
-      chiefCharmLevels: "Chief Charm Levels",
       chiefCharmMaterials: "Your Materials",
       petLevels: "Pet Levels",
-      petMaterials: "Your Materials"
+      petMaterials: "Your Materials",
+      expertLevels: "Expert Levels",
+      expertMaterials: "Your Materials",
+      expertSkillsLevels: "Expert Skills",
+      expertSkillsMaterials: "Your Materials"
     },
     labels: {
       building: "Building",
@@ -122,7 +126,22 @@ const TRANSLATIONS = {
       petFood: "Pet Food",
       tamingManual: "Taming Manual",
       energizingPotion: "Energizing Potion",
-      strengtheningSerum: "Strengthening Serum"
+      strengtheningSerum: "Strengthening Serum",
+      advancementSigils: "Advancement Sigils",
+      generalAdvancementSigils: "General Advancement Sigils",
+      compass: "Compass (10)",
+      fieryHeart: "Fiery Heart (100)",
+      sailOfConquest: "Sail of Conquest (1000)",
+      affinity: "Affinity Needed",
+      totalAffinity: "Total Affinity Required",
+      totalSigils: "Total Sigils Required",
+      remainingAffinity: "Affinity Needed",
+      remainingSigils: "Sigils Needed",
+      expert: "Expert",
+      skillExp: "Skill Exp",
+      skillBooks: "Skill Books",
+      note: "Note:",
+      skill: "Skill"
     },
     buttons: {
       addBuilding: "+ Add Building",
@@ -249,6 +268,29 @@ const TRANSLATIONS = {
       wood: "Wood",
       coal: "Coal",
       iron: "Iron"
+    },
+    messages: {
+      expertSkillsAffinityNote: "Skill prerequisites depend on your Affinity levels. Please ensure you have filled out your current/target Affinity levels on the Experts Calculator page first to accurately see what skill targets you are eligible for."
+    },
+    expert: {
+      agnes: "Agnes",
+      cyrille: "Cyrille",
+      holger: "Holger",
+      romulus: "Romulus",
+      title: {
+        Stranger: "Stranger",
+        Acquaintance1: "Acquaintance 1",
+        Acquaintance2: "Acquaintance 2",
+        Acquaintance3: "Acquaintance 3",
+        Casual1: "Casual 1",
+        Casual2: "Casual 2",
+        Casual3: "Casual 3",
+        Close1: "Close 1",
+        Close2: "Close 2",
+        Close3: "Close 3",
+        Intimate: "Intimate",
+        Unknown: "Unknown"
+      }
     },
     gearColor: {
       green: "Green",

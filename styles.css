@@ -712,6 +712,28 @@ button:hover {
   color: #ffffff;
 }
 
+/* Compact inline button — overrides the global full-width button style */
+.small-btn {
+  width: auto;
+  flex: 0 0 auto;
+  margin-top: 0;
+  min-height: 36px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px !important;
+  background: rgba(77, 143, 254, 0.3) !important;
+  border: 1px solid rgba(77, 143, 254, 0.45) !important;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.small-btn:hover {
+  background: rgba(77, 143, 254, 0.5) !important;
+  transform: translateY(-1px);
+}
+
+
 .inlineActionBtnPrimary {
   background: #4a90e2 !important;
 }
@@ -1111,5 +1133,173 @@ button:hover {
 @media (max-width: 480px) {
   .pet-row-header, .pet-row {
     grid-template-columns: 1.2fr 1fr 1fr;
+  }
+}
+
+/* ============================================================
+   EXPERT COLLECTION GRID (mirrors pet-collection-grid style)
+   ============================================================ */
+
+.expert-collection-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.expert-row-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr auto;
+  padding: 10px;
+  background: rgba(255,255,255,0.1);
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #ffe08a;
+  gap: 8px;
+}
+
+.expert-row-header span:last-child {
+  text-align: right;
+  padding-right: 4px;
+  min-width: 64px;
+}
+
+/* Expert row with a right-aligned sigil input */
+.expert-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr auto;
+  padding: 8px 10px;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: transparent;
+}
+
+.expert-row:last-child {
+  border-bottom: none;
+}
+
+.expert-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.expert-name-text {
+  font-weight: 600;
+  font-size: 0.95em;
+  color: #ffe08a;
+}
+
+.expert-sigil-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.expert-sigil-label {
+  font-size: 0.7em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.expert-sigil-input {
+  width: 64px !important;
+  min-height: 32px !important;
+  padding: 4px 6px !important;
+  font-size: 0.85em !important;
+  text-align: center;
+  border-radius: 6px !important;
+}
+
+/* Compact dropdowns inside the expert grid */
+.expert-row select {
+  margin-top: 0;
+  min-height: 36px;
+  padding: 4px 28px 4px 8px;
+  font-size: 0.9em;
+  background-position: calc(100% - 10px) calc(50% - 3px), calc(100% - 4px) calc(50% - 3px);
+  background-size: 5px 5px;
+}
+
+/* ============================================================
+   EXPERT SKILLS GRID
+   4-skill layout per expert: name | skill | current | target
+   ============================================================ */
+
+.expert-skill-collection-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.expert-skill-block {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: transparent;
+}
+
+.expert-skill-block:last-child {
+  border-bottom: none;
+}
+
+.expert-skill-name-row {
+  padding: 8px 10px 4px;
+  font-weight: 600;
+  font-size: 0.95em;
+  color: #ffe08a;
+  background: rgba(255,255,255,0.04);
+}
+
+.expert-skill-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr;
+  padding: 4px 10px;
+  align-items: center;
+  gap: 8px;
+}
+
+.expert-skill-label {
+  font-size: 0.82em;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.expert-skill-block select {
+  margin-top: 0;
+  min-height: 32px;
+  padding: 3px 24px 3px 7px;
+  font-size: 0.85em;
+  background-position: calc(100% - 8px) calc(50% - 3px), calc(100% - 2px) calc(50% - 3px);
+  background-size: 5px 5px;
+}
+
+/* ============================================================
+   GEAR & CHARM TABLE – compact selects (mirrors pet panel)
+   ============================================================ */
+
+.gear-table-block select {
+  margin-top: 0;
+  min-height: 36px;
+  padding: 6px 28px 6px 10px;
+  font-size: 0.9em;
+  background-position: calc(100% - 10px) calc(50% - 3px), calc(100% - 4px) calc(50% - 3px);
+  background-size: 5px 5px;
+}
+
+@media (max-width: 480px) {
+  .expert-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .expert-row .expert-sigil-cell {
+    display: none;
+  }
+  .expert-skill-row {
+    grid-template-columns: 70px 1fr 1fr;
   }
 }

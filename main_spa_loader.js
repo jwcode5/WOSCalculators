@@ -8,6 +8,7 @@ function ensureCalculatorDropdown(selectedKey) {
     { key: 'chiefCharm', label: 'Chief Charm' },
     { key: 'pets', label: 'Pets' },
     { key: 'experts', label: 'Experts Calculator' },
+    { key: 'expertSkills', label: 'Expert Skills' },
     { key: 'heroGear', label: 'Hero Gear' },
     { key: 'koi', label: 'KoI Calculator' },
     { key: 'research', label: 'Research Upgrades' },
@@ -529,6 +530,159 @@ async function renderChiefCharmCalculatorPanel() {
   }
 }
 
+async function renderExpertsCalculatorPanel() {
+  console.log('[SPA] renderExpertsCalculatorPanel called');
+  if (window.dataReadyPromise) {
+    await window.dataReadyPromise;
+  }
+  document.getElementById('spaPanel').innerHTML = `
+    <!-- Experts Calculator Panel -->
+    <div id="expertsPanel">
+      <fieldset>
+        <legend data-i18n="sections.expertLevels">Expert Levels &amp; Skills</legend>
+
+        <div class="pet-batch-controls">
+          <div class="pet-batch-group">
+            <label data-i18n="labels.setAllCurrentLevels">Set all affinity current levels</label>
+            <div class="pet-batch-inline">
+              <select id="setAllExpertCurrent"></select>
+              <button type="button" id="setAllExpertCurrentBtn" class="small-btn" data-i18n="buttons.setAll">Set All</button>
+            </div>
+          </div>
+          <div class="pet-batch-group">
+            <label data-i18n="labels.setAllTargetLevels">Set all affinity target levels</label>
+            <div class="pet-batch-inline">
+              <select id="setAllExpertTarget"></select>
+              <button type="button" id="setAllExpertTargetBtn" class="small-btn" data-i18n="buttons.setAll">Set All</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="expert-collection-grid">
+          <div class="expert-row-header">
+            <span data-i18n="labels.expert">Expert</span>
+            <span data-i18n="labels.currentLevel">Current</span>
+            <span data-i18n="labels.targetLevel">Target</span>
+            <span data-i18n="labels.expertSigils">Sigils</span>
+          </div>
+          <div id="expertCollectionContainer">
+            <!-- Expert rows injected by script.js -->
+          </div>
+        </div>
+
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.expertMaterials">Your Materials</legend>
+        <div class="gear-materials-grid">
+
+          <div class="gear-material-field" style="grid-column: 1 / -1;">
+            <strong>Affinity &amp; Advancement Sigils</strong>
+          </div>
+          <div class="gear-material-field">
+            <label for="expertAdvancementSigils" data-i18n="labels.generalAdvancementSigils">General Advancement Sigils</label>
+            <input id="expertAdvancementSigils" type="number" min="0" value="0" />
+          </div>
+          <div class="gear-material-field">
+            <label for="expertCompass" data-i18n="labels.compass">Compass (10 Affinity)</label>
+            <input id="expertCompass" type="number" min="0" value="0" />
+          </div>
+          <div class="gear-material-field">
+            <label for="expertFieryHeart" data-i18n="labels.fieryHeart">Fiery Heart (100 Affinity)</label>
+            <input id="expertFieryHeart" type="number" min="0" value="0" />
+          </div>
+          <div class="gear-material-field">
+            <label for="expertSailOfConquest" data-i18n="labels.sailOfConquest">Sail of Conquest (1000 Affinity)</label>
+            <input id="expertSailOfConquest" type="number" min="0" value="0" />
+          </div>
+
+
+        </div>
+      </fieldset>
+
+      <div class="gear-button-row">
+        <button id="expertsCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+      </div>
+
+      <section id="expertsResult" class="result"></section>
+    </div>
+  `;
+  if (typeof initExpertsPanel === 'function') {
+    initExpertsPanel();
+  }
+}
+
+async function renderExpertSkillsCalculatorPanel() {
+  console.log('[SPA] renderExpertSkillsCalculatorPanel called');
+  if (window.dataReadyPromise) {
+    await window.dataReadyPromise;
+  }
+  document.getElementById('spaPanel').innerHTML = `
+    <!-- Expert Skills Calculator Panel -->
+    <div id="expertSkillsPanel">
+      <div style="margin-bottom: 16px; padding: 12px; background: rgba(255,165,0,0.1); border-left: 4px solid orange; border-radius: 4px;">
+        <strong data-i18n="labels.note">Note:</strong> 
+        <span data-i18n="messages.expertSkillsAffinityNote">Skill prerequisites depend on your Affinity levels. Please ensure you have filled out your current/target Affinity levels on the Experts Calculator page first to accurately see what skill targets you are eligible for.</span>
+      </div>
+
+      <fieldset>
+        <legend data-i18n="sections.expertSkillsLevels">Expert Skills</legend>
+
+        <div class="pet-batch-controls">
+          <div class="pet-batch-group">
+            <label data-i18n="labels.setAllCurrentLevels">Set all skill current levels</label>
+            <div class="pet-batch-inline">
+              <select id="setAllExpertSkillCurrent"></select>
+              <button type="button" id="setAllExpertSkillCurrentBtn" class="small-btn" data-i18n="buttons.setAll">Set All</button>
+            </div>
+          </div>
+          <div class="pet-batch-group">
+            <label data-i18n="labels.setAllTargetLevels">Set all skill target levels</label>
+            <div class="pet-batch-inline">
+              <select id="setAllExpertSkillTarget"></select>
+              <button type="button" id="setAllExpertSkillTargetBtn" class="small-btn" data-i18n="buttons.setAll">Set All</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="expert-skill-collection-grid">
+          <div class="expert-row-header" style="grid-template-columns: 80px 1fr 1fr; min-width: 0;">
+            <span data-i18n="labels.skill">Skill</span>
+            <span data-i18n="labels.currentLevel">Current</span>
+            <span data-i18n="labels.targetLevel">Target</span>
+          </div>
+          <div id="expertSkillCollectionContainer">
+            <!-- Expert Skills rows injected by script.js -->
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.expertSkillsMaterials">Your Materials</legend>
+        <div class="gear-materials-grid">
+          <div class="gear-material-field">
+            <label for="expertSkillExp" data-i18n="labels.skillExp">Skill Exp</label>
+            <input id="expertSkillExp" type="number" min="0" value="0" />
+          </div>
+          <div class="gear-material-field">
+            <label for="expertSkillBooks" data-i18n="labels.skillBooks">Skill Books</label>
+            <input id="expertSkillBooks" type="number" min="0" value="0" />
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="gear-button-row">
+        <button id="expertSkillsCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+      </div>
+
+      <section id="expertSkillsResult" class="result"></section>
+    </div>
+  `;
+  if (typeof initExpertSkillsPanel === 'function') {
+    initExpertSkillsPanel();
+  }
+}
+
 function spaLoaderInit() {
   let dropdown = document.getElementById('calculatorDropdown');
   function handlePanelChange(key) {
@@ -558,7 +712,10 @@ function spaLoaderInit() {
         await renderPlaceholderPanel('What If');
         break;
       case 'experts':
-        await renderPlaceholderPanel('Experts');
+        await renderExpertsCalculatorPanel();
+        break;
+      case 'expertSkills':
+        await renderExpertSkillsCalculatorPanel();
         break;
       case 'heroGear':
         await renderPlaceholderPanel('Hero Gear');

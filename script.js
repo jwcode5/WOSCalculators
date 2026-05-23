@@ -121,6 +121,7 @@ var PREREQUISITES = null;       // Loaded from data/prerequisites.json
 var CHIEF_GEAR_DATA = null;     // Loaded from data/chiefGear.json
 var CHIEF_CHARM_DATA = null;    // Loaded from data/chiefCharm.json
 var PET_UPGRADES = null;        // Loaded from data/petUpgrades.tiered.json
+var EXPERTS_DATA = null;        // Loaded from data/expertsData.json
 var optionalBuildings = [];     // Extra buildings the user added manually
 var bearHuntMails = [];         // Bear Hunt Mail reward rows
 var accounts = [];              // All saved accounts (Option B blob model)
@@ -3752,12 +3753,13 @@ function renderPetsResult(result) {
 async function loadData() {
   try {
     // Load all data files and SVS points CSV in parallel
-    const [buildingsResponse, preqResponse, gearResponse, charmResponse, petsResponse] = await Promise.all([
+    const [buildingsResponse, preqResponse, gearResponse, charmResponse, petsResponse, expertsResponse] = await Promise.all([
       fetch("data/buildings.json"),
       fetch("data/prerequisites.json"),
       fetch("data/chiefGear.json"),
       fetch("data/chiefCharm.json"),
-      fetch("data/petUpgrades.tiered.json")
+      fetch("data/petUpgrades.tiered.json"),
+      fetch("data/expertsData.json")
     ]);
     await loadSvsPointsCsv();
 
@@ -3776,7 +3778,10 @@ async function loadData() {
     const petsData = await petsResponse.json();
     PET_UPGRADES = petsData;
 
-    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA, CHIEF_CHARM_DATA, PET_UPGRADES, SVS_POINTS_LOOKUP });
+    const expertsData = await expertsResponse.json();
+    EXPERTS_DATA = expertsData;
+
+    console.log("Data loaded successfully", { BUILDING_COSTS, PREREQUISITES, CHIEF_GEAR_DATA, CHIEF_CHARM_DATA, PET_UPGRADES, EXPERTS_DATA, SVS_POINTS_LOOKUP });
 
     // Initialize accounts (migrates legacy flat keys on first run)
     initAccounts();
@@ -4353,3 +4358,589 @@ if ('serviceWorker' in navigator &&
 
 // Initialize the data loading and store the promise globally so the SPA loader can wait for it
 window.dataReadyPromise = loadData();
+function initExpertsPanel() {
+  const container = document.getElementById("expertCollectionContainer");
+  if (!container || !EXPERTS_DATA) return;
+
+  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+  let html = "";
+
+  EXPERT_ORDER.forEach(name => {
+    const key = name.toLowerCase();
+    const localizedName = translateText(`expert.${key}`, {}, name);
+
+    html += `
+      <div class="expert-row" data-expert="${name}">
+        <div class="expert-name-cell">
+          <span class="expert-name-text">${escapeHtml(localizedName)}</span>
+        </div>
+        <select class="expert-current-select" data-expert="${name}"></select>
+        <select class="expert-target-select" data-expert="${name}"></select>
+        <div class="expert-sigil-cell">
+          <span class="expert-sigil-label">${translateText("labels.expertSigils", {}, "Sigils")}</span>
+          <input type="number" class="expert-specific-sigils expert-sigil-input" data-expert="${name}" min="0" value="0" />
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+
+
+  // Populate dropdowns
+  EXPERT_ORDER.forEach(name => {
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData || !expertData.levels) return;
+
+    // Affinity
+    let optionsHTML = '';
+    for (let i = 0; i < expertData.levels.length; i++) {
+      const lvl = expertData.levels[i].level;
+      const title = getRelationshipTitle(lvl);
+      const locTitle = translateText(`expert.title.${title.replace(/ /g, '')}`, {}, title);
+      optionsHTML += `<option value="${lvl}">Lv.${lvl} - ${locTitle}</option>`;
+    }
+    const currentSel = container.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    const targetSel = container.querySelector(`.expert-target-select[data-expert="${name}"]`);
+    if (currentSel) currentSel.innerHTML = optionsHTML;
+    if (targetSel) targetSel.innerHTML = optionsHTML;
+
+    
+  });
+
+  // Batch selectors (Affinity only for simplicity)
+  const batchCurrent = document.getElementById("setAllExpertCurrent");
+  const batchTarget = document.getElementById("setAllExpertTarget");
+  if (batchCurrent && batchTarget && EXPERTS_DATA["Agnes"]) {
+    let optionsHTML = '';
+    const firstExpertData = EXPERTS_DATA["Agnes"];
+    for (let i = 0; i < firstExpertData.levels.length; i++) {
+      const lvl = firstExpertData.levels[i].level;
+      const title = getRelationshipTitle(lvl);
+      const locTitle = translateText(`expert.title.${title.replace(/ /g, '')}`, {}, title);
+      optionsHTML += `<option value="${lvl}">Lv.${lvl} - ${locTitle}</option>`;
+    }
+    batchCurrent.innerHTML = optionsHTML;
+    batchTarget.innerHTML = optionsHTML;
+  }
+
+  // Event listeners
+  document.getElementById("setAllExpertCurrentBtn")?.addEventListener("click", () => {
+    const val = document.getElementById("setAllExpertCurrent")?.value;
+    if (val) {
+      document.querySelectorAll(".expert-current-select").forEach(sel => {
+        sel.value = val;
+        const name = sel.dataset.expert;
+        const tgtSel = document.querySelector(`.expert-target-select[data-expert="${name}"]`);
+        if (tgtSel && parseInt(tgtSel.value) < parseInt(val)) tgtSel.value = val;
+      });
+      saveExpertsState();
+    }
+  });
+
+  document.getElementById("setAllExpertTargetBtn")?.addEventListener("click", () => {
+    const val = document.getElementById("setAllExpertTarget")?.value;
+    if (val) {
+      document.querySelectorAll(".expert-target-select").forEach(sel => {
+        const name = sel.dataset.expert;
+        const curSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+        if (curSel && parseInt(curSel.value) > parseInt(val)) {
+        } else {
+          sel.value = val;
+        }
+      });
+      saveExpertsState();
+    }
+  });
+
+  // Enforce relations
+  document.querySelectorAll(".expert-current-select").forEach(sel => {
+    sel.addEventListener("change", (e) => {
+      const name = e.target.dataset.expert;
+      const tgtSel = document.querySelector(`.expert-target-select[data-expert="${name}"]`);
+      if (tgtSel && parseInt(tgtSel.value) < parseInt(e.target.value)) tgtSel.value = e.target.value;
+      saveExpertsState();
+    });
+  });
+
+  document.querySelectorAll(".expert-target-select").forEach(sel => {
+    sel.addEventListener("change", (e) => {
+      const name = e.target.dataset.expert;
+      const curSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+      if (curSel && parseInt(curSel.value) > parseInt(e.target.value)) e.target.value = curSel.value;
+      saveExpertsState();
+      saveExpertsState();
+    });
+  });
+
+  document.getElementById("expertsCalculateBtn")?.addEventListener("click", calculateExperts);
+
+  // Attach input listeners
+  const materialIds = [
+    "expertAdvancementSigils", "expertCompass", "expertFieryHeart", "expertSailOfConquest"
+  ];
+  materialIds.forEach(id => {
+    document.getElementById(id)?.addEventListener("input", saveExpertsState);
+  });
+  
+  document.querySelectorAll(".expert-specific-sigils").forEach(input => {
+    input.addEventListener("input", saveExpertsState);
+  });
+
+  loadExpertsState();
+}
+
+function getLevelForRelationship(expertName, relTitle) {
+  const expertData = EXPERTS_DATA[expertName];
+  if (!expertData || !expertData.levels) return 1;
+  const match = expertData.levels.find(r => r.relationship && r.relationship.toLowerCase().replace(/ /g, '') === relTitle.toLowerCase().replace(/ /g, ''));
+  if (match) return match.level;
+  
+  // Fallback map if missing
+  relTitle = relTitle.toLowerCase().replace(/ /g, '');
+  if (relTitle.includes("stranger")) return 1;
+  if (relTitle.includes("acquaintance1")) return 10;
+  if (relTitle.includes("acquaintance2")) return 20;
+  if (relTitle.includes("acquaintance3")) return 30;
+  if (relTitle.includes("casual1")) return 40;
+  if (relTitle.includes("casual2")) return 50;
+  if (relTitle.includes("casual3")) return 60;
+  if (relTitle.includes("close1")) return 70;
+  if (relTitle.includes("close2")) return 80;
+  if (relTitle.includes("close3")) return 90;
+  if (relTitle.includes("intimate")) return 100;
+  return 1;
+}
+
+function saveExpertsState() {
+  const account = getActiveAccount();
+  if (!account) return;
+
+  const calculators = account.calculators || {};
+  const expertsState = calculators.experts || { levels: {}, materials: {} };
+  if (!expertsState.levels) expertsState.levels = {};
+  if (!expertsState.materials) expertsState.materials = {};
+
+  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+  EXPERT_ORDER.forEach(name => {
+    if (!expertsState.levels[name]) expertsState.levels[name] = { skills: {} };
+    if (!expertsState.levels[name].skills) expertsState.levels[name].skills = {};
+    
+    const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    const targetSel = document.querySelector(`.expert-target-select[data-expert="${name}"]`);
+    const specSigils = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+    
+    if (currentSel) expertsState.levels[name].current = currentSel.value;
+    if (targetSel) expertsState.levels[name].target = targetSel.value;
+    if (specSigils) expertsState.levels[name].specificSigils = parseInt(specSigils.value) || 0;
+    
+    [1, 2, 3, 4].forEach(s => {
+      const sCur = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+      const sTgt = document.querySelector(`.skill-target-select[data-expert="${name}"][data-skill="${s}"]`);
+      if (sCur) expertsState.levels[name].skills[s] = expertsState.levels[name].skills[s] || {};
+      if (sCur) expertsState.levels[name].skills[s].current = sCur.value;
+      if (sTgt) expertsState.levels[name].skills[s] = expertsState.levels[name].skills[s] || {};
+      if (sTgt) expertsState.levels[name].skills[s].target = sTgt.value;
+    });
+  });
+
+  const materialIds = [
+    "expertAdvancementSigils", "expertCompass", "expertFieryHeart", "expertSailOfConquest",
+    "expertSkillExp", "expertSkillBooks"
+  ];
+  materialIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      const key = id.replace("expert", "");
+      const camelKey = key.charAt(0).toLowerCase() + key.slice(1);
+      expertsState.materials[camelKey] = parseInt(el.value) || 0;
+    }
+  });
+
+  calculators.experts = expertsState;
+  updateActiveAccount({ calculators });
+}
+
+function loadExpertsState() {
+  const account = getActiveAccount();
+  if (!account) return;
+
+  const expertsState = (account.calculators && account.calculators.experts) ? account.calculators.experts : {};
+
+  if (expertsState.levels) {
+    const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+    EXPERT_ORDER.forEach(name => {
+      const state = expertsState.levels[name];
+      if (state) {
+        const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+        const targetSel = document.querySelector(`.expert-target-select[data-expert="${name}"]`);
+        const specSigils = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+        
+        if (currentSel && state.current) currentSel.value = state.current;
+        if (targetSel && state.target) targetSel.value = state.target;
+        if (specSigils && state.specificSigils !== undefined) specSigils.value = state.specificSigils;
+        
+        if (state.skills) {
+          [1, 2, 3, 4].forEach(s => {
+            const sCur = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+            const sTgt = document.querySelector(`.skill-target-select[data-expert="${name}"][data-skill="${s}"]`);
+            if (sCur && state.skills[s]?.current) sCur.value = state.skills[s].current;
+            if (sTgt && state.skills[s]?.target) sTgt.value = state.skills[s].target;
+          });
+        }
+      }
+    });
+  }
+
+  if (expertsState.materials) {
+    const m = expertsState.materials;
+    const ids = {
+      expertAdvancementSigils: m.advancementSigils,
+      expertCompass: m.compass,
+      expertFieryHeart: m.fieryHeart,
+      expertSailOfConquest: m.sailOfConquest,
+      expertSkillExp: m.skillExp,
+      expertSkillBooks: m.skillBooks
+    };
+    for (const [id, val] of Object.entries(ids)) {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    }
+  }
+}
+
+function calculateExperts() {
+  if (!EXPERTS_DATA) return;
+
+  let totalAffinityNeeded = 0;
+  let totalGeneralSigilsNeeded = 0; // After using specific sigils
+  let resultsHTML = "";
+  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+
+  EXPERT_ORDER.forEach(name => {
+    const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    const targetSel = document.querySelector(`.expert-target-select[data-expert="${name}"]`);
+    const specSigilsInp = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+    
+    if (!currentSel || !targetSel) return;
+
+    const curLvl = parseInt(currentSel.value) || 1;
+    const tgtLvl = parseInt(targetSel.value) || 1;
+    let specSigilsAvail = parseInt(specSigilsInp?.value) || 0;
+
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData || !expertData.levels) return;
+
+    let affinity = 0;
+    let sigils = 0;
+    // Affinity and Sigils
+    if (curLvl < tgtLvl) {
+      for (let l = curLvl + 1; l <= tgtLvl; l++) {
+        const row = expertData.levels.find(r => r.level === l);
+        if (row) {
+          affinity += (row.affinity || 0);
+          sigils += (row.advancement || 0);
+        }
+      }
+    }
+    
+    // Apply specific sigils
+    let remainingSigilsForExpert = sigils;
+    if (specSigilsAvail >= remainingSigilsForExpert) {
+      remainingSigilsForExpert = 0;
+    } else {
+      remainingSigilsForExpert -= specSigilsAvail;
+    }
+
+    totalAffinityNeeded += affinity;
+    totalGeneralSigilsNeeded += remainingSigilsForExpert;
+    if (affinity > 0 || sigils > 0 ) {
+      const localizedName = translateText(`expert.${name.toLowerCase()}`, {}, name);
+      resultsHTML += `
+        <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
+          <strong>${escapeHtml(localizedName)}</strong><br>
+          ${affinity > 0 ? `${translateText("labels.affinity", {}, "Affinity Needed")}: ${affinity.toLocaleString()} <br>` : ""}
+          ${sigils > 0 ? `${translateText("labels.advancementSigils", {}, "Advancement Sigils Needed")}: ${sigils.toLocaleString()} (After Specific Sigils: ${remainingSigilsForExpert.toLocaleString()})<br>` : ""}
+          
+        </div>
+      `;
+    }
+  });
+
+  const invGenSigils = parseInt(document.getElementById("expertAdvancementSigils")?.value) || 0;
+  const invCompass = parseInt(document.getElementById("expertCompass")?.value) || 0;
+  const invFieryHeart = parseInt(document.getElementById("expertFieryHeart")?.value) || 0;
+  const invSail = parseInt(document.getElementById("expertSailOfConquest")?.value) || 0;
+  
+  const totalInvAffinity = (invCompass * 10) + (invFieryHeart * 100) + (invSail * 1000);
+
+  const remainingAffinity = Math.max(0, totalAffinityNeeded - totalInvAffinity);
+  const remainingGenSigils = Math.max(0, totalGeneralSigilsNeeded - invGenSigils);
+  
+  let grandTotalHTML = `
+    <div class="card-panel" style="margin-top: 15px;">
+      <strong>${translateText("results.grandTotal", {}, "GRAND TOTAL")}</strong><br>
+      ${translateText("labels.totalAffinity", {}, "Total Affinity Required")}: ${totalAffinityNeeded.toLocaleString()}<br>
+      ${translateText("labels.totalSigils", {}, "Total General Sigils Required")}: ${totalGeneralSigilsNeeded.toLocaleString()}<br>
+      <br>
+      
+      <strong>${translateText("results.afterInventory", {}, "Remaining After Inventory")}</strong><br>
+      ${translateText("labels.remainingAffinity", {}, "Affinity Needed")}: ${remainingAffinity.toLocaleString()}<br>
+      ${translateText("labels.remainingSigils", {}, "General Sigils Needed")}: ${remainingGenSigils.toLocaleString()}<br>
+      
+    </div>
+  `;
+
+  if (totalAffinityNeeded === 0 && totalGeneralSigilsNeeded === 0 ) {
+    resultsHTML = `<div class="card-panel" style="margin-top: 15px;">${translateText("results.noUpgrades", {}, "No upgrades selected or already at target level.")}</div>`;
+  } else {
+    resultsHTML += grandTotalHTML;
+  }
+
+  const resultEl = document.getElementById("expertsResult");
+  if (resultEl) {
+    resultEl.dataset.hasResults = "true";
+    resultEl.innerHTML = resultsHTML;
+  }
+}
+
+function initExpertSkillsPanel() {
+  const container = document.getElementById("expertSkillCollectionContainer");
+  if (!container || !EXPERTS_DATA) return;
+
+  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+  let html = "";
+
+  EXPERT_ORDER.forEach(name => {
+    const key = name.toLowerCase();
+    const localizedName = translateText(`expert.${key}`, {}, name);
+
+    html += `
+      <div class="expert-skill-block" data-expert="${name}">
+        <div class="expert-skill-name-row">${escapeHtml(localizedName)}</div>
+        <div class="expert-skill-row">
+          <span class="expert-skill-label">${translateText("labels.skill1", {}, "Skill 1")}</span>
+          <select class="skill-current-select" data-expert="${name}" data-skill="1"></select>
+          <select class="skill-target-select" data-expert="${name}" data-skill="1"></select>
+        </div>
+        <div class="expert-skill-row">
+          <span class="expert-skill-label">${translateText("labels.skill2", {}, "Skill 2")}</span>
+          <select class="skill-current-select" data-expert="${name}" data-skill="2"></select>
+          <select class="skill-target-select" data-expert="${name}" data-skill="2"></select>
+        </div>
+        <div class="expert-skill-row">
+          <span class="expert-skill-label">${translateText("labels.skill3", {}, "Skill 3")}</span>
+          <select class="skill-current-select" data-expert="${name}" data-skill="3"></select>
+          <select class="skill-target-select" data-expert="${name}" data-skill="3"></select>
+        </div>
+        <div class="expert-skill-row">
+          <span class="expert-skill-label">${translateText("labels.skill4", {}, "Skill 4")}</span>
+          <select class="skill-current-select" data-expert="${name}" data-skill="4"></select>
+          <select class="skill-target-select" data-expert="${name}" data-skill="4"></select>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+
+  EXPERT_ORDER.forEach(name => {
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData || !expertData.levels) return;
+
+    [1, 2, 3, 4].forEach(skill => {
+      const skillArr = expertData.skills[skill.toString()];
+      let sHtml = '';
+      if (skillArr) {
+        for (let i = 0; i < skillArr.length; i++) {
+          const sLvl = skillArr[i].level;
+          const sRel = skillArr[i].relationship;
+          const reqStr = (sRel && sRel !== '-') ? ` (Req: ${sRel})` : '';
+          sHtml += `<option value="${sLvl}" data-req="${sRel}">Lv.${sLvl}${reqStr}</option>`;
+        }
+      } else {
+        sHtml = `<option value="1">Lv.1</option>`;
+      }
+      const sCur = container.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${skill}"]`);
+      const sTgt = container.querySelector(`.skill-target-select[data-expert="${name}"][data-skill="${skill}"]`);
+      if (sCur) sCur.innerHTML = sHtml;
+      if (sTgt) sTgt.innerHTML = sHtml;
+    });
+  });
+
+  const batchCurrent = document.getElementById("setAllExpertSkillCurrent");
+  const batchTarget = document.getElementById("setAllExpertSkillTarget");
+  if (batchCurrent && batchTarget && EXPERTS_DATA["Agnes"]) {
+    let optionsHTML = '';
+    const skillArr = EXPERTS_DATA["Agnes"].skills["1"];
+    if (skillArr) {
+      for (let i = 0; i < skillArr.length; i++) {
+        const sLvl = skillArr[i].level;
+        optionsHTML += `<option value="${sLvl}">Lv.${sLvl}</option>`;
+      }
+    }
+    batchCurrent.innerHTML = optionsHTML;
+    batchTarget.innerHTML = optionsHTML;
+  }
+
+  document.getElementById("setAllExpertSkillCurrentBtn")?.addEventListener("click", () => {
+    const val = document.getElementById("setAllExpertSkillCurrent")?.value;
+    if (val) {
+      document.querySelectorAll(".skill-current-select").forEach(sel => {
+        sel.value = val;
+        const name = sel.dataset.expert;
+        const s = sel.dataset.skill;
+        const tgtSel = document.querySelector(`.skill-target-select[data-expert="${name}"][data-skill="${s}"]`);
+        if (tgtSel && parseInt(tgtSel.value) < parseInt(val)) tgtSel.value = val;
+      });
+      saveExpertsState();
+    }
+  });
+
+  document.getElementById("setAllExpertSkillTargetBtn")?.addEventListener("click", () => {
+    const val = document.getElementById("setAllExpertSkillTarget")?.value;
+    if (val) {
+      document.querySelectorAll(".skill-target-select").forEach(sel => {
+        const name = sel.dataset.expert;
+        const s = sel.dataset.skill;
+        const curSel = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+        if (curSel && parseInt(curSel.value) > parseInt(val)) {
+        } else {
+          sel.value = val;
+        }
+      });
+      saveExpertsState();
+    }
+  });
+
+  document.querySelectorAll(".skill-current-select").forEach(sel => {
+    sel.addEventListener("change", (e) => {
+      const name = e.target.dataset.expert;
+      const s = e.target.dataset.skill;
+      const tgtSel = document.querySelector(`.skill-target-select[data-expert="${name}"][data-skill="${s}"]`);
+      if (tgtSel && parseInt(tgtSel.value) < parseInt(e.target.value)) tgtSel.value = e.target.value;
+      saveExpertsState();
+    });
+  });
+
+  document.querySelectorAll(".skill-target-select").forEach(sel => {
+    sel.addEventListener("change", (e) => {
+      const name = e.target.dataset.expert;
+      const s = e.target.dataset.skill;
+      const curSel = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+      if (curSel && parseInt(curSel.value) > parseInt(e.target.value)) e.target.value = curSel.value;
+      saveExpertsState();
+    });
+  });
+
+  document.getElementById("expertSkillsCalculateBtn")?.addEventListener("click", calculateExpertSkills);
+
+  ["expertSkillExp", "expertSkillBooks"].forEach(id => {
+    document.getElementById(id)?.addEventListener("input", saveExpertsState);
+  });
+
+  loadExpertsState();
+}
+
+function calculateExpertSkills() {
+  if (!EXPERTS_DATA) return;
+
+  let totalSkillExpNeeded = 0;
+  let totalSkillBooksNeeded = 0;
+  let resultsHTML = "";
+
+  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+
+  // Read affinity state
+  const account = getActiveAccount();
+  const expertsState = (account && account.calculators && account.calculators.experts) ? account.calculators.experts : { levels: {} };
+
+  EXPERT_ORDER.forEach(name => {
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData) return;
+
+    let skillExp = 0;
+    let skillBooks = 0;
+    
+    // Evaluate if affinity prerequisite is met
+    const curAffinityLevel = expertsState.levels[name]?.current ? parseInt(expertsState.levels[name].current) : 1;
+
+    let expertWarnings = [];
+
+    [1, 2, 3, 4].forEach(s => {
+      const sCurSel = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+      const sTgtSel = document.querySelector(`.skill-target-select[data-expert="${name}"][data-skill="${s}"]`);
+      
+      if (sCurSel && sTgtSel) {
+        const sc = parseInt(sCurSel.value) || 1;
+        const st = parseInt(sTgtSel.value) || 1;
+        
+        // Check affinity requirement for target skill
+        const opt = sTgtSel.options[sTgtSel.selectedIndex];
+        const reqRel = opt?.dataset?.req;
+        if (reqRel && reqRel !== '-' && reqRel !== '') {
+            const reqLevel = getLevelForRelationship(name, reqRel);
+            if (curAffinityLevel < reqLevel) {
+                expertWarnings.push(`Skill ${s} Target Lv.${st} requires Affinity ${reqRel} (Lv.${reqLevel}). Current is Lv.${curAffinityLevel}.`);
+            }
+        }
+
+        if (sc < st) {
+          const sArr = expertData.skills[s.toString()];
+          if (sArr) {
+            for (let sl = sc + 1; sl <= st; sl++) {
+              const row = sArr.find(r => r.level === sl);
+              if (row) {
+                skillExp += (row.exp || 0);
+                skillBooks += (row.book || 0);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    totalSkillExpNeeded += skillExp;
+    totalSkillBooksNeeded += skillBooks;
+
+    if (skillExp > 0 || skillBooks > 0 || expertWarnings.length > 0) {
+      const localizedName = translateText(`expert.${name.toLowerCase()}`, {}, name);
+      resultsHTML += `
+        <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,165,0,0.5);">
+          <strong>${escapeHtml(localizedName)}</strong><br>
+          ${expertWarnings.map(w => `<div style="color: orange; font-size: 0.9em;">&#9888; ${w}</div>`).join("")}
+          ${skillExp > 0 ? `${translateText("labels.skillExp", {}, "Skill Exp Needed")}: ${skillExp.toLocaleString()} <br>` : ""}
+          ${skillBooks > 0 ? `${translateText("labels.skillBooks", {}, "Skill Books Needed")}: ${skillBooks.toLocaleString()} <br>` : ""}
+        </div>
+      `;
+    }
+  });
+
+  const invSkillExp = parseInt(document.getElementById("expertSkillExp")?.value) || 0;
+  const invSkillBooks = parseInt(document.getElementById("expertSkillBooks")?.value) || 0;
+
+  const remainingSkillExp = Math.max(0, totalSkillExpNeeded - invSkillExp);
+  const remainingSkillBooks = Math.max(0, totalSkillBooksNeeded - invSkillBooks);
+
+  let grandTotalHTML = `
+    <div class="card-panel" style="margin-top: 15px;">
+      <strong>${translateText("results.grandTotal", {}, "GRAND TOTAL")}</strong><br>
+      ${translateText("labels.skillExp", {}, "Total Skill Exp Required")}: ${totalSkillExpNeeded.toLocaleString()}<br>
+      ${translateText("labels.skillBooks", {}, "Total Skill Books Required")}: ${totalSkillBooksNeeded.toLocaleString()}<br><br>
+      
+      <strong>${translateText("results.afterInventory", {}, "Remaining After Inventory")}</strong><br>
+      ${translateText("labels.remainingSkillExp", {}, "Skill Exp Needed")}: ${remainingSkillExp.toLocaleString()}<br>
+      ${translateText("labels.remainingSkillBooks", {}, "Skill Books Needed")}: ${remainingSkillBooks.toLocaleString()}
+    </div>
+  `;
+
+  if (totalSkillExpNeeded === 0 && totalSkillBooksNeeded === 0) {
+    resultsHTML += `<div class="card-panel" style="margin-top: 15px;">${translateText("results.noUpgrades", {}, "No upgrades selected or already at target level.")}</div>`;
+  } else {
+    resultsHTML += grandTotalHTML;
+  }
+
+  const resultEl = document.getElementById("expertSkillsResult");
+  if (resultEl) {
+    resultEl.dataset.hasResults = "true";
+    resultEl.innerHTML = resultsHTML;
+  }
+}
