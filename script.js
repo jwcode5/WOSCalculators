@@ -4395,7 +4395,7 @@ function initExpertsPanel() {
     let optionsHTML = '';
     for (let i = 0; i < expertData.levels.length; i++) {
       const lvl = expertData.levels[i].level;
-      const title = getRelationshipTitle(lvl);
+      const title = expertData.levels[i].relationship || '';
       const locTitle = translateText(`expert.title.${title.replace(/ /g, '')}`, {}, title);
       optionsHTML += `<option value="${lvl}">Lv.${lvl} - ${locTitle}</option>`;
     }
@@ -4415,7 +4415,7 @@ function initExpertsPanel() {
     const firstExpertData = EXPERTS_DATA["Agnes"];
     for (let i = 0; i < firstExpertData.levels.length; i++) {
       const lvl = firstExpertData.levels[i].level;
-      const title = getRelationshipTitle(lvl);
+      const title = firstExpertData.levels[i].relationship || '';
       const locTitle = translateText(`expert.title.${title.replace(/ /g, '')}`, {}, title);
       optionsHTML += `<option value="${lvl}">Lv.${lvl} - ${locTitle}</option>`;
     }

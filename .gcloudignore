@@ -1,0 +1,8 @@
+# Block local web building artifacts and production builds
+node_modules/
+dist/
+package-lock.json
+
+# Block any local python cache files if used in server side logic
+__pycache__/
+*.pyc
