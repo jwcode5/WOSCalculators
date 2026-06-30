@@ -826,13 +826,13 @@
           "level": 4,
           "exp": 172800,
           "book": 2000,
-          "relationship": ""
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 5,
           "exp": 345600,
           "book": 4000,
-          "relationship": ""
+          "relationship": "Casual 2"
         }
       ],
       "2": [
@@ -840,31 +840,31 @@
           "level": 1,
           "exp": 0,
           "book": 0,
-          "relationship": "Acquaintance2"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 2,
           "exp": 34200,
           "book": 400,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 3,
           "exp": 69000,
           "book": 800,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 4,
           "exp": 138000,
           "book": 1600,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 5,
           "exp": 276000,
           "book": 3200,
-          "relationship": "-"
+          "relationship": "Casual 3"
         }
       ],
       "3": [
@@ -878,25 +878,25 @@
           "level": 2,
           "exp": 13800,
           "book": 200,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 3,
           "exp": 27600,
           "book": 400,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv 8."
         },
         {
           "level": 4,
           "exp": 55200,
           "book": 800,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 8"
         },
         {
           "level": 5,
           "exp": 110400,
           "book": 1600,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 12"
         }
       ],
       "4": [
@@ -910,55 +910,55 @@
           "level": 2,
           "exp": 10200,
           "book": 100,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 3,
           "exp": 20400,
           "book": 200,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 4,
           "exp": 30600,
           "book": 300,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 5,
           "exp": 41400,
           "book": 400,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 15"
         },
         {
           "level": 6,
           "exp": 51600,
           "book": 500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 15"
         },
         {
           "level": 7,
           "exp": 61800,
           "book": 600,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 15"
         },
         {
           "level": 8,
           "exp": 72600,
           "book": 700,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 9,
           "exp": 82800,
           "book": 800,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 10,
           "exp": 93000,
           "book": 900,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 24"
         }
       ]
     }
@@ -1790,7 +1790,7 @@
           "level": 4,
           "exp": 10800,
           "book": 210,
-          "relationship": "Stranger"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 5,
@@ -1802,31 +1802,31 @@
           "level": 6,
           "exp": 18000,
           "book": 350,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 7,
           "exp": 21600,
           "book": 420,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 8,
           "exp": 25200,
           "book": 490,
-          "relationship": "-"
+          "relationship": "Casual 2"
         },
         {
           "level": 9,
           "exp": 28800,
           "book": 560,
-          "relationship": "-"
+          "relationship": "Casual 2"
         },
         {
           "level": 10,
           "exp": 32400,
           "book": 630,
-          "relationship": "-"
+          "relationship": "Close 1"
         }
       ],
       "2": [
@@ -1840,25 +1840,25 @@
           "level": 2,
           "exp": 27600,
           "book": 400,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 3,
           "exp": 55200,
           "book": 800,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 4,
           "exp": 110400,
           "book": 1600,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 5,
           "exp": 220800,
           "book": 3200,
-          "relationship": "-"
+          "relationship": "Close 2"
         }
       ],
       "3": [
@@ -1872,25 +1872,25 @@
           "level": 2,
           "exp": 43200,
           "book": 500,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 3,
           "exp": 86400,
           "book": 1000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 10"
         },
         {
           "level": 4,
           "exp": 172800,
           "book": 2000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 10"
         },
         {
           "level": 5,
           "exp": 345600,
           "book": 4000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 15"
         }
       ],
       "4": [
@@ -1904,55 +1904,55 @@
           "level": 2,
           "exp": 10200,
           "book": 100,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 3,
           "exp": 20400,
           "book": 200,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 4,
           "exp": 30600,
           "book": 300,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 5,
           "exp": 41400,
           "book": 400,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 18"
         },
         {
           "level": 6,
           "exp": 51600,
           "book": 500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 18"
         },
         {
           "level": 7,
           "exp": 61800,
           "book": 600,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 18"
         },
         {
           "level": 8,
           "exp": 72600,
           "book": 700,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 24"
         },
         {
           "level": 9,
           "exp": 82800,
           "book": 800,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 24"
         },
         {
           "level": 10,
           "exp": 93000,
           "book": 900,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 29"
         }
       ]
     }
@@ -2772,55 +2772,55 @@
           "level": 2,
           "exp": 82800,
           "book": 600,
-          "relationship": "-"
+          "relationship": "Acquaintance 1"
         },
         {
           "level": 3,
           "exp": 165600,
           "book": 1200,
-          "relationship": "-"
+          "relationship": "Acquaintance 1"
         },
         {
           "level": 4,
           "exp": 248400,
           "book": 1800,
-          "relationship": "-"
+          "relationship": "Acquaintance 1"
         },
         {
           "level": 5,
           "exp": 331800,
           "book": 2400,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 6,
           "exp": 414600,
           "book": 3000,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 7,
           "exp": 497400,
           "book": 3600,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 8,
           "exp": 580200,
           "book": 4200,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 9,
           "exp": 663600,
           "book": 4800,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 10,
           "exp": 746400,
           "book": 5400,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         }
       ],
       "2": [
@@ -2834,55 +2834,55 @@
           "level": 2,
           "exp": 30600,
           "book": 300,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 3,
           "exp": 61800,
           "book": 600,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 4,
           "exp": 93000,
           "book": 900,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 5,
           "exp": 124200,
           "book": 1200,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 6,
           "exp": 155400,
           "book": 1500,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 7,
           "exp": 186600,
           "book": 1800,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 8,
           "exp": 217200,
           "book": 2100,
-          "relationship": "-"
+          "relationship": "Casual 3"
         },
         {
           "level": 9,
           "exp": 248400,
           "book": 2400,
-          "relationship": "-"
+          "relationship": "Casual 3"
         },
         {
           "level": 10,
           "exp": 279600,
           "book": 2700,
-          "relationship": "-"
+          "relationship": "Close 2"
         }
       ],
       "3": [
@@ -2896,55 +2896,55 @@
           "level": 2,
           "exp": 30600,
           "book": 300,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 3,
           "exp": 61800,
           "book": 600,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 4,
           "exp": 93000,
           "book": 900,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 5,
           "exp": 124200,
           "book": 1200,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 14"
         },
         {
           "level": 6,
           "exp": 155400,
           "book": 1500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 14"
         },
         {
           "level": 7,
           "exp": 186600,
           "book": 1800,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 14"
         },
         {
           "level": 8,
           "exp": 217200,
           "book": 2100,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 9,
           "exp": 248400,
           "book": 2400,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 10,
           "exp": 279600,
           "book": 2700,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 28"
         }
       ],
       "4": [
@@ -2958,55 +2958,55 @@
           "level": 2,
           "exp": 82800,
           "book": 600,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 3,
           "exp": 165600,
           "book": 1200,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 4,
           "exp": 248400,
           "book": 1800,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 5,
           "exp": 331800,
           "book": 2400,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 6,
           "exp": 414600,
           "book": 3000,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 7,
           "exp": 497400,
           "book": 3600,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 8,
           "exp": 580200,
           "book": 4200,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 9,
           "exp": 663600,
           "book": 4800,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 10,
           "exp": 746400,
           "book": 5400,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 39"
         }
       ]
     }
@@ -3826,55 +3826,55 @@
           "level": 2,
           "exp": 30600,
           "book": 300,
-          "relationship": "-"
+          "relationship": "Acquaintance 1"
         },
         {
           "level": 3,
           "exp": 61800,
           "book": 600,
-          "relationship": "-"
+          "relationship": "Acquaintance 1"
         },
         {
           "level": 4,
           "exp": 93000,
           "book": 900,
-          "relationship": "-"
+          "relationship": "Acquaintance 1"
         },
         {
           "level": 5,
           "exp": 124200,
           "book": 1200,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 6,
           "exp": 155400,
           "book": 1500,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 7,
           "exp": 186600,
           "book": 1800,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 8,
           "exp": 217200,
           "book": 2100,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 9,
           "exp": 248400,
           "book": 2400,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 10,
           "exp": 279600,
           "book": 2700,
-          "relationship": "-"
+          "relationship": "Close 1"
         }
       ],
       "2": [
@@ -3888,115 +3888,115 @@
           "level": 2,
           "exp": 86400,
           "book": 500,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 3,
           "exp": 172800,
           "book": 1000,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 4,
           "exp": 259200,
           "book": 1500,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 5,
           "exp": 345600,
           "book": 2000,
-          "relationship": "-"
+          "relationship": "Acquaintance 2"
         },
         {
           "level": 6,
           "exp": 432000,
           "book": 2500,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 7,
           "exp": 518400,
           "book": 3000,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 8,
           "exp": 604800,
           "book": 3500,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 9,
           "exp": 691200,
           "book": 4000,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 10,
           "exp": 777600,
           "book": 4500,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 11,
           "exp": 864000,
           "book": 5000,
-          "relationship": "-"
+          "relationship": "Casual 2"
         },
         {
           "level": 12,
           "exp": 950400,
           "book": 5500,
-          "relationship": "-"
+          "relationship": "Casual 2"
         },
         {
           "level": 13,
           "exp": 1036800,
           "book": 6000,
-          "relationship": "-"
+          "relationship": "Casual 2"
         },
         {
           "level": 14,
           "exp": 1209600,
           "book": 7000,
-          "relationship": "-"
+          "relationship": "Casual 2"
         },
         {
           "level": 15,
           "exp": 1382400,
           "book": 8000,
-          "relationship": "-"
+          "relationship": "Casual 2"
         },
         {
           "level": 16,
           "exp": 1382400,
           "book": 8000,
-          "relationship": "-"
+          "relationship": "Close 1"
         },
         {
           "level": 17,
           "exp": 1555200,
           "book": 9000,
-          "relationship": "-"
+          "relationship": "Close 1"
         },
         {
           "level": 18,
           "exp": 1555200,
           "book": 9000,
-          "relationship": "-"
+          "relationship": "Close 1"
         },
         {
           "level": 19,
           "exp": 1728000,
           "book": 10000,
-          "relationship": "-"
+          "relationship": "Close 1"
         },
         {
           "level": 20,
           "exp": 1728000,
           "book": 10000,
-          "relationship": "-"
+          "relationship": "Close 1"
         }
       ],
       "3": [
@@ -4010,115 +4010,115 @@
           "level": 2,
           "exp": 159000,
           "book": 800,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 3,
           "exp": 297600,
           "book": 1500,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 4,
           "exp": 436800,
           "book": 2200,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 5,
           "exp": 595800,
           "book": 3000,
-          "relationship": "-"
+          "relationship": "Acquaintance 3"
         },
         {
           "level": 6,
           "exp": 754800,
           "book": 3800,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 7,
           "exp": 894000,
           "book": 4500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 8,
           "exp": 1033200,
           "book": 5200,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 9,
           "exp": 1192200,
           "book": 6000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 10,
           "exp": 1651200,
           "book": 6800,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 11,
           "exp": 149400,
           "book": 7500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 12,
           "exp": 1629000,
           "book": 8200,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 13,
           "exp": 1788000,
           "book": 9000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 14,
           "exp": 2086200,
           "book": 10500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 15,
           "exp": 2384400,
           "book": 12000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 20"
         },
         {
           "level": 16,
           "exp": 2384400,
           "book": 12000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 40"
         },
         {
           "level": 17,
           "exp": 2682600,
           "book": 13500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 40"
         },
         {
           "level": 18,
           "exp": 2682600,
           "book": 13500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 40"
         },
         {
           "level": 19,
           "exp": 2980800,
           "book": 15000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 40"
         },
         {
           "level": 20,
           "exp": 2980800,
           "book": 15000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 40"
         }
       ],
       "4": [
@@ -4132,115 +4132,3517 @@
           "level": 2,
           "exp": 179400,
           "book": 800,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 3,
           "exp": 336600,
           "book": 1500,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 4,
           "exp": 493800,
           "book": 2200,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 5,
           "exp": 673800,
           "book": 3000,
-          "relationship": "-"
+          "relationship": "Casual 1"
         },
         {
           "level": 6,
           "exp": 853200,
           "book": 3800,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 7,
           "exp": 1010400,
           "book": 4500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 8,
           "exp": 1167600,
           "book": 5200,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 9,
           "exp": 1347600,
           "book": 6000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 10,
           "exp": 1527600,
           "book": 6800,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 11,
           "exp": 1684800,
           "book": 7500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 12,
           "exp": 1842000,
           "book": 8200,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 13,
           "exp": 2021400,
           "book": 9000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 14,
           "exp": 2358600,
           "book": 10500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 15,
           "exp": 2695200,
           "book": 12000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 30"
         },
         {
           "level": 16,
           "exp": 2695200,
           "book": 12000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 55"
         },
         {
           "level": 17,
           "exp": 3032400,
           "book": 13500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 55"
         },
         {
           "level": 18,
           "exp": 3032400,
           "book": 13500,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 55"
         },
         {
           "level": 19,
           "exp": 3369600,
           "book": 15000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 55"
         },
         {
           "level": 20,
           "exp": 3369600,
           "book": 15000,
-          "relationship": "-"
+          "relationship": "Total Skills: Lv. 69"
+        }
+      ]
+    }
+  },
+  "Valeria": {
+    "levels": [
+      {
+        "level": 1,
+        "affinity": 1000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.10%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 2,
+        "affinity": 1840,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.20%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 3,
+        "affinity": 1940,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.30%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 4,
+        "affinity": 2030,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.40%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 5,
+        "affinity": 2120,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.50%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 6,
+        "affinity": 2210,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.60%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 7,
+        "affinity": 2400,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.70%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 8,
+        "affinity": 2580,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.80%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 9,
+        "affinity": 2760,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.90%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 10,
+        "affinity": 2950,
+        "advancement": 20,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.80%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 11,
+        "affinity": 3130,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.90%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 12,
+        "affinity": 3320,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.00%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 13,
+        "affinity": 3500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.10%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 14,
+        "affinity": 3680,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.20%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 15,
+        "affinity": 3870,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.30%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 16,
+        "affinity": 4050,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.40%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 17,
+        "affinity": 4240,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.50%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 18,
+        "affinity": 4420,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.60%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 19,
+        "affinity": 4600,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.70%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 20,
+        "affinity": 4790,
+        "advancement": 40,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.60%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 21,
+        "affinity": 4970,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.70%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 22,
+        "affinity": 5160,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.80%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 23,
+        "affinity": 5340,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.90%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 24,
+        "affinity": 5520,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.00%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 25,
+        "affinity": 5710,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.10%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 26,
+        "affinity": 5890,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.20%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 27,
+        "affinity": 6080,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.30%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 28,
+        "affinity": 6260,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.40%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 29,
+        "affinity": 6440,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.50%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 30,
+        "affinity": 6720,
+        "advancement": 60,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.40%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 31,
+        "affinity": 7000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.50%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 32,
+        "affinity": 7270,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.60%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 33,
+        "affinity": 7550,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.70%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 34,
+        "affinity": 7820,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.80%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 35,
+        "affinity": 8100,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.90%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 36,
+        "affinity": 8380,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.00%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 37,
+        "affinity": 8650,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.10%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 38,
+        "affinity": 8930,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.20%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 39,
+        "affinity": 9200,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.30%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 40,
+        "affinity": 9570,
+        "advancement": 80,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.20%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 41,
+        "affinity": 9940,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.30%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 42,
+        "affinity": 10310,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.40%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 43,
+        "affinity": 10680,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.50%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 44,
+        "affinity": 11040,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.60%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 45,
+        "affinity": 11410,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.70%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 46,
+        "affinity": 11780,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.80%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 47,
+        "affinity": 12150,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.90%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 48,
+        "affinity": 12520,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "10.00%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 49,
+        "affinity": 12880,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "10.10%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 50,
+        "affinity": 13340,
+        "advancement": 100,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.00%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 51,
+        "affinity": 13800,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.10%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 52,
+        "affinity": 14260,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.20%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 53,
+        "affinity": 14720,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.30%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 54,
+        "affinity": 15180,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.40%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 55,
+        "affinity": 15640,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.50%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 56,
+        "affinity": 16100,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.60%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 57,
+        "affinity": 16560,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.70%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 58,
+        "affinity": 17020,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.80%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 59,
+        "affinity": 17480,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.90%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 60,
+        "affinity": 17940,
+        "advancement": 120,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.80%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 61,
+        "affinity": 18400,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.90%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 62,
+        "affinity": 18860,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.00%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 63,
+        "affinity": 19320,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.10%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 64,
+        "affinity": 19780,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.20%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 65,
+        "affinity": 20240,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.30%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 66,
+        "affinity": 20700,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.40%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 67,
+        "affinity": 21160,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.50%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 68,
+        "affinity": 21620,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.60%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 69,
+        "affinity": 22080,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.70%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 70,
+        "affinity": 22540,
+        "advancement": 140,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.60%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 71,
+        "affinity": 23000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.70%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 72,
+        "affinity": 23460,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.80%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 73,
+        "affinity": 23920,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.90%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 74,
+        "affinity": 24380,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "15.00%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 75,
+        "affinity": 24840,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "15.10%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 76,
+        "affinity": 25300,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "15.20%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 77,
+        "affinity": 25760,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "15.30%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 78,
+        "affinity": 26200,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "15.40%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 79,
+        "affinity": 26680,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "15.50%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 80,
+        "affinity": 27140,
+        "advancement": 160,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "16.40%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 81,
+        "affinity": 27600,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "16.50%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 82,
+        "affinity": 28060,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "16.60%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 83,
+        "affinity": 28520,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "16.70%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 84,
+        "affinity": 28980,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "16.80%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 85,
+        "affinity": 29440,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "16.90%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 86,
+        "affinity": 29900,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "17.00%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 87,
+        "affinity": 30360,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "17.10%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 88,
+        "affinity": 30820,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "17.20%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 89,
+        "affinity": 31280,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "17.30%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 90,
+        "affinity": 31740,
+        "advancement": 180,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "18.20%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 91,
+        "affinity": 32200,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "18.30%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 92,
+        "affinity": 32660,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "18.40%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 93,
+        "affinity": 33120,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "18.50%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 94,
+        "affinity": 33580,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "18.60%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 95,
+        "affinity": 34040,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "18.70%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 96,
+        "affinity": 34500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "18.80%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 97,
+        "affinity": 34960,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "18.90%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 98,
+        "affinity": 34960,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "19.00%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 99,
+        "affinity": 35880,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "19.10%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 100,
+        "affinity": 36340,
+        "advancement": 200,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "20.00%",
+        "relationship": "Intimate"
+      }
+    ],
+    "skills": {
+      "1": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 43200,
+          "book": 500,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 86400,
+          "book": 1000,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 129600,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 172800,
+          "book": 2000,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 216000,
+          "book": 2500,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 259200,
+          "book": 3000,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 302400,
+          "book": 3500,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 345600,
+          "book": 4000,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 388800,
+          "book": 4500,
+          "relationship": ""
+        }
+      ],
+      "2": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 60000,
+          "book": 500,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 120600,
+          "book": 1000,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 181200,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 241800,
+          "book": 2000,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 302400,
+          "book": 2500,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 362400,
+          "book": 3000,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 423000,
+          "book": 3500,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 483600,
+          "book": 4000,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 544200,
+          "book": 4500,
+          "relationship": ""
+        }
+      ],
+      "3": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 110400,
+          "book": 800,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 207000,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 303600,
+          "book": 2200,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 414600,
+          "book": 3000,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 525000,
+          "book": 8000,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 621600,
+          "book": 4500,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 718800,
+          "book": 5200,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 829200,
+          "book": 6000,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 939600,
+          "book": 6800,
+          "relationship": ""
+        },
+        {
+          "level": 11,
+          "exp": 1036800,
+          "book": 7500,
+          "relationship": ""
+        },
+        {
+          "level": 12,
+          "exp": 1133400,
+          "book": 8200,
+          "relationship": ""
+        },
+        {
+          "level": 13,
+          "exp": 1243800,
+          "book": 9000,
+          "relationship": ""
+        },
+        {
+          "level": 14,
+          "exp": 1451400,
+          "book": 10500,
+          "relationship": ""
+        },
+        {
+          "level": 15,
+          "exp": 1658400,
+          "book": 12000,
+          "relationship": ""
+        },
+        {
+          "level": 16,
+          "exp": 1658400,
+          "book": 12000,
+          "relationship": ""
+        },
+        {
+          "level": 17,
+          "exp": 1866000,
+          "book": 13500,
+          "relationship": ""
+        },
+        {
+          "level": 18,
+          "exp": 1866000,
+          "book": 13500,
+          "relationship": ""
+        },
+        {
+          "level": 19,
+          "exp": 2073600,
+          "book": 15000,
+          "relationship": ""
+        },
+        {
+          "level": 20,
+          "exp": 2073600,
+          "book": 15000,
+          "relationship": ""
+        }
+      ],
+      "4": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 124200,
+          "book": 800,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 232800,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 342000,
+          "book": 2200,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 466200,
+          "book": 3000,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 591000,
+          "book": 8000,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 699600,
+          "book": 4500,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 808200,
+          "book": 5200,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 933000,
+          "book": 6000,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 1057200,
+          "book": 6800,
+          "relationship": ""
+        },
+        {
+          "level": 11,
+          "exp": 1166400,
+          "book": 7500,
+          "relationship": ""
+        },
+        {
+          "level": 12,
+          "exp": 1275000,
+          "book": 8200,
+          "relationship": ""
+        },
+        {
+          "level": 13,
+          "exp": 1399200,
+          "book": 9000,
+          "relationship": ""
+        },
+        {
+          "level": 14,
+          "exp": 1632600,
+          "book": 10500,
+          "relationship": ""
+        },
+        {
+          "level": 15,
+          "exp": 1866000,
+          "book": 12000,
+          "relationship": ""
+        },
+        {
+          "level": 16,
+          "exp": 1866000,
+          "book": 12000,
+          "relationship": ""
+        },
+        {
+          "level": 17,
+          "exp": 2099400,
+          "book": 13500,
+          "relationship": ""
+        },
+        {
+          "level": 18,
+          "exp": 2099400,
+          "book": 13500,
+          "relationship": ""
+        },
+        {
+          "level": 19,
+          "exp": 2332800,
+          "book": 15000,
+          "relationship": ""
+        },
+        {
+          "level": 20,
+          "exp": 233280,
+          "book": 15000,
+          "relationship": ""
+        }
+      ]
+    }
+  },
+  "Baldur": {
+    "levels": [
+      {
+        "level": 1,
+        "affinity": 1000,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.05%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 2,
+        "affinity": 400,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.10%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 3,
+        "affinity": 420,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.15%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 4,
+        "affinity": 440,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.20%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 5,
+        "affinity": 460,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.25%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 6,
+        "affinity": 480,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.30%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 7,
+        "affinity": 520,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.35%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 8,
+        "affinity": 560,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.40%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 9,
+        "affinity": 600,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.45%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 10,
+        "affinity": 640,
+        "advancement": 6,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.90%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 11,
+        "affinity": 680,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "1.95%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 12,
+        "affinity": 720,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.00%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 13,
+        "affinity": 760,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.05%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 14,
+        "affinity": 800,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.10%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 15,
+        "affinity": 840,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.15%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 16,
+        "affinity": 880,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.20%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 17,
+        "affinity": 920,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.25%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 18,
+        "affinity": 960,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.30%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 19,
+        "affinity": 1000,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.35%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 20,
+        "affinity": 1040,
+        "advancement": 12,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.80%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 21,
+        "affinity": 1080,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.85%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 22,
+        "affinity": 1120,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.90%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 23,
+        "affinity": 1160,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "2.95%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 24,
+        "affinity": 1200,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.00%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 25,
+        "affinity": 1240,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.05%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 26,
+        "affinity": 1280,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.10%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 27,
+        "affinity": 1320,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.15%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 28,
+        "affinity": 1360,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.20%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 29,
+        "affinity": 1400,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.25%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 30,
+        "affinity": 1460,
+        "advancement": 18,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.70%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 31,
+        "affinity": 1520,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.75%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 32,
+        "affinity": 1580,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.80%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 33,
+        "affinity": 1640,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.85%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 34,
+        "affinity": 1700,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.90%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 35,
+        "affinity": 1760,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "3.95%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 36,
+        "affinity": 1820,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.00%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 37,
+        "affinity": 1880,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.05%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 38,
+        "affinity": 1940,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.10%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 39,
+        "affinity": 2000,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.15%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 40,
+        "affinity": 2080,
+        "advancement": 24,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.60%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 41,
+        "affinity": 2160,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.65%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 42,
+        "affinity": 2240,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.70%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 43,
+        "affinity": 2320,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.75%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 44,
+        "affinity": 2400,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.80%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 45,
+        "affinity": 2480,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.85%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 46,
+        "affinity": 2560,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.90%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 47,
+        "affinity": 2640,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "4.95%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 48,
+        "affinity": 2720,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.00%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 49,
+        "affinity": 2800,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.05%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 50,
+        "affinity": 2900,
+        "advancement": 30,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.50%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 51,
+        "affinity": 3000,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.55%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 52,
+        "affinity": 3100,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.60%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 53,
+        "affinity": 3200,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.65%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 54,
+        "affinity": 3300,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.70%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 55,
+        "affinity": 3400,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.75%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 56,
+        "affinity": 3500,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.80%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 57,
+        "affinity": 3600,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.85%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 58,
+        "affinity": 3700,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.90%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 59,
+        "affinity": 3800,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "5.95%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 60,
+        "affinity": 3900,
+        "advancement": 36,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.40%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 61,
+        "affinity": 4000,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.45%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 62,
+        "affinity": 4100,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.50%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 63,
+        "affinity": 4200,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.55%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 64,
+        "affinity": 4300,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.60%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 65,
+        "affinity": 4400,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.65%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 66,
+        "affinity": 4500,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.70%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 67,
+        "affinity": 4600,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.75%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 68,
+        "affinity": 4700,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.80%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 69,
+        "affinity": 4800,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "6.85%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 70,
+        "affinity": 4900,
+        "advancement": 42,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.30%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 71,
+        "affinity": 5000,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.35%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 72,
+        "affinity": 5100,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.40%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 73,
+        "affinity": 5200,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.45%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 74,
+        "affinity": 5300,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.50%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 75,
+        "affinity": 5400,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.55%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 76,
+        "affinity": 5500,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.60%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 77,
+        "affinity": 5600,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.65%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 78,
+        "affinity": 5700,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.70%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 79,
+        "affinity": 5800,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "7.75%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 80,
+        "affinity": 5900,
+        "advancement": 48,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.20%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 81,
+        "affinity": 6000,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.25%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 82,
+        "affinity": 6100,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.30%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 83,
+        "affinity": 6200,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.35%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 84,
+        "affinity": 6300,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.40%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 85,
+        "affinity": 6400,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.45%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 86,
+        "affinity": 6500,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.50%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 87,
+        "affinity": 6600,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.55%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 88,
+        "affinity": 6700,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.60%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 89,
+        "affinity": 6800,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "8.65%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 90,
+        "affinity": 6900,
+        "advancement": 54,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.10%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 91,
+        "affinity": 7000,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.15%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 92,
+        "affinity": 7100,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.20%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 93,
+        "affinity": 7200,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.25%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 94,
+        "affinity": 7300,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.30%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 95,
+        "affinity": 7400,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.35%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 96,
+        "affinity": 7500,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.40%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 97,
+        "affinity": 7600,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.45%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 98,
+        "affinity": 7700,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.50%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 99,
+        "affinity": 7800,
+        "advancement": 0,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "9.55%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 100,
+        "affinity": 7900,
+        "advancement": 60,
+        "statBoosted": "Troops Attack/Defense",
+        "stats": "10.00%",
+        "relationship": "Intimate"
+      }
+    ],
+    "skills": {
+      "1": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 25800,
+          "book": 300,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 51600,
+          "book": 600,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 77400,
+          "book": 900,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 103200,
+          "book": 1200,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 129600,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 155400,
+          "book": 1800,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 181200,
+          "book": 2100,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 207000,
+          "book": 2400,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 232800,
+          "book": 2700,
+          "relationship": ""
+        }
+      ],
+      "2": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 25800,
+          "book": 300,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 51600,
+          "book": 600,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 77400,
+          "book": 900,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 103200,
+          "book": 1200,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 129600,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 155400,
+          "book": 1800,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 181200,
+          "book": 2100,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 207000,
+          "book": 2400,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 232800,
+          "book": 2700,
+          "relationship": ""
+        }
+      ],
+      "3": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 25800,
+          "book": 300,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 51600,
+          "book": 600,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 77400,
+          "book": 900,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 103200,
+          "book": 1200,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 129600,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 155400,
+          "book": 1800,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 181200,
+          "book": 2100,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 207000,
+          "book": 2400,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 232800,
+          "book": 2700,
+          "relationship": ""
+        }
+      ],
+      "4": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 51600,
+          "book": 500,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 103200,
+          "book": 1000,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 155400,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 207000,
+          "book": 2000,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 259200,
+          "book": 2500,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 310800,
+          "book": 3000,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 362400,
+          "book": 3500,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 414600,
+          "book": 4000,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 466200,
+          "book": 4500,
+          "relationship": ""
+        }
+      ]
+    }
+  },
+  "Fabian": {
+    "levels": [
+      {
+        "level": 1,
+        "affinity": 1000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "1.58%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 2,
+        "affinity": 1000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "1.65%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 3,
+        "affinity": 1050,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "1.73%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 4,
+        "affinity": 1100,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "1.80%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 5,
+        "affinity": 1150,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "1.88%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 6,
+        "affinity": 1200,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "1.95%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 7,
+        "affinity": 1300,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.03%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 8,
+        "affinity": 1400,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.10%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 9,
+        "affinity": 1500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.18%",
+        "relationship": "Stranger"
+      },
+      {
+        "level": 10,
+        "affinity": 1600,
+        "advancement": 12,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.85%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 11,
+        "affinity": 1700,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "2.93%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 12,
+        "affinity": 1800,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.00%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 13,
+        "affinity": 1900,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.08%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 14,
+        "affinity": 2000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.15%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 15,
+        "affinity": 2100,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.23%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 16,
+        "affinity": 2200,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.30%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 17,
+        "affinity": 2300,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.38%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 18,
+        "affinity": 2400,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.45%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 19,
+        "affinity": 2500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "3.53%",
+        "relationship": "Acquaintance 1"
+      },
+      {
+        "level": 20,
+        "affinity": 2600,
+        "advancement": 24,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.20%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 21,
+        "affinity": 2700,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.28%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 22,
+        "affinity": 2800,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.35%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 23,
+        "affinity": 2900,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.43%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 24,
+        "affinity": 3000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.50%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 25,
+        "affinity": 3100,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.58%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 26,
+        "affinity": 3200,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.65%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 27,
+        "affinity": 3300,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.73%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 28,
+        "affinity": 3400,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.80%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 29,
+        "affinity": 3500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "4.88%",
+        "relationship": "Acquaintance 2"
+      },
+      {
+        "level": 30,
+        "affinity": 3650,
+        "advancement": 36,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.55%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 31,
+        "affinity": 3800,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.63%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 32,
+        "affinity": 3950,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.70%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 33,
+        "affinity": 4100,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.78%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 34,
+        "affinity": 4250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.85%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 35,
+        "affinity": 4400,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "5.93%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 36,
+        "affinity": 4550,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.00%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 37,
+        "affinity": 4700,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.08%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 38,
+        "affinity": 4850,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.15%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 39,
+        "affinity": 5000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.23%",
+        "relationship": "Acquaintance 3"
+      },
+      {
+        "level": 40,
+        "affinity": 5200,
+        "advancement": 48,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.90%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 41,
+        "affinity": 5400,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "6.98%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 42,
+        "affinity": 5600,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.05%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 43,
+        "affinity": 5800,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.13%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 44,
+        "affinity": 6000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.20%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 45,
+        "affinity": 6200,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.28%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 46,
+        "affinity": 6400,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.35%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 47,
+        "affinity": 6600,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.43%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 48,
+        "affinity": 6800,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.50%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 49,
+        "affinity": 7000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "7.58%",
+        "relationship": "Casual 1"
+      },
+      {
+        "level": 50,
+        "affinity": 7250,
+        "advancement": 60,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.25%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 51,
+        "affinity": 7500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.33%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 52,
+        "affinity": 7750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.40%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 53,
+        "affinity": 8000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.48%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 54,
+        "affinity": 8250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.55%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 55,
+        "affinity": 8500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.63%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 56,
+        "affinity": 8750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.70%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 57,
+        "affinity": 9000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.78%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 58,
+        "affinity": 9250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.85%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 59,
+        "affinity": 9500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "8.93%",
+        "relationship": "Casual 2"
+      },
+      {
+        "level": 60,
+        "affinity": 9750,
+        "advancement": 72,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.60%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 61,
+        "affinity": 10000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.68%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 62,
+        "affinity": 10250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.75%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 63,
+        "affinity": 10500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.83%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 64,
+        "affinity": 10750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.90%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 65,
+        "affinity": 11000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "9.98%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 66,
+        "affinity": 11250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "10.05%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 67,
+        "affinity": 11500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "10.13%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 68,
+        "affinity": 11750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "10.20%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 69,
+        "affinity": 12000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "10.28%",
+        "relationship": "Casual 3"
+      },
+      {
+        "level": 70,
+        "affinity": 12250,
+        "advancement": 84,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "10.95%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 71,
+        "affinity": 12500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.03%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 72,
+        "affinity": 12750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.10%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 73,
+        "affinity": 13000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.18%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 74,
+        "affinity": 13250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.25%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 75,
+        "affinity": 13500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.33%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 76,
+        "affinity": 13750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.40%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 77,
+        "affinity": 14000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.48%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 78,
+        "affinity": 14250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.55%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 79,
+        "affinity": 14500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "11.63%",
+        "relationship": "Close 1"
+      },
+      {
+        "level": 80,
+        "affinity": 14750,
+        "advancement": 96,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.30%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 81,
+        "affinity": 15000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.38%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 82,
+        "affinity": 15250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.45%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 83,
+        "affinity": 15500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.53%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 84,
+        "affinity": 15750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.60%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 85,
+        "affinity": 16000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.68%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 86,
+        "affinity": 16250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.75%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 87,
+        "affinity": 16500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.83%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 88,
+        "affinity": 16750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.90%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 89,
+        "affinity": 17000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "12.98%",
+        "relationship": "Close 2"
+      },
+      {
+        "level": 90,
+        "affinity": 17250,
+        "advancement": 108,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.65%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 91,
+        "affinity": 17500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.73%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 92,
+        "affinity": 17750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.80%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 93,
+        "affinity": 18000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.88%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 94,
+        "affinity": 18250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "13.95%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 95,
+        "affinity": 18500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.03%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 96,
+        "affinity": 18750,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.10%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 97,
+        "affinity": 19000,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.18%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 98,
+        "affinity": 19250,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.25%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 99,
+        "affinity": 19500,
+        "advancement": 0,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "14.33%",
+        "relationship": "Close 3"
+      },
+      {
+        "level": 100,
+        "affinity": 19750,
+        "advancement": 120,
+        "statBoosted": "Troops Lethality/Health",
+        "stats": "15.00%",
+        "relationship": "Intimate"
+      }
+    ],
+    "skills": {
+      "1": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 25800,
+          "book": 300,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 51600,
+          "book": 600,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 77400,
+          "book": 900,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 103200,
+          "book": 1200,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 129600,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 155400,
+          "book": 1800,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 181200,
+          "book": 2100,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 207000,
+          "book": 2400,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 232800,
+          "book": 2700,
+          "relationship": ""
+        }
+      ],
+      "2": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 33053,
+          "book": 500,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 107400,
+          "book": 1000,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 160800,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 214800,
+          "book": 2000,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 268800,
+          "book": 2500,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 322200,
+          "book": 3000,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 376200,
+          "book": 3500,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 429600,
+          "book": 4000,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 483600,
+          "book": 4500,
+          "relationship": ""
+        }
+      ],
+      "3": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 27600,
+          "book": 200,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 69000,
+          "book": 500,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 96600,
+          "book": 700,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 138000,
+          "book": 1000,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 165600,
+          "book": 1200,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 207000,
+          "book": 1500,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 234600,
+          "book": 1700,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 276000,
+          "book": 2000,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 318000,
+          "book": 2300,
+          "relationship": ""
+        },
+        {
+          "level": 11,
+          "exp": 345600,
+          "book": 2500,
+          "relationship": ""
+        },
+        {
+          "level": 12,
+          "exp": 373200,
+          "book": 2700,
+          "relationship": ""
+        },
+        {
+          "level": 13,
+          "exp": 414600,
+          "book": 3000,
+          "relationship": ""
+        },
+        {
+          "level": 14,
+          "exp": 483600,
+          "book": 3500,
+          "relationship": ""
+        },
+        {
+          "level": 15,
+          "exp": 552600,
+          "book": 4000,
+          "relationship": ""
+        },
+        {
+          "level": 16,
+          "exp": 552600,
+          "book": 4000,
+          "relationship": ""
+        },
+        {
+          "level": 17,
+          "exp": 621600,
+          "book": 4500,
+          "relationship": ""
+        },
+        {
+          "level": 18,
+          "exp": 621600,
+          "book": 4500,
+          "relationship": ""
+        },
+        {
+          "level": 19,
+          "exp": 705000,
+          "book": 5100,
+          "relationship": ""
+        },
+        {
+          "level": 20,
+          "exp": 705000,
+          "book": 5100,
+          "relationship": ""
+        }
+      ],
+      "4": [
+        {
+          "level": 1,
+          "exp": 0,
+          "book": 0,
+          "relationship": ""
+        },
+        {
+          "level": 2,
+          "exp": 46200,
+          "book": 300,
+          "relationship": ""
+        },
+        {
+          "level": 3,
+          "exp": 108600,
+          "book": 700,
+          "relationship": ""
+        },
+        {
+          "level": 4,
+          "exp": 155400,
+          "book": 1000,
+          "relationship": ""
+        },
+        {
+          "level": 5,
+          "exp": 217200,
+          "book": 1400,
+          "relationship": ""
+        },
+        {
+          "level": 6,
+          "exp": 279600,
+          "book": 1800,
+          "relationship": ""
+        },
+        {
+          "level": 7,
+          "exp": 326400,
+          "book": 2100,
+          "relationship": ""
+        },
+        {
+          "level": 8,
+          "exp": 373200,
+          "book": 2400,
+          "relationship": ""
+        },
+        {
+          "level": 9,
+          "exp": 435000,
+          "book": 2800,
+          "relationship": ""
+        },
+        {
+          "level": 10,
+          "exp": 497400,
+          "book": 3200,
+          "relationship": ""
+        },
+        {
+          "level": 11,
+          "exp": 544200,
+          "book": 3500,
+          "relationship": ""
+        },
+        {
+          "level": 12,
+          "exp": 591000,
+          "book": 3800,
+          "relationship": ""
+        },
+        {
+          "level": 13,
+          "exp": 652800,
+          "book": 4200,
+          "relationship": ""
+        },
+        {
+          "level": 14,
+          "exp": 762000,
+          "book": 4900,
+          "relationship": ""
+        },
+        {
+          "level": 15,
+          "exp": 886200,
+          "book": 5700,
+          "relationship": ""
+        },
+        {
+          "level": 16,
+          "exp": 886200,
+          "book": 5700,
+          "relationship": ""
+        },
+        {
+          "level": 17,
+          "exp": 994800,
+          "book": 6400,
+          "relationship": ""
+        },
+        {
+          "level": 18,
+          "exp": 994800,
+          "book": 6400,
+          "relationship": ""
+        },
+        {
+          "level": 19,
+          "exp": 1104000,
+          "book": 7100,
+          "relationship": ""
+        },
+        {
+          "level": 20,
+          "exp": 1104000,
+          "book": 7100,
+          "relationship": ""
         }
       ]
     }

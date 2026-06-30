@@ -2,165 +2,325 @@ Expert,Skill,Level,Exp,Book,Relationship
 Agnes,1,1,0,0,Acquaintance 1
 Agnes,1,2,43200,500,Acquaintance 1
 Agnes,1,3,86400,1000,Acquaintance 3
-Agnes,1,4,172800,2000,
-Agnes,1,5,345600,4000,
-Agnes,2,1,0,0,Acquaintance2
-Agnes,2,2,34200,400,-
-Agnes,2,3,69000,800,-
-Agnes,2,4,138000,1600,-
-Agnes,2,5,276000,3200,-
+Agnes,1,4,172800,2000,Acquaintance 3
+Agnes,1,5,345600,4000,Casual 2
+Agnes,2,1,0,0,Acquaintance 2
+Agnes,2,2,34200,400,Acquaintance 2
+Agnes,2,3,69000,800,Casual 1
+Agnes,2,4,138000,1600,Casual 1
+Agnes,2,5,276000,3200,Casual 3
 Agnes,3,1,0,0,Acquaintance 3
-Agnes,3,2,13800,200,-
-Agnes,3,3,27600,400,-
-Agnes,3,4,55200,800,-
-Agnes,3,5,110400,1600,-
+Agnes,3,2,13800,200,Acquaintance 3
+Agnes,3,3,27600,400,Total Skills: Lv 8.
+Agnes,3,4,55200,800,Total Skills: Lv. 8
+Agnes,3,5,110400,1600,Total Skills: Lv. 12
 Agnes,4,1,0,0,Casual 1
-Agnes,4,2,10200,100,-
-Agnes,4,3,20400,200,-
-Agnes,4,4,30600,300,-
-Agnes,4,5,41400,400,-
-Agnes,4,6,51600,500,-
-Agnes,4,7,61800,600,-
-Agnes,4,8,72600,700,-
-Agnes,4,9,82800,800,-
-Agnes,4,10,93000,900,-
-Cyrille,1,1,0,,Stranger
+Agnes,4,2,10200,100,Casual 1
+Agnes,4,3,20400,200,Casual 1
+Agnes,4,4,30600,300,Casual 1
+Agnes,4,5,41400,400,Total Skills: Lv. 15
+Agnes,4,6,51600,500,Total Skills: Lv. 15
+Agnes,4,7,61800,600,Total Skills: Lv. 15
+Agnes,4,8,72600,700,Total Skills: Lv. 20
+Agnes,4,9,82800,800,Total Skills: Lv. 20
+Agnes,4,10,93000,900,Total Skills: Lv. 24
+Cyrille,1,1,0,0,Stranger
 Cyrille,1,2,3600,70,Stranger
 Cyrille,1,3,7200,140,Stranger
-Cyrille,1,4,10800,210,Stranger
+Cyrille,1,4,10800,210,Acquaintance 3
 Cyrille,1,5,14400,280,Acquaintance 3
-Cyrille,1,6,18000,350,-
-Cyrille,1,7,21600,420,-
-Cyrille,1,8,25200,490,-
-Cyrille,1,9,28800,560,-
-Cyrille,1,10,32400,630,-
+Cyrille,1,6,18000,350,Acquaintance 3
+Cyrille,1,7,21600,420,Acquaintance 3
+Cyrille,1,8,25200,490,Casual 2
+Cyrille,1,9,28800,560,Casual 2
+Cyrille,1,10,32400,630,Close 1
 Cyrille,2,1,0,0,Acquaintance 2
-Cyrille,2,2,27600,400,-
-Cyrille,2,3,55200,800,-
-Cyrille,2,4,110400,1600,-
-Cyrille,2,5,220800,3200,-
+Cyrille,2,2,27600,400,Acquaintance 2
+Cyrille,2,3,55200,800,Casual 1
+Cyrille,2,4,110400,1600,Casual 1
+Cyrille,2,5,220800,3200,Close 2
 Cyrille,3,1,0,0,Acquaintance 3
-Cyrille,3,2,43200,500,-
-Cyrille,3,3,86400,1000,-
-Cyrille,3,4,172800,2000,-
-Cyrille,3,5,345600,4000,-
+Cyrille,3,2,43200,500,Acquaintance 3
+Cyrille,3,3,86400,1000,Total Skills: Lv. 10
+Cyrille,3,4,172800,2000,Total Skills: Lv. 10
+Cyrille,3,5,345600,4000,Total Skills: Lv. 15
 Cyrille,4,1,0,0,Casual 1
-Cyrille,4,2,10200,100,-
-Cyrille,4,3,20400,200,-
-Cyrille,4,4,30600,300,-
-Cyrille,4,5,41400,400,-
-Cyrille,4,6,51600,500,-
-Cyrille,4,7,61800,600,-
-Cyrille,4,8,72600,700,-
-Cyrille,4,9,82800,800,-
-Cyrille,4,10,93000,900,-
+Cyrille,4,2,10200,100,Casual 1
+Cyrille,4,3,20400,200,Casual 1
+Cyrille,4,4,30600,300,Casual 1
+Cyrille,4,5,41400,400,Total Skills: Lv. 18
+Cyrille,4,6,51600,500,Total Skills: Lv. 18
+Cyrille,4,7,61800,600,Total Skills: Lv. 18
+Cyrille,4,8,72600,700,Total Skills: Lv. 24
+Cyrille,4,9,82800,800,Total Skills: Lv. 24
+Cyrille,4,10,93000,900,Total Skills: Lv. 29
 Holger,1,1,0,0,Acquaintance 1
-Holger,1,2,82800,600,-
-Holger,1,3,165600,1200,-
-Holger,1,4,248400,1800,-
-Holger,1,5,331800,2400,-
-Holger,1,6,414600,3000,-
-Holger,1,7,497400,3600,-
-Holger,1,8,580200,4200,-
-Holger,1,9,663600,4800,-
-Holger,1,10,746400,5400,-
+Holger,1,2,82800,600,Acquaintance 1
+Holger,1,3,165600,1200,Acquaintance 1
+Holger,1,4,248400,1800,Acquaintance 1
+Holger,1,5,331800,2400,Acquaintance 3
+Holger,1,6,414600,3000,Acquaintance 3
+Holger,1,7,497400,3600,Acquaintance 3
+Holger,1,8,580200,4200,Acquaintance 3
+Holger,1,9,663600,4800,Acquaintance 3
+Holger,1,10,746400,5400,Acquaintance 3
 Holger,2,1,0,0,Acquaintance 2
-Holger,2,2,30600,300,-
-Holger,2,3,61800,600,-
-Holger,2,4,93000,900,-
-Holger,2,5,124200,1200,-
-Holger,2,6,155400,1500,-
-Holger,2,7,186600,1800,-
-Holger,2,8,217200,2100,-
-Holger,2,9,248400,2400,-
-Holger,2,10,279600,2700,-
+Holger,2,2,30600,300,Acquaintance 2
+Holger,2,3,61800,600,Acquaintance 2
+Holger,2,4,93000,900,Acquaintance 2
+Holger,2,5,124200,1200,Casual 1
+Holger,2,6,155400,1500,Casual 1
+Holger,2,7,186600,1800,Casual 1
+Holger,2,8,217200,2100,Casual 3
+Holger,2,9,248400,2400,Casual 3
+Holger,2,10,279600,2700,Close 2
 Holger,3,1,0,0,Acquaintance 3
-Holger,3,2,30600,300,-
-Holger,3,3,61800,600,-
-Holger,3,4,93000,900,-
-Holger,3,5,124200,1200,-
-Holger,3,6,155400,1500,-
-Holger,3,7,186600,1800,-
-Holger,3,8,217200,2100,-
-Holger,3,9,248400,2400,-
-Holger,3,10,279600,2700,-
+Holger,3,2,30600,300,Acquaintance 3
+Holger,3,3,61800,600,Acquaintance 3
+Holger,3,4,93000,900,Acquaintance 3
+Holger,3,5,124200,1200,Total Skills: Lv. 14
+Holger,3,6,155400,1500,Total Skills: Lv. 14
+Holger,3,7,186600,1800,Total Skills: Lv. 14
+Holger,3,8,217200,2100,Total Skills: Lv. 20
+Holger,3,9,248400,2400,Total Skills: Lv. 20
+Holger,3,10,279600,2700,Total Skills: Lv. 28
 Holger,4,1,0,0,Casual 1
-Holger,4,2,82800,600,-
-Holger,4,3,165600,1200,-
-Holger,4,4,248400,1800,-
-Holger,4,5,331800,2400,-
-Holger,4,6,414600,3000,-
-Holger,4,7,497400,3600,-
-Holger,4,8,580200,4200,-
-Holger,4,9,663600,4800,-
-Holger,4,10,746400,5400,-
+Holger,4,2,82800,600,Casual 1
+Holger,4,3,165600,1200,Casual 1
+Holger,4,4,248400,1800,Casual 1
+Holger,4,5,331800,2400,Casual 1
+Holger,4,6,414600,3000,Casual 1
+Holger,4,7,497400,3600,Casual 1
+Holger,4,8,580200,4200,Casual 1
+Holger,4,9,663600,4800,Casual 1
+Holger,4,10,746400,5400,Total Skills: Lv. 39
 Romulus,1,1,0,0,Acquaintance 1
-Romulus,1,2,30600,300,-
-Romulus,1,3,61800,600,-
-Romulus,1,4,93000,900,-
-Romulus,1,5,124200,1200,-
-Romulus,1,6,155400,1500,-
-Romulus,1,7,186600,1800,-
-Romulus,1,8,217200,2100,-
-Romulus,1,9,248400,2400,-
-Romulus,1,10,279600,2700,-
+Romulus,1,2,30600,300,Acquaintance 1
+Romulus,1,3,61800,600,Acquaintance 1
+Romulus,1,4,93000,900,Acquaintance 1
+Romulus,1,5,124200,1200,Acquaintance 3
+Romulus,1,6,155400,1500,Acquaintance 3
+Romulus,1,7,186600,1800,Acquaintance 3
+Romulus,1,8,217200,2100,Acquaintance 3
+Romulus,1,9,248400,2400,Acquaintance 3
+Romulus,1,10,279600,2700,Close 1
 Romulus,2,1,0,0,Acquaintance 2
-Romulus,2,2,86400,500,-
-Romulus,2,3,172800,1000,-
-Romulus,2,4,259200,1500,-
-Romulus,2,5,345600,2000,-
-Romulus,2,6,432000,2500,-
-Romulus,2,7,518400,3000,-
-Romulus,2,8,604800,3500,-
-Romulus,2,9,691200,4000,-
-Romulus,2,10,777600,4500,-
-Romulus,2,11,864000,5000,-
-Romulus,2,12,950400,5500,-
-Romulus,2,13,1036800,6000,-
-Romulus,2,14,1209600,7000,-
-Romulus,2,15,1382400,8000,-
-Romulus,2,16,1382400,8000,-
-Romulus,2,17,1555200,9000,-
-Romulus,2,18,1555200,9000,-
-Romulus,2,19,1728000,10000,-
-Romulus,2,20,1728000,10000,-
+Romulus,2,2,86400,500,Acquaintance 2
+Romulus,2,3,172800,1000,Acquaintance 2
+Romulus,2,4,259200,1500,Acquaintance 2
+Romulus,2,5,345600,2000,Acquaintance 2
+Romulus,2,6,432000,2500,Acquaintance 3
+Romulus,2,7,518400,3000,Acquaintance 3
+Romulus,2,8,604800,3500,Acquaintance 3
+Romulus,2,9,691200,4000,Acquaintance 3
+Romulus,2,10,777600,4500,Acquaintance 3
+Romulus,2,11,864000,5000,Casual 2
+Romulus,2,12,950400,5500,Casual 2
+Romulus,2,13,1036800,6000,Casual 2
+Romulus,2,14,1209600,7000,Casual 2
+Romulus,2,15,1382400,8000,Casual 2
+Romulus,2,16,1382400,8000,Close 1
+Romulus,2,17,1555200,9000,Close 1
+Romulus,2,18,1555200,9000,Close 1
+Romulus,2,19,1728000,10000,Close 1
+Romulus,2,20,1728000,10000,Close 1
 Romulus,3,1,0,0,Acquaintance 3
-Romulus,3,2,159000,800,-
-Romulus,3,3,297600,1500,-
-Romulus,3,4,436800,2200,-
-Romulus,3,5,595800,3000,-
-Romulus,3,6,754800,3800,-
-Romulus,3,7,894000,4500,-
-Romulus,3,8,1033200,5200,-
-Romulus,3,9,1192200,6000,-
-Romulus,3,10,1651200,6800,-
-Romulus,3,11,149400,7500,-
-Romulus,3,12,1629000,8200,-
-Romulus,3,13,1788000,9000,-
-Romulus,3,14,2086200,10500,-
-Romulus,3,15,2384400,12000,-
-Romulus,3,16,2384400,12000,-
-Romulus,3,17,2682600,13500,-
-Romulus,3,18,2682600,13500,-
-Romulus,3,19,2980800,15000,-
-Romulus,3,20,2980800,15000,-
+Romulus,3,2,159000,800,Acquaintance 3
+Romulus,3,3,297600,1500,Acquaintance 3
+Romulus,3,4,436800,2200,Acquaintance 3
+Romulus,3,5,595800,3000,Acquaintance 3
+Romulus,3,6,754800,3800,Total Skills: Lv. 20
+Romulus,3,7,894000,4500,Total Skills: Lv. 20
+Romulus,3,8,1033200,5200,Total Skills: Lv. 20
+Romulus,3,9,1192200,6000,Total Skills: Lv. 20
+Romulus,3,10,1651200,6800,Total Skills: Lv. 20
+Romulus,3,11,149400,7500,Total Skills: Lv. 20
+Romulus,3,12,1629000,8200,Total Skills: Lv. 20
+Romulus,3,13,1788000,9000,Total Skills: Lv. 20
+Romulus,3,14,2086200,10500,Total Skills: Lv. 20
+Romulus,3,15,2384400,12000,Total Skills: Lv. 20
+Romulus,3,16,2384400,12000,Total Skills: Lv. 40
+Romulus,3,17,2682600,13500,Total Skills: Lv. 40
+Romulus,3,18,2682600,13500,Total Skills: Lv. 40
+Romulus,3,19,2980800,15000,Total Skills: Lv. 40
+Romulus,3,20,2980800,15000,Total Skills: Lv. 40
 Romulus,4,1,0,0,Casual 1
-Romulus,4,2,179400,800,-
-Romulus,4,3,336600,1500,-
-Romulus,4,4,493800,2200,-
-Romulus,4,5,673800,3000,-
-Romulus,4,6,853200,3800,-
-Romulus,4,7,1010400,4500,-
-Romulus,4,8,1167600,5200,-
-Romulus,4,9,1347600,6000,-
-Romulus,4,10,1527600,6800,-
-Romulus,4,11,1684800,7500,-
-Romulus,4,12,1842000,8200,-
-Romulus,4,13,2021400,9000,-
-Romulus,4,14,2358600,10500,-
-Romulus,4,15,2695200,12000,-
-Romulus,4,16,2695200,12000,-
-Romulus,4,17,3032400,13500,-
-Romulus,4,18,3032400,13500,-
-Romulus,4,19,3369600,15000,-
-Romulus,4,20,3369600,15000,-
+Romulus,4,2,179400,800,Casual 1
+Romulus,4,3,336600,1500,Casual 1
+Romulus,4,4,493800,2200,Casual 1
+Romulus,4,5,673800,3000,Casual 1
+Romulus,4,6,853200,3800,Total Skills: Lv. 30
+Romulus,4,7,1010400,4500,Total Skills: Lv. 30
+Romulus,4,8,1167600,5200,Total Skills: Lv. 30
+Romulus,4,9,1347600,6000,Total Skills: Lv. 30
+Romulus,4,10,1527600,6800,Total Skills: Lv. 30
+Romulus,4,11,1684800,7500,Total Skills: Lv. 30
+Romulus,4,12,1842000,8200,Total Skills: Lv. 30
+Romulus,4,13,2021400,9000,Total Skills: Lv. 30
+Romulus,4,14,2358600,10500,Total Skills: Lv. 30
+Romulus,4,15,2695200,12000,Total Skills: Lv. 30
+Romulus,4,16,2695200,12000,Total Skills: Lv. 55
+Romulus,4,17,3032400,13500,Total Skills: Lv. 55
+Romulus,4,18,3032400,13500,Total Skills: Lv. 55
+Romulus,4,19,3369600,15000,Total Skills: Lv. 55
+Romulus,4,20,3369600,15000,Total Skills: Lv. 69
+Valeria,1,1,-,-,
+Valeria,1,2,43200,500,
+Valeria,1,3,86400,1000,
+Valeria,1,4,129600,1500,
+Valeria,1,5,172800,2000,
+Valeria,1,6,216000,2500,
+Valeria,1,7,259200,3000,
+Valeria,1,8,302400,3500,
+Valeria,1,9,345600,4000,
+Valeria,1,10,388800,4500,
+Valeria,2,1,-,-,
+Valeria,2,2,60000,500,
+Valeria,2,3,120600,1000,
+Valeria,2,4,181200,1500,
+Valeria,2,5,241800,2000,
+Valeria,2,6,302400,2500,
+Valeria,2,7,362400,3000,
+Valeria,2,8,423000,3500,
+Valeria,2,9,483600,4000,
+Valeria,2,10,544200,4500,
+Valeria,3,1,-,-,
+Valeria,3,2,110400,800,
+Valeria,3,3,207000,1500,
+Valeria,3,4,303600,2200,
+Valeria,3,5,414600,3000,
+Valeria,3,6,525000,8000,
+Valeria,3,7,621600,4500,
+Valeria,3,8,718800,5200,
+Valeria,3,9,829200,6000,
+Valeria,3,10,939600,6800,
+Valeria,3,11,1036800,7500,
+Valeria,3,12,1133400,8200,
+Valeria,3,13,1243800,9000,
+Valeria,3,14,1451400,10500,
+Valeria,3,15,1658400,12000,
+Valeria,3,16,1658400,12000,
+Valeria,3,17,1866000,13500,
+Valeria,3,18,1866000,13500,
+Valeria,3,19,2073600,15000,
+Valeria,3,20,2073600,15000,
+Valeria,4,1,-,-,
+Valeria,4,2,124200,800,
+Valeria,4,3,232800,1500,
+Valeria,4,4,342000,2200,
+Valeria,4,5,466200,3000,
+Valeria,4,6,591000,8000,
+Valeria,4,7,699600,4500,
+Valeria,4,8,808200,5200,
+Valeria,4,9,933000,6000,
+Valeria,4,10,1057200,6800,
+Valeria,4,11,1166400,7500,
+Valeria,4,12,1275000,8200,
+Valeria,4,13,1399200,9000,
+Valeria,4,14,1632600,10500,
+Valeria,4,15,1866000,12000,
+Valeria,4,16,1866000,12000,
+Valeria,4,17,2099400,13500,
+Valeria,4,18,2099400,13500,
+Valeria,4,19,2332800,15000,
+Valeria,4,20,233280,15000,
+Baldur,1,1,-,-,
+Baldur,1,2,25800,300,
+Baldur,1,3,51600,600,
+Baldur,1,4,77400,900,
+Baldur,1,5,103200,1200,
+Baldur,1,6,129600,1500,
+Baldur,1,7,155400,1800,
+Baldur,1,8,181200,2100,
+Baldur,1,9,207000,2400,
+Baldur,1,10,232800,2700,
+Baldur,2,1,-,-,
+Baldur,2,2,25800,300,
+Baldur,2,3,51600,600,
+Baldur,2,4,77400,900,
+Baldur,2,5,103200,1200,
+Baldur,2,6,129600,1500,
+Baldur,2,7,155400,1800,
+Baldur,2,8,181200,2100,
+Baldur,2,9,207000,2400,
+Baldur,2,10,232800,2700,
+Baldur,3,1,-,-,
+Baldur,3,2,25800,300,
+Baldur,3,3,51600,600,
+Baldur,3,4,77400,900,
+Baldur,3,5,103200,1200,
+Baldur,3,6,129600,1500,
+Baldur,3,7,155400,1800,
+Baldur,3,8,181200,2100,
+Baldur,3,9,207000,2400,
+Baldur,3,10,232800,2700,
+Baldur,4,1,-,-,
+Baldur,4,2,51600,500,
+Baldur,4,3,103200,1000,
+Baldur,4,4,155400,1500,
+Baldur,4,5,207000,2000,
+Baldur,4,6,259200,2500,
+Baldur,4,7,310800,3000,
+Baldur,4,8,362400,3500,
+Baldur,4,9,414600,4000,
+Baldur,4,10,466200,4500,
+Fabian,1,1,-,-,
+Fabian,1,2,25800,300,
+Fabian,1,3,51600,600,
+Fabian,1,4,77400,900,
+Fabian,1,5,103200,1200,
+Fabian,1,6,129600,1500,
+Fabian,1,7,155400,1800,
+Fabian,1,8,181200,2100,
+Fabian,1,9,207000,2400,
+Fabian,1,10,232800,2700,
+Fabian,2,1,-,-,
+Fabian,2,2,33053,500,
+Fabian,2,3,107400,1000,
+Fabian,2,4,160800,1500,
+Fabian,2,5,214800,2000,
+Fabian,2,6,268800,2500,
+Fabian,2,7,322200,3000,
+Fabian,2,8,376200,3500,
+Fabian,2,9,429600,4000,
+Fabian,2,10,483600,4500,
+Fabian,3,1,-,-,
+Fabian,3,2,27600,200,
+Fabian,3,3,69000,500,
+Fabian,3,4,96600,700,
+Fabian,3,5,138000,1000,
+Fabian,3,6,165600,1200,
+Fabian,3,7,207000,1500,
+Fabian,3,8,234600,1700,
+Fabian,3,9,276000,2000,
+Fabian,3,10,318000,2300,
+Fabian,3,11,345600,2500,
+Fabian,3,12,373200,2700,
+Fabian,3,13,414600,3000,
+Fabian,3,14,483600,3500,
+Fabian,3,15,552600,4000,
+Fabian,3,16,552600,4000,
+Fabian,3,17,621600,4500,
+Fabian,3,18,621600,4500,
+Fabian,3,19,705000,5100,
+Fabian,3,20,705000,5100,
+Fabian,4,1,-,-,
+Fabian,4,2,46200,300,
+Fabian,4,3,108600,700,
+Fabian,4,4,155400,1000,
+Fabian,4,5,217200,1400,
+Fabian,4,6,279600,1800,
+Fabian,4,7,326400,2100,
+Fabian,4,8,373200,2400,
+Fabian,4,9,435000,2800,
+Fabian,4,10,497400,3200,
+Fabian,4,11,544200,3500,
+Fabian,4,12,591000,3800,
+Fabian,4,13,652800,4200,
+Fabian,4,14,762000,4900,
+Fabian,4,15,886200,5700,
+Fabian,4,16,886200,5700,
+Fabian,4,17,994800,6400,
+Fabian,4,18,994800,6400,
+Fabian,4,19,1104000,7100,
+Fabian,4,20,1104000,7100,

@@ -76,7 +76,13 @@ const TRANSLATIONS = {
       expertLevels: "Expert Levels",
       expertMaterials: "Your Materials",
       expertSkillsLevels: "Expert Skills",
-      expertSkillsMaterials: "Your Materials"
+      expertSkillsMaterials: "Your Materials",
+      svsImport: "Import Data",
+      svsDay1: "Day 1: City Construction",
+      svsDay2: "Day 2: Research Day",
+      svsDay3: "Day 3: Beast Slay",
+      svsDay4: "Day 4: Hero Development",
+      svsDay5: "Day 5: Power Boost"
     },
     labels: {
       building: "Building",
@@ -128,7 +134,7 @@ const TRANSLATIONS = {
       energizingPotion: "Energizing Potion",
       strengtheningSerum: "Strengthening Serum",
       advancementSigils: "Advancement Sigils",
-      generalAdvancementSigils: "General Advancement Sigils",
+      generalAdvancementSigils: "Common Expert Sigil",
       compass: "Compass (10)",
       fieryHeart: "Fiery Heart (100)",
       sailOfConquest: "Sail of Conquest (1000)",
@@ -138,10 +144,22 @@ const TRANSLATIONS = {
       remainingAffinity: "Affinity Needed",
       remainingSigils: "Sigils Needed",
       expert: "Expert",
-      skillExp: "Skill Exp",
+      skillExp: "Learning Speedups",
       skillBooks: "Skill Books",
       note: "Note:",
-      skill: "Skill"
+      skill: "Skill",
+      svsFireCrystals: "Fire Crystals",
+      svsConstructionSpeedups: "Construction Speedups (min)",
+      svsResearchSpeedups: "Research Speedups (min)",
+      svsFCShards: "FC Shards",
+      svsExpertSigils: "Expert Sigils",
+      svsBooksOfKnowledge: "Books of Knowledge",
+      svsPetAdvancement: "Pet Advancement Score",
+      svsPolarTerrors: "Polar Terror Rallies",
+      svsChiefCharmScore: "Chief Charm Score",
+      svsTroopTraining: "Troop Training Score",
+      svsMithril: "Mithril",
+      svsChiefGearScore: "Chief Gear Score"
     },
     buttons: {
       addBuilding: "+ Add Building",
@@ -152,7 +170,15 @@ const TRANSLATIONS = {
       refresh: "Refresh",
       reset: "Reset",
       calculateCost: "Calculate Cost",
-      smartUpgrade: "Smart Upgrade"
+      smartUpgrade: "Smart Upgrade",
+      importAll: "Import All",
+      importBuildings: "Import Buildings",
+      importResearch: "Import Research",
+      importPets: "Import Pets",
+      importCharms: "Import Charms",
+      importGear: "Import Gear",
+      importExperts: "Import Experts",
+      importTroops: "Import Troops"
     },
     options: {
       none0: "None (0%)"
@@ -270,7 +296,7 @@ const TRANSLATIONS = {
       iron: "Iron"
     },
     messages: {
-      expertSkillsAffinityNote: "Skill prerequisites depend on your Affinity levels. Please ensure you have filled out your current/target Affinity levels on the Experts Calculator page first to accurately see what skill targets you are eligible for."
+      expertSkillsAffinityNote: "Skill prerequisites depend on your Expert Affinity levels. Please ensure you have filled out your current/target Affinity levels on the Expert Levels calculator page first. (This is completely separate from Hero stats!)"
     },
     expert: {
       agnes: "Agnes",

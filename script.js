@@ -9,7 +9,7 @@ let GEAR_SVS_POINTS_LOOKUP = {};
 
 async function loadSvsPointsCsv() {
   // Chief Charm (Sheet4.csv)
-  const response = await fetch('data/WOS%20Calculator%20-%20Sheet4.csv');
+  const response = await fetch('data/WOS%20Calculator%20-%20Sheet4.csv' + window.location.search);
   const text = await response.text();
   const lines = text.split(/\r?\n/).filter(Boolean);
   for (let i = 1; i < lines.length; ++i) {
@@ -19,7 +19,7 @@ async function loadSvsPointsCsv() {
     SVS_POINTS_LOOKUP[level][status] = parseInt(score, 10);
   }
   // Chief Gear (Sheet2.csv)
-  const gearResp = await fetch('data/WOS%20Calculator%20-%20Sheet2.csv');
+  const gearResp = await fetch('data/WOS%20Calculator%20-%20Sheet2.csv' + window.location.search);
   const gearText = await gearResp.text();
   const gearLines = gearText.split(/\r?\n/).filter(Boolean);
   const header = gearLines[0].split(',');
@@ -98,6 +98,34 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 // Ensure info icons always display the "i" character, even if inner text is missing
 document.addEventListener("DOMContentLoaded", function() {
+  const forceUpdateBtn = document.getElementById('forceUpdateBtn');
+  if (forceUpdateBtn) {
+    forceUpdateBtn.addEventListener('click', async () => {
+      forceUpdateBtn.textContent = 'Updating...';
+      forceUpdateBtn.disabled = true;
+      try {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (let reg of registrations) {
+            await reg.unregister();
+          }
+        }
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          for (let name of cacheNames) {
+            await caches.delete(name);
+          }
+        }
+        window.location.href = window.location.pathname + '?v=' + new Date().getTime();
+      } catch (e) {
+        console.error(e);
+        alert('Failed to update: ' + e.message);
+        forceUpdateBtn.textContent = 'Update App';
+        forceUpdateBtn.disabled = false;
+      }
+    });
+  }
+
   document.querySelectorAll('.info-icon').forEach(function(el) {
     if (!el.textContent.trim()) el.textContent = 'i';
   });
@@ -3223,7 +3251,8 @@ function onCharmCalculateClick() {
     CHARM_SLOT_DEFINITIONS.forEach(slot => {
       const finalLevel = optimized.optimizedLevels[slot.slotKey] || currentLevels[slot.slotKey] || "none";
       const levelLabel = CHIEF_CHARM_DATA.levels[finalLevel]?.label || finalLevel;
-      const slotLabel = translateText(`labels.${slot.slotKey}`, {}, slot.slotKey);
+      const rawFallback = slot.slotKey.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      const slotLabel = translateText(`labels.${slot.slotKey}`, {}, rawFallback);
       optimizedHtml += `<tr><td>${escapeHtml(slotLabel)}</td><td>${escapeHtml(levelLabel)}</td></tr>`;
     });
     optimizedHtml += "</tbody></table>";
@@ -3380,7 +3409,8 @@ function initPetsPanel() {
     const curSel = container.querySelector(`.pet-current-select[data-pet="${name}"]`);
     const tgtSel = container.querySelector(`.pet-target-select[data-pet="${name}"]`);
     
-    const options = upgrades.map((u, i) => `<option value="${i}">${u.level}</option>`).join('');
+    let options = `<option value="-1">${translateText("labels.notObtained", {}, "Not Obtained")}</option>`;
+    options += upgrades.map((u, i) => `<option value="${i}">${u.level}</option>`).join('');
     curSel.innerHTML = options;
     tgtSel.innerHTML = options;
 
@@ -3403,7 +3433,7 @@ function initPetsPanel() {
   const setAllTgt = document.getElementById("setAllPetTarget");
   if (setAllCur && setAllTgt) {
     const maxLevels = 100; // General max, refined by specific pet data
-    let options = "";
+    let options = `<option value="-1">${translateText("labels.notObtained", {}, "Not Obtained")}</option>`;
     for (let i = 0; i <= maxLevels; i++) {
       options += `<option value="${i}">${i}</option>`;
     }
@@ -3600,11 +3630,14 @@ function onPetsSmartUpgradeClick() {
       } else if (PET_UPGRADES.tiers[petData.tier]) {
         upgrades = PET_UPGRADES.tiers[petData.tier].upgrades;
       }
+      const startIdx = parseInt(row.querySelector(".pet-current-select").value);
+      if (startIdx === -1) return; // Skip if not obtained
+
       currentStates.push({
         name,
         upgrades,
-        startIndex: parseInt(row.querySelector(".pet-current-select").value),
-        currentIndex: parseInt(row.querySelector(".pet-current-select").value)
+        startIndex: startIdx,
+        currentIndex: startIdx
       });
     }
   });
@@ -3754,12 +3787,12 @@ async function loadData() {
   try {
     // Load all data files and SVS points CSV in parallel
     const [buildingsResponse, preqResponse, gearResponse, charmResponse, petsResponse, expertsResponse] = await Promise.all([
-      fetch("data/buildings.json"),
-      fetch("data/prerequisites.json"),
-      fetch("data/chiefGear.json"),
-      fetch("data/chiefCharm.json"),
-      fetch("data/petUpgrades.tiered.json"),
-      fetch("data/expertsData.json")
+      fetch("data/buildings.json" + window.location.search),
+      fetch("data/prerequisites.json" + window.location.search),
+      fetch("data/chiefGear.json" + window.location.search),
+      fetch("data/chiefCharm.json" + window.location.search),
+      fetch("data/petUpgrades.tiered.json" + window.location.search),
+      fetch("data/expertsData.json" + window.location.search)
     ]);
     await loadSvsPointsCsv();
 
@@ -4362,7 +4395,7 @@ function initExpertsPanel() {
   const container = document.getElementById("expertCollectionContainer");
   if (!container || !EXPERTS_DATA) return;
 
-  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
   let html = "";
 
   EXPERT_ORDER.forEach(name => {
@@ -4392,7 +4425,7 @@ function initExpertsPanel() {
     if (!expertData || !expertData.levels) return;
 
     // Affinity
-    let optionsHTML = '';
+    let optionsHTML = `<option value="-1">${translateText("labels.notObtained", {}, "Not Obtained")}</option>`;
     for (let i = 0; i < expertData.levels.length; i++) {
       const lvl = expertData.levels[i].level;
       const title = expertData.levels[i].relationship || '';
@@ -4411,7 +4444,7 @@ function initExpertsPanel() {
   const batchCurrent = document.getElementById("setAllExpertCurrent");
   const batchTarget = document.getElementById("setAllExpertTarget");
   if (batchCurrent && batchTarget && EXPERTS_DATA["Agnes"]) {
-    let optionsHTML = '';
+    let optionsHTML = `<option value="-1">${translateText("labels.notObtained", {}, "Not Obtained")}</option>`;
     const firstExpertData = EXPERTS_DATA["Agnes"];
     for (let i = 0; i < firstExpertData.levels.length; i++) {
       const lvl = firstExpertData.levels[i].level;
@@ -4473,6 +4506,7 @@ function initExpertsPanel() {
   });
 
   document.getElementById("expertsCalculateBtn")?.addEventListener("click", calculateExperts);
+  document.getElementById("expertsSmartUpgradeBtn")?.addEventListener("click", onExpertSmartUpgradeClick);
 
   // Attach input listeners
   const materialIds = [
@@ -4520,7 +4554,7 @@ function saveExpertsState() {
   if (!expertsState.levels) expertsState.levels = {};
   if (!expertsState.materials) expertsState.materials = {};
 
-  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
   EXPERT_ORDER.forEach(name => {
     if (!expertsState.levels[name]) expertsState.levels[name] = { skills: {} };
     if (!expertsState.levels[name].skills) expertsState.levels[name].skills = {};
@@ -4567,7 +4601,7 @@ function loadExpertsState() {
   const expertsState = (account.calculators && account.calculators.experts) ? account.calculators.experts : {};
 
   if (expertsState.levels) {
-    const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+    const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
     EXPERT_ORDER.forEach(name => {
       const state = expertsState.levels[name];
       if (state) {
@@ -4614,7 +4648,7 @@ function calculateExperts() {
   let totalAffinityNeeded = 0;
   let totalGeneralSigilsNeeded = 0; // After using specific sigils
   let resultsHTML = "";
-  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
 
   EXPERT_ORDER.forEach(name => {
     const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
@@ -4625,6 +4659,7 @@ function calculateExperts() {
 
     const curLvl = parseInt(currentSel.value) || 1;
     const tgtLvl = parseInt(targetSel.value) || 1;
+    if (curLvl === -1) return;
     let specSigilsAvail = parseInt(specSigilsInp?.value) || 0;
 
     const expertData = EXPERTS_DATA[name];
@@ -4703,11 +4738,407 @@ function calculateExperts() {
   }
 }
 
+// ==========================================
+// SVS Calculator Logic
+// ==========================================
+
+function initSvSPanel() {
+  const panel = document.getElementById("svsPanel");
+  if (!panel) return;
+
+  const importAllBtn = document.getElementById("svsImportAllBtn");
+  if (importAllBtn) importAllBtn.addEventListener("click", importSvSData);
+
+  const importBtns = [
+    { id: "svsImportBuildingsBtn", handler: importSvSBuildings },
+    { id: "svsImportResearchBtn", handler: importSvSResearch },
+    { id: "svsImportPetsBtn", handler: importSvSPets },
+    { id: "svsImportCharmsBtn", handler: importSvSCharms },
+    { id: "svsImportGearBtn", handler: importSvSGear },
+    { id: "svsImportExpertsBtn", handler: importSvSExperts },
+    { id: "svsImportTroopsBtn", handler: importSvSTroops }
+  ];
+
+  importBtns.forEach(b => {
+    const el = document.getElementById(b.id);
+    if (el) el.addEventListener("click", b.handler);
+  });
+
+  // Attach input listeners for live calculation
+  const inputs = panel.querySelectorAll("input[type='number']");
+  inputs.forEach(input => {
+    input.addEventListener("input", calculateSvSPoints);
+  });
+  const selects = panel.querySelectorAll("select");
+  selects.forEach(select => {
+    select.addEventListener("change", calculateSvSPoints);
+  });
+}
+
+function calculateSvSPoints() {
+  const resultEl = document.getElementById("svsResult");
+  if (!resultEl) return;
+
+  const getVal = (id) => {
+    const el = document.getElementById(id);
+    return el ? (parseInt(el.value) || 0) : 0;
+  };
+
+  // Day 1
+  let day1 = 0;
+  day1 += getVal("svsD1_FC") * 2000;
+  day1 += getVal("svsD1_FCShards") * 1000;
+  day1 += getVal("svsD1_RefinedFC") * 30000;
+  day1 += getVal("svsD1_Speedups") * 30;
+  day1 += getVal("svsD1_Charm") * 70;
+
+  // Day 2
+  let day2 = 0;
+  day2 += getVal("svsD2_FC") * 2000;
+  day2 += getVal("svsD2_FCShards") * 1000;
+  day2 += getVal("svsD2_RefinedFC") * 30000;
+  day2 += getVal("svsD2_Speedups") * 30;
+  day2 += getVal("svsD2_LuckyWheel") * 8000;
+  day2 += getVal("svsD2_RareHero") * 350;
+  day2 += getVal("svsD2_EpicHero") * 1220;
+  day2 += getVal("svsD2_MythicHero") * 3040;
+  day2 += getVal("svsD2_Meat") * 2;
+  day2 += getVal("svsD2_Wood") * 2;
+  day2 += getVal("svsD2_Coal") * 2;
+  day2 += getVal("svsD2_Iron") * 2;
+
+  // Day 3
+  let day3 = 0;
+  day3 += getVal("svsD3_PetAdv") * 50;
+  day3 += getVal("svsD3_AdvWildMark") * 15000;
+  day3 += getVal("svsD3_ComWildMark") * 1150;
+  day3 += getVal("svsD3_LuckyWheel") * 8000;
+  day3 += getVal("svsD3_Charm") * 70;
+  day3 += getVal("svsD3_RareHero") * 350;
+  day3 += getVal("svsD3_EpicHero") * 1220;
+  day3 += getVal("svsD3_MythicHero") * 3040;
+  day3 += getVal("svsD3_PolarTerror") * 30000;
+  day3 += getVal("svsD3_Beast1") * 9000;
+  day3 += getVal("svsD3_Beast11") * 9750;
+  day3 += getVal("svsD3_Beast16") * 10500;
+  day3 += getVal("svsD3_Beast21") * 11250;
+  day3 += getVal("svsD3_Beast26") * 12000;
+
+  // Day 4
+  let day4 = 0;
+  day4 += getVal("svsD4_Charm") * 70;
+  day4 += getVal("svsD4_EssenceStone") * 4000;
+  day4 += getVal("svsD4_Widget") * 8000;
+  day4 += getVal("svsD4_Mithril") * 40000;
+  day4 += getVal("svsD4_T1") * 3;
+  day4 += getVal("svsD4_T2") * 4;
+  day4 += getVal("svsD4_T3") * 5;
+  day4 += getVal("svsD4_T4") * 8;
+  day4 += getVal("svsD4_T5") * 12;
+  day4 += getVal("svsD4_T6") * 18;
+  day4 += getVal("svsD4_T7") * 25;
+  day4 += getVal("svsD4_T8") * 35;
+  day4 += getVal("svsD4_T9") * 45;
+  day4 += getVal("svsD4_T10") * 60;
+  day4 += getVal("svsD4_T11") * 75;
+
+  // Day 5
+  let day5 = 0;
+  day5 += getVal("svsD5_PetAdv") * 50;
+  day5 += getVal("svsD5_AdvWildMark") * 15000;
+  day5 += getVal("svsD5_ComWildMark") * 1150;
+  day5 += getVal("svsD5_EssenceStone") * 4000;
+  day5 += getVal("svsD5_Widget") * 8000;
+  day5 += getVal("svsD5_Mithril") * 40000;
+  day5 += getVal("svsD5_GearScore") * 36;
+  day5 += getVal("svsD5_FC") * 2000;
+  day5 += getVal("svsD5_FCShards") * 1000;
+  day5 += getVal("svsD5_RefinedFC") * 30000;
+  day5 += getVal("svsD5_Speedups") * 30;
+
+  const valeriaLevel = getVal("svsValeriaSkill");
+  const valeriaMultiplier = 1 + (valeriaLevel * 2) / 100;
+
+  day1 = Math.floor(day1 * valeriaMultiplier);
+  day2 = Math.floor(day2 * valeriaMultiplier);
+  day3 = Math.floor(day3 * valeriaMultiplier);
+  day4 = Math.floor(day4 * valeriaMultiplier);
+  day5 = Math.floor(day5 * valeriaMultiplier);
+
+  const total = day1 + day2 + day3 + day4 + day5;
+
+  let resultsHTML = `
+    <div class="result-box">
+      <h3>Total SvS Points: ${total.toLocaleString()}</h3>
+      <ul>
+        <li><strong>Day 1 (City Construction):</strong> ${day1.toLocaleString()}</li>
+        <li><strong>Day 2 (Research Day):</strong> ${day2.toLocaleString()}</li>
+        <li><strong>Day 3 (Beast Slay):</strong> ${day3.toLocaleString()}</li>
+        <li><strong>Day 4 (Hero Development):</strong> ${day4.toLocaleString()}</li>
+        <li><strong>Day 5 (Power Boost):</strong> ${day5.toLocaleString()}</li>
+      </ul>
+    </div>
+  `;
+
+  resultEl.innerHTML = resultsHTML;
+}
+
+function importSvSData() {
+  console.log("Import SVS Data (All) triggered.");
+  importSvSBuildings();
+  importSvSResearch();
+  importSvSPets();
+  importSvSCharms();
+  importSvSGear();
+  importSvSExperts();
+  importSvSTroops();
+  alert("Import All triggered. Logic will be wired up once values and calculations are finalized. Currently, no data was found or all values were 0.");
+}
+
+function handleImportStub(sectionName) {
+  console.log(`Import ${sectionName} triggered.`);
+  alert(`Import ${sectionName} successful, but no data was available (or all values were 0). Make sure you have entered data in the ${sectionName} calculator first.`);
+}
+
+function importSvSBuildings() {
+  console.log("Import Buildings triggered.");
+  const account = getActiveAccount();
+  const upgradeState = getUpgradeStateFromAccount(account);
+
+  if (!upgradeState || !upgradeState.building) {
+    alert("No building data found to import. Please visit the Upgrade calculator first.");
+    return;
+  }
+
+  const { building: targetBuilding, currentLevel, targetLevel, prereqState, optionalBuildings } = upgradeState;
+  const buildingsToCalc = [{ building: targetBuilding, currentLevel, targetLevel }];
+
+  const prereqMap = getAggregatedPrerequisites(targetBuilding, currentLevel, targetLevel);
+  for (const [bName, reqLvl] of prereqMap.entries()) {
+    if (!BUILDING_COSTS[bName]) continue;
+    
+    const savedForTarget = prereqState?.[targetBuilding]?.[bName];
+    const prereqLevels = getBuildingLevelOrder(bName);
+    
+    const curLvl = savedForTarget?.currentLevel || prereqLevels[0];
+    const reqLvlStr = String(reqLvl);
+    const tgtLvl = savedForTarget?.targetLevel || (prereqLevels.includes(reqLvlStr) ? reqLvlStr : prereqLevels[prereqLevels.length - 1]);
+    
+    const curIdx = prereqLevels.indexOf(curLvl);
+    const tgtIdx = prereqLevels.indexOf(tgtLvl);
+    const safeTgt = (tgtIdx >= curIdx && tgtIdx >= 0) ? tgtLvl : curLvl;
+    
+    buildingsToCalc.push({ building: bName, currentLevel: curLvl, targetLevel: safeTgt });
+  }
+
+  if (optionalBuildings) {
+    for (const opt of optionalBuildings) {
+      const optLevels = getBuildingLevelOrder(opt.building);
+      const optCurIdx = optLevels.indexOf(opt.currentLevel);
+      const optTgtIdx = optLevels.indexOf(opt.targetLevel);
+      if (optCurIdx >= 0 && optTgtIdx >= 0 && optCurIdx < optTgtIdx) {
+        buildingsToCalc.push({ building: opt.building, currentLevel: opt.currentLevel, targetLevel: opt.targetLevel });
+      }
+    }
+  }
+
+  let totalFC = 0;
+  let totalRFC = 0;
+  let totalSeconds = 0;
+
+  for (const item of buildingsToCalc) {
+    const { building, currentLevel: curLvl, targetLevel: tgtLvl } = item;
+    if (!BUILDING_COSTS[building]) continue;
+
+    const path = getUpgradePathKeys(building, curLvl, tgtLvl);
+    for (const level of path) {
+      const lvlData = BUILDING_COSTS[building][level];
+      if (!lvlData) continue;
+      totalFC += lvlData.fireCrystals || 0;
+      totalRFC += lvlData.refinedFireCrystals || 0;
+      totalSeconds += lvlData.seconds || 0;
+    }
+  }
+
+  if (totalFC === 0 && totalRFC === 0 && totalSeconds === 0) {
+    alert("Import successful, but calculated building costs were 0. Ensure your target levels are higher than current levels.");
+    return;
+  }
+
+  const fcEl1 = document.getElementById("svsD1_FC");
+  const rfcEl1 = document.getElementById("svsD1_RefinedFC");
+  const speedupsEl1 = document.getElementById("svsD1_Speedups");
+  const fcEl2 = document.getElementById("svsD2_FC");
+  const rfcEl2 = document.getElementById("svsD2_RefinedFC");
+  const speedupsEl2 = document.getElementById("svsD2_Speedups");
+  const fcEl5 = document.getElementById("svsD5_FC");
+  const rfcEl5 = document.getElementById("svsD5_RefinedFC");
+  const speedupsEl5 = document.getElementById("svsD5_Speedups");
+
+  if (fcEl1) fcEl1.value = totalFC;
+  if (rfcEl1) rfcEl1.value = totalRFC;
+  if (speedupsEl1) speedupsEl1.value = Math.ceil(totalSeconds / 60);
+
+  if (fcEl2) fcEl2.value = totalFC;
+  if (rfcEl2) rfcEl2.value = totalRFC;
+  if (speedupsEl2) speedupsEl2.value = Math.ceil(totalSeconds / 60);
+
+  if (fcEl5) fcEl5.value = totalFC;
+  if (rfcEl5) rfcEl5.value = totalRFC;
+  if (speedupsEl5) speedupsEl5.value = Math.ceil(totalSeconds / 60);
+
+  calculateSvSPoints();
+  alert(`Imported ${totalFC} Fire Crystals, ${totalRFC} Refined FC, and ${Math.ceil(totalSeconds/60)}m of Construction Speedups to Day 1, Day 2, and Day 5.`);
+}
+function importSvSResearch() {
+  alert("The Research calculator hasn't been built yet, so there is no data to import!");
+}
+
+function importSvSPets() {
+  console.log("Import Pets triggered.");
+  const account = getActiveAccount();
+  if (!account || !account.calculators || !account.calculators.pets || !account.calculators.pets.petTargets) {
+    alert("No Pet data found to import. Please visit the Pets calculator first.");
+    return;
+  }
+
+  const petState = account.calculators.pets;
+  const petTargetsMap = petState.petTargets;
+  const petCurrentsMap = petState.petCurrents || {};
+
+  const targets = [];
+  Object.keys(petTargetsMap).forEach(petName => {
+    const curLevel = petCurrentsMap[petName];
+    const tgtLevel = petTargetsMap[petName];
+    if (curLevel && tgtLevel) {
+      const petData = PET_UPGRADES.pets[petName];
+      if (petData) {
+        let upgrades = petData.customUpgrades || PET_UPGRADES.tiers[petData.tier]?.upgrades || [];
+        const startIdx = upgrades.findIndex(u => u.level === curLevel);
+        const endIdx = upgrades.findIndex(u => u.level === tgtLevel);
+        if (startIdx >= 0 && endIdx >= 0 && startIdx < endIdx) {
+          targets.push({ name: petName, startIdx, endIdx });
+        }
+      }
+    }
+  });
+
+  if (targets.length === 0) {
+    alert("Import successful, but no pet upgrades were found. Ensure target levels are higher than current levels.");
+    return;
+  }
+
+  const grandTotal = calculateMultiPetUpgrade(targets);
+  const scoreDiff = grandTotal.svsPoints || 0;
+
+  if (scoreDiff === 0) {
+    alert("Calculated Pet Advancement Score difference was 0.");
+    return;
+  }
+
+  const petAdvEl3 = document.getElementById("svsD3_PetAdv");
+  const petAdvEl5 = document.getElementById("svsD5_PetAdv");
+  if (petAdvEl3) petAdvEl3.value = scoreDiff;
+  if (petAdvEl5) petAdvEl5.value = scoreDiff;
+
+  calculateSvSPoints();
+  alert(`Imported a Pet Advancement Score increase of ${scoreDiff} to Day 3 and Day 5.`);
+}
+
+function importSvSCharms() {
+  console.log("Import Charms triggered.");
+  const account = getActiveAccount();
+  const state = account?.calculators?.chiefCharm;
+  if (!state || !state.levels) {
+    alert("No Chief Charm data found to import. Please visit the Chief Charm calculator first.");
+    return;
+  }
+  
+  let totalScoreDiff = 0;
+  CHARM_SLOT_DEFINITIONS.forEach(slot => {
+    const currentKey = state.levels[slot.slotKey]?.current || "none";
+    const targetKey = state.levels[slot.slotKey]?.target || "none";
+    const levelKeyToIndex = {};
+    if (CHIEF_CHARM_DATA && CHIEF_CHARM_DATA.levelOrder) {
+      CHIEF_CHARM_DATA.levelOrder.forEach((k, idx) => { levelKeyToIndex[k] = idx; });
+      const currentIdx = levelKeyToIndex[currentKey] || -1;
+      const targetIdx = levelKeyToIndex[targetKey] || -1;
+      for (let i = currentIdx + 1; i <= targetIdx; i++) {
+        const levelKey = CHIEF_CHARM_DATA.levelOrder[i];
+        totalScoreDiff += getSvsPointsForUpgrade(levelKey) / 70;
+      }
+    }
+  });
+
+  if (totalScoreDiff === 0) {
+    alert("Import successful, but calculated Charm Score difference was 0. Ensure target levels are higher than current levels.");
+    return;
+  }
+
+  const d1 = document.getElementById("svsD1_Charm");
+  const d3 = document.getElementById("svsD3_Charm");
+  const d4 = document.getElementById("svsD4_Charm");
+  if (d1) d1.value = totalScoreDiff;
+  if (d3) d3.value = totalScoreDiff;
+  if (d4) d4.value = totalScoreDiff;
+
+  calculateSvSPoints();
+  alert(`Imported a Chief Charm Score increase of ${totalScoreDiff} to Days 1, 3, and 4.`);
+}
+
+function importSvSGear() {
+  console.log("Import Gear triggered.");
+  const account = getActiveAccount();
+  const state = account?.calculators?.chiefGear;
+  if (!state || !state.levels) {
+    alert("No Chief Gear data found to import. Please visit the Chief Gear calculator first.");
+    return;
+  }
+
+  let totalScoreDiff = 0;
+  GEAR_SLOTS.forEach(slot => {
+    const currentKey = state.levels[slot]?.current || "none";
+    const targetKey = state.levels[slot]?.target || "none";
+    const levelKeyToIndex = {};
+    if (CHIEF_GEAR_DATA && CHIEF_GEAR_DATA.levelOrder) {
+      CHIEF_GEAR_DATA.levelOrder.forEach((k, idx) => { levelKeyToIndex[k] = idx; });
+      const currentIdx = levelKeyToIndex[currentKey] || -1;
+      const targetIdx = levelKeyToIndex[targetKey] || -1;
+      for (let i = currentIdx + 1; i <= targetIdx; i++) {
+        const levelKey = CHIEF_GEAR_DATA.levelOrder[i];
+        const levelInfo = CHIEF_GEAR_DATA.levels[levelKey];
+        if (levelInfo && !levelInfo.isCharm) {
+          totalScoreDiff += getGearSvsPoints(levelInfo.tier, levelInfo.stars);
+        }
+      }
+    }
+  });
+
+  if (totalScoreDiff === 0) {
+    alert("Import successful, but calculated Gear Score difference was 0. Ensure target levels are higher than current levels.");
+    return;
+  }
+
+  const gearEl = document.getElementById("svsD5_GearScore");
+  if (gearEl) gearEl.value = totalScoreDiff;
+
+  calculateSvSPoints();
+  alert(`Imported a Chief Gear Score increase of ${totalScoreDiff} to Day 5.`);
+}
+
+function importSvSExperts() {
+  alert("The Experts calculator does not currently map its outputs (Affinity/General Sigils) to SvS Hero fields (Rare/Epic/Mythic Shards). This data cannot be imported directly yet.");
+}
+
+function importSvSTroops() {
+  alert("The Troops calculator hasn't been built yet, so there is no data to import!");
+}
+
 function initExpertSkillsPanel() {
   const container = document.getElementById("expertSkillCollectionContainer");
   if (!container || !EXPERTS_DATA) return;
 
-  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
   let html = "";
 
   EXPERT_ORDER.forEach(name => {
@@ -4748,7 +5179,7 @@ function initExpertSkillsPanel() {
 
     [1, 2, 3, 4].forEach(skill => {
       const skillArr = expertData.skills[skill.toString()];
-      let sHtml = '';
+      let sHtml = `<option value="-1">${translateText("labels.notObtained", {}, "Not Obtained")}</option>`;
       if (skillArr) {
         for (let i = 0; i < skillArr.length; i++) {
           const sLvl = skillArr[i].level;
@@ -4769,7 +5200,7 @@ function initExpertSkillsPanel() {
   const batchCurrent = document.getElementById("setAllExpertSkillCurrent");
   const batchTarget = document.getElementById("setAllExpertSkillTarget");
   if (batchCurrent && batchTarget && EXPERTS_DATA["Agnes"]) {
-    let optionsHTML = '';
+    let optionsHTML = `<option value="-1">${translateText("labels.notObtained", {}, "Not Obtained")}</option>`;
     const skillArr = EXPERTS_DATA["Agnes"].skills["1"];
     if (skillArr) {
       for (let i = 0; i < skillArr.length; i++) {
@@ -4832,6 +5263,7 @@ function initExpertSkillsPanel() {
   });
 
   document.getElementById("expertSkillsCalculateBtn")?.addEventListener("click", calculateExpertSkills);
+  document.getElementById("expertSkillsSmartUpgradeBtn")?.addEventListener("click", onExpertSkillsSmartUpgradeClick);
 
   ["expertSkillExp", "expertSkillBooks"].forEach(id => {
     document.getElementById(id)?.addEventListener("input", saveExpertsState);
@@ -4847,7 +5279,7 @@ function calculateExpertSkills() {
   let totalSkillBooksNeeded = 0;
   let resultsHTML = "";
 
-  const EXPERT_ORDER = ["Agnes", "Cyrille", "Holger", "Romulus"];
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
 
   // Read affinity state
   const account = getActiveAccount();
@@ -4872,6 +5304,7 @@ function calculateExpertSkills() {
       if (sCurSel && sTgtSel) {
         const sc = parseInt(sCurSel.value) || 1;
         const st = parseInt(sTgtSel.value) || 1;
+        if (sc === -1) return;
         
         // Check affinity requirement for target skill
         const opt = sTgtSel.options[sTgtSel.selectedIndex];
@@ -4907,27 +5340,27 @@ function calculateExpertSkills() {
         <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,165,0,0.5);">
           <strong>${escapeHtml(localizedName)}</strong><br>
           ${expertWarnings.map(w => `<div style="color: orange; font-size: 0.9em;">&#9888; ${w}</div>`).join("")}
-          ${skillExp > 0 ? `${translateText("labels.skillExp", {}, "Skill Exp Needed")}: ${skillExp.toLocaleString()} <br>` : ""}
+          ${skillExp > 0 ? `${translateText("labels.skillExp", {}, "Learning Speedups Needed")}: ${formatDuration(skillExp)} <br>` : ""}
           ${skillBooks > 0 ? `${translateText("labels.skillBooks", {}, "Skill Books Needed")}: ${skillBooks.toLocaleString()} <br>` : ""}
         </div>
       `;
     }
   });
 
-  const invSkillExp = parseInt(document.getElementById("expertSkillExp")?.value) || 0;
+  const invSkillExpSeconds = (parseInt(document.getElementById("expertSkillExp")?.value) || 0) * 60;
   const invSkillBooks = parseInt(document.getElementById("expertSkillBooks")?.value) || 0;
 
-  const remainingSkillExp = Math.max(0, totalSkillExpNeeded - invSkillExp);
+  const remainingSkillExpSeconds = Math.max(0, totalSkillExpNeeded - invSkillExpSeconds);
   const remainingSkillBooks = Math.max(0, totalSkillBooksNeeded - invSkillBooks);
 
   let grandTotalHTML = `
     <div class="card-panel" style="margin-top: 15px;">
       <strong>${translateText("results.grandTotal", {}, "GRAND TOTAL")}</strong><br>
-      ${translateText("labels.skillExp", {}, "Total Skill Exp Required")}: ${totalSkillExpNeeded.toLocaleString()}<br>
+      ${translateText("labels.skillExp", {}, "Total Learning Speedups Required")}: ${formatDuration(totalSkillExpNeeded)}<br>
       ${translateText("labels.skillBooks", {}, "Total Skill Books Required")}: ${totalSkillBooksNeeded.toLocaleString()}<br><br>
       
       <strong>${translateText("results.afterInventory", {}, "Remaining After Inventory")}</strong><br>
-      ${translateText("labels.remainingSkillExp", {}, "Skill Exp Needed")}: ${remainingSkillExp.toLocaleString()}<br>
+      ${translateText("labels.remainingSkillExp", {}, "Learning Speedups Needed")}: ${formatDuration(remainingSkillExpSeconds)}<br>
       ${translateText("labels.remainingSkillBooks", {}, "Skill Books Needed")}: ${remainingSkillBooks.toLocaleString()}
     </div>
   `;
@@ -4944,3 +5377,188 @@ function calculateExpertSkills() {
     resultEl.innerHTML = resultsHTML;
   }
 }
+function onExpertSmartUpgradeClick() {
+  if (!EXPERTS_DATA) return;
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
+
+  let commonSigils = parseInt(document.getElementById("expertAdvancementSigils")?.value) || 0;
+  const invCompass = parseInt(document.getElementById("expertCompass")?.value) || 0;
+  const invFieryHeart = parseInt(document.getElementById("expertFieryHeart")?.value) || 0;
+  const invSail = parseInt(document.getElementById("expertSailOfConquest")?.value) || 0;
+  let totalAffinity = (invCompass * 10) + (invFieryHeart * 100) + (invSail * 1000);
+
+  const currentStates = [];
+  EXPERT_ORDER.forEach(name => {
+    const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    if (!currentSel) return;
+    const curLvl = parseInt(currentSel.value) || 1;
+    if (curLvl === -1) return; // Skip Not Obtained
+    
+    const specSigilsInp = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+    const specSigilsAvail = parseInt(specSigilsInp?.value) || 0;
+
+    const expertData = EXPERTS_DATA[name];
+    if (expertData && expertData.levels) {
+      currentStates.push({
+        name,
+        upgrades: expertData.levels,
+        startIndex: expertData.levels.findIndex(l => l.level === curLvl),
+        currentIndex: expertData.levels.findIndex(l => l.level === curLvl),
+        specificSigils: specSigilsAvail
+      });
+    }
+  });
+
+  let upgradesDone = 0;
+  while (true) {
+    let bestExpert = null;
+    let minCostValue = Infinity;
+
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        const affinityCost = next.affinity || 0;
+        const sigilCost = next.advancement || 0;
+        
+        const commonCost = Math.max(0, sigilCost - state.specificSigils);
+        
+        if (affinityCost <= totalAffinity && commonCost <= commonSigils) {
+          const costValue = affinityCost + commonCost * 100; // Prefer lower affinity and common sigil usage
+          if (costValue < minCostValue) {
+            minCostValue = costValue;
+            bestExpert = state;
+          }
+        }
+      }
+    });
+
+    if (!bestExpert) break;
+
+    const next = bestExpert.upgrades[bestExpert.currentIndex + 1];
+    const affinityCost = next.affinity || 0;
+    const sigilCost = next.advancement || 0;
+    const commonCost = Math.max(0, sigilCost - bestExpert.specificSigils);
+
+    totalAffinity -= affinityCost;
+    commonSigils -= commonCost;
+    bestExpert.specificSigils = Math.max(0, bestExpert.specificSigils - sigilCost);
+    bestExpert.currentIndex++;
+    upgradesDone++;
+  }
+
+  // Apply back to UI
+  currentStates.forEach(state => {
+    if (state.currentIndex > state.startIndex) {
+      const targetSel = document.querySelector(`.expert-target-select[data-expert="${state.name}"]`);
+      if (targetSel) {
+        targetSel.value = state.upgrades[state.currentIndex].level;
+      }
+    }
+  });
+
+  if (upgradesDone > 0) {
+    saveExpertsState();
+    calculateExperts();
+    alert(translateText("results.smartUpgradeCompleteMsg", { count: upgradesDone }, `Smart Upgrade complete! Optimized targets set. (${upgradesDone} upgrades simulated)`));
+  } else {
+    alert(translateText("results.noUpgradesPossible", {}, "No upgrades possible with current materials."));
+  }
+}
+
+function onExpertSkillsSmartUpgradeClick() {
+  if (!EXPERTS_DATA) return;
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
+
+  let invSkillExpSeconds = (parseInt(document.getElementById("expertSkillExp")?.value) || 0) * 60;
+  let invSkillBooks = parseInt(document.getElementById("expertSkillBooks")?.value) || 0;
+
+  // Need affinity bounds for skills
+  const account = getActiveAccount();
+  const expertsState = (account && account.calculators && account.calculators.experts) ? account.calculators.experts : { levels: {} };
+
+  const currentStates = [];
+  EXPERT_ORDER.forEach(name => {
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData) return;
+    const curAffinityLevel = expertsState.levels[name]?.current ? parseInt(expertsState.levels[name].current) : 1;
+
+    [1, 2, 3, 4].forEach(s => {
+      const curSel = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+      if (curSel) {
+        const sc = parseInt(curSel.value) || 1;
+        if (sc !== -1) {
+          const skillArr = expertData.skills[s.toString()];
+          if (skillArr) {
+            currentStates.push({
+              name,
+              skill: s,
+              upgrades: skillArr,
+              startIndex: skillArr.findIndex(l => l.level === sc),
+              currentIndex: skillArr.findIndex(l => l.level === sc),
+              maxAffinity: curAffinityLevel
+            });
+          }
+        }
+      }
+    });
+  });
+
+  let upgradesDone = 0;
+  while (true) {
+    let bestSkill = null;
+    let minCostValue = Infinity;
+
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        
+        // Check affinity requirement
+        const reqRel = next.relationship;
+        let reqLevel = 1;
+        if (reqRel && reqRel !== '-' && reqRel !== '') {
+          reqLevel = getLevelForRelationship(state.name, reqRel);
+        }
+
+        if (state.maxAffinity >= reqLevel) {
+          const expCost = next.exp || 0;
+          const bookCost = next.book || 0;
+          
+          if (expCost <= invSkillExpSeconds && bookCost <= invSkillBooks) {
+            const costValue = expCost + (bookCost * 50); // Weighted cost
+            if (costValue < minCostValue) {
+              minCostValue = costValue;
+              bestSkill = state;
+            }
+          }
+        }
+      }
+    });
+
+    if (!bestSkill) break;
+
+    const next = bestSkill.upgrades[bestSkill.currentIndex + 1];
+    invSkillExpSeconds -= (next.exp || 0);
+    invSkillBooks -= (next.book || 0);
+    bestSkill.currentIndex++;
+    upgradesDone++;
+  }
+
+  // Apply back to UI
+  currentStates.forEach(state => {
+    if (state.currentIndex > state.startIndex) {
+      const targetSel = document.querySelector(`.skill-target-select[data-expert="${state.name}"][data-skill="${state.skill}"]`);
+      if (targetSel) {
+        targetSel.value = state.upgrades[state.currentIndex].level;
+      }
+    }
+  });
+
+  if (upgradesDone > 0) {
+    saveExpertsState();
+    calculateExpertSkills();
+    alert(translateText("results.smartUpgradeCompleteMsg", { count: upgradesDone }, `Smart Upgrade complete! Optimized targets set. (${upgradesDone} upgrades simulated)`));
+  } else {
+    alert(translateText("results.noUpgradesPossible", {}, "No upgrades possible with current materials."));
+  }
+}
+

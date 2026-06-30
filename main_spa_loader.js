@@ -468,6 +468,145 @@ async function renderPetsCalculatorPanel() {
   }
 }
 
+async function renderSvSCalculatorPanel() {
+  console.log('[SPA] renderSvSCalculatorPanel called');
+  if (window.dataReadyPromise) {
+    await window.dataReadyPromise;
+  }
+  document.getElementById('spaPanel').innerHTML = `
+    <!-- SVS Calculator Panel -->
+    <div id="svsPanel">
+      <fieldset>
+        <legend data-i18n="sections.svsImport">Import Data</legend>
+        <div class="gear-button-row" style="flex-wrap: wrap; gap: 10px;">
+          <button id="svsImportBuildingsBtn" type="button" data-i18n="buttons.importBuildings">Import Buildings</button>
+          <button id="svsImportResearchBtn" type="button" data-i18n="buttons.importResearch">Import Research</button>
+          <button id="svsImportPetsBtn" type="button" data-i18n="buttons.importPets">Import Pets</button>
+          <button id="svsImportCharmsBtn" type="button" data-i18n="buttons.importCharms">Import Charms</button>
+          <button id="svsImportGearBtn" type="button" data-i18n="buttons.importGear">Import Gear</button>
+          <button id="svsImportExpertsBtn" type="button" data-i18n="buttons.importExperts">Import Experts</button>
+          <button id="svsImportTroopsBtn" type="button" data-i18n="buttons.importTroops">Import Troops</button>
+          <button id="svsImportAllBtn" type="button" class="accent-button" data-i18n="buttons.importAll">Import All</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.svsExpertSkills">Expert Skills</legend>
+        <div class="gear-materials-grid">
+          <div class="gear-material-field">
+            <label>Valeria: Well Prepared (Level)</label>
+            <select id="svsValeriaSkill" style="padding:5px; background:var(--input-bg); color:var(--text-color); border:1px solid #444; border-radius:4px; font-size:16px;">
+              <option value="0">0 (0% Boost)</option>
+              <option value="1">1 (2% Boost)</option>
+              <option value="2">2 (4% Boost)</option>
+              <option value="3">3 (6% Boost)</option>
+              <option value="4">4 (8% Boost)</option>
+              <option value="5">5 (10% Boost)</option>
+              <option value="6">6 (12% Boost)</option>
+              <option value="7">7 (14% Boost)</option>
+              <option value="8">8 (16% Boost)</option>
+              <option value="9">9 (18% Boost)</option>
+              <option value="10">10 (20% Boost)</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.svsDay1">Day 1: City Construction</legend>
+        <div class="gear-materials-grid">
+          <div class="gear-material-field"><label>Fire Crystals</label><input id="svsD1_FC" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Fire Crystal Shards</label><input id="svsD1_FCShards" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Refined Fire Crystals</label><input id="svsD1_RefinedFC" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Speedups (minutes)</label><input id="svsD1_Speedups" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Chief Charm Score</label><input id="svsD1_Charm" type="number" min="0" value="0" /></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.svsDay2">Day 2: Basic Skills Up</legend>
+        <div class="gear-materials-grid">
+          <div class="gear-material-field"><label>Fire Crystals</label><input id="svsD2_FC" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Fire Crystal Shards</label><input id="svsD2_FCShards" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Refined Fire Crystals</label><input id="svsD2_RefinedFC" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Speedups (minutes)</label><input id="svsD2_Speedups" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Lucky Wheel Spins</label><input id="svsD2_LuckyWheel" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Rare Hero Shards</label><input id="svsD2_RareHero" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Epic Hero Shards</label><input id="svsD2_EpicHero" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Mythic Hero Shards</label><input id="svsD2_MythicHero" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Gather Meat (x1000)</label><input id="svsD2_Meat" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Gather Wood (x1000)</label><input id="svsD2_Wood" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Gather Coal (x200)</label><input id="svsD2_Coal" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Gather Iron (x50)</label><input id="svsD2_Iron" type="number" min="0" value="0" /></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.svsDay3">Day 3: Beast Slay</legend>
+        <div class="gear-materials-grid">
+          <div class="gear-material-field"><label>Pet Advancement Score</label><input id="svsD3_PetAdv" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Advanced Wild Mark</label><input id="svsD3_AdvWildMark" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Common Wild Mark</label><input id="svsD3_ComWildMark" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Lucky Wheel Spins</label><input id="svsD3_LuckyWheel" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Chief Charm Score</label><input id="svsD3_Charm" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Rare Hero Shards</label><input id="svsD3_RareHero" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Epic Hero Shards</label><input id="svsD3_EpicHero" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Mythic Hero Shards</label><input id="svsD3_MythicHero" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Polar Terror Rallies</label><input id="svsD3_PolarTerror" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Beast Lv 1-10</label><input id="svsD3_Beast1" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Beast Lv 11-15</label><input id="svsD3_Beast11" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Beast Lv 16-20</label><input id="svsD3_Beast16" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Beast Lv 21-25</label><input id="svsD3_Beast21" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Beast Lv 26-30</label><input id="svsD3_Beast26" type="number" min="0" value="0" /></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.svsDay4">Day 4: Hero Development</legend>
+        <div class="gear-materials-grid">
+          <div class="gear-material-field"><label>Chief Charm Score</label><input id="svsD4_Charm" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Hero Gear Essence Stone</label><input id="svsD4_EssenceStone" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Hero Exclusive Gear Widget</label><input id="svsD4_Widget" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Mithril</label><input id="svsD4_Mithril" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T1 Troops</label><input id="svsD4_T1" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T2 Troops</label><input id="svsD4_T2" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T3 Troops</label><input id="svsD4_T3" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T4 Troops</label><input id="svsD4_T4" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T5 Troops</label><input id="svsD4_T5" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T6 Troops</label><input id="svsD4_T6" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T7 Troops</label><input id="svsD4_T7" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T8 Troops</label><input id="svsD4_T8" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T9 Troops</label><input id="svsD4_T9" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T10 Troops</label><input id="svsD4_T10" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Train T11 Troops</label><input id="svsD4_T11" type="number" min="0" value="0" /></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="sections.svsDay5">Day 5: Power Boost</legend>
+        <div class="gear-materials-grid">
+          <div class="gear-material-field"><label>Pet Advancement Score</label><input id="svsD5_PetAdv" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Advanced Wild Mark</label><input id="svsD5_AdvWildMark" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Common Wild Mark</label><input id="svsD5_ComWildMark" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Hero Gear Essence Stone</label><input id="svsD5_EssenceStone" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Hero Exclusive Gear Widget</label><input id="svsD5_Widget" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Mithril</label><input id="svsD5_Mithril" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Chief Gear Score</label><input id="svsD5_GearScore" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Fire Crystals</label><input id="svsD5_FC" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Fire Crystal Shards</label><input id="svsD5_FCShards" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Refined Fire Crystals</label><input id="svsD5_RefinedFC" type="number" min="0" value="0" /></div>
+          <div class="gear-material-field"><label>Speedups (minutes)</label><input id="svsD5_Speedups" type="number" min="0" value="0" /></div>
+        </div>
+      </fieldset>
+
+      <section id="svsResult" class="result"></section>
+    </div>
+  `;
+  if (typeof initSvSPanel === 'function') {
+    initSvSPanel();
+  }
+}
+
 async function renderChiefCharmCalculatorPanel() {
   console.log('[SPA] renderChiefCharmCalculatorPanel called');
   if (window.dataReadyPromise) {
@@ -580,7 +719,7 @@ async function renderExpertsCalculatorPanel() {
             <strong>Affinity &amp; Advancement Sigils</strong>
           </div>
           <div class="gear-material-field">
-            <label for="expertAdvancementSigils" data-i18n="labels.generalAdvancementSigils">General Advancement Sigils</label>
+            <label for="expertAdvancementSigils" data-i18n="labels.generalAdvancementSigils">Common Expert Sigil</label>
             <input id="expertAdvancementSigils" type="number" min="0" value="0" />
           </div>
           <div class="gear-material-field">
@@ -601,7 +740,10 @@ async function renderExpertsCalculatorPanel() {
       </fieldset>
 
       <div class="gear-button-row">
-        <button id="expertsCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+        <div style="display:flex; gap:10px;">
+          <button id="expertsCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+          <button id="expertsSmartUpgradeBtn" type="button" class="accent-button" data-i18n="buttons.smartUpgrade">Smart Upgrade</button>
+        </div>
       </div>
 
       <section id="expertsResult" class="result"></section>
@@ -661,7 +803,7 @@ async function renderExpertSkillsCalculatorPanel() {
         <legend data-i18n="sections.expertSkillsMaterials">Your Materials</legend>
         <div class="gear-materials-grid">
           <div class="gear-material-field">
-            <label for="expertSkillExp" data-i18n="labels.skillExp">Skill Exp</label>
+            <label for="expertSkillExp" data-i18n="labels.skillExp">Learning Speedups (minutes)</label>
             <input id="expertSkillExp" type="number" min="0" value="0" />
           </div>
           <div class="gear-material-field">
@@ -672,7 +814,10 @@ async function renderExpertSkillsCalculatorPanel() {
       </fieldset>
 
       <div class="gear-button-row">
-        <button id="expertSkillsCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+        <div style="display:flex; gap:10px;">
+          <button id="expertSkillsCalculateBtn" type="button" data-i18n="buttons.calculate">Calculate</button>
+          <button id="expertSkillsSmartUpgradeBtn" type="button" class="accent-button" data-i18n="buttons.smartUpgrade">Smart Upgrade</button>
+        </div>
       </div>
 
       <section id="expertSkillsResult" class="result"></section>
@@ -691,6 +836,8 @@ function spaLoaderInit() {
     if (typeof window !== 'undefined') {
       window.activeCalculator = key;
     }
+    // Save to localStorage so it persists across refreshes
+    localStorage.setItem("wosCalc_activeCalculator", key);
     
     // We wrap the switch in an async IIFE to ensure we wait for async renderers
     // before applying translations
@@ -727,7 +874,7 @@ function spaLoaderInit() {
         await renderPlaceholderPanel('Research Upgrades');
         break;
       case 'svs':
-        await renderPlaceholderPanel('SvS');
+        await renderSvSCalculatorPanel();
         break;
       case 'troopTraining':
         await renderPlaceholderPanel('Troop Training');
