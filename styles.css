@@ -1303,3 +1303,367 @@ button:hover {
     grid-template-columns: 70px 1fr 1fr;
   }
 }
+
+/* ============================================================ */
+/* GitHub Migration Overlay */
+/* ============================================================ */
+.full-screen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--body-bg, #071533);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: var(--text-color, #e0e0e0);
+}
+
+.overlay-content {
+  background: var(--panel, rgba(0, 0, 0, 0.4));
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.3));
+  border: 1px solid var(--border-color, #3a4a6b);
+  max-width: 500px;
+  width: 90%;
+}
+
+.overlay-content h1 {
+  font-size: 2.2em;
+  margin-bottom: 20px;
+  color: #ff6b6b;
+}
+
+.overlay-content p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+/* ============================================================ */
+/* Auth Modal Styles */
+/* ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-panel {
+  background: var(--panel, #122244);
+  color: var(--text-color, #e0e0e0);
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: var(--shadow, 0 10px 20px rgba(0,0,0,0.5));
+  border: 1px solid var(--border-color, #3a4a6b);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color, #3a4a6b);
+  background-color: rgba(0,0,0,0.1);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.4em;
+  color: #fff;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-color, #e0e0e0);
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #ff6b6b;
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-input {
+  background: var(--input-bg, #0b1836);
+  color: var(--text-color, #e0e0e0);
+  border: 1px solid var(--border-color, #3a4a6b);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1em;
+  width: 100%;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-buttons button {
+  flex: 1;
+  padding: 12px;
+}
+
+.secondary-button {
+  background-color: transparent;
+  color: var(--text-color, #e0e0e0);
+  border: 1px solid var(--border-color, #3a4a6b);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.secondary-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #777;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color, #3a4a6b);
+}
+.expert-skill-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr;
+  padding: 4px 10px;
+  align-items: center;
+  gap: 8px;
+}
+
+.expert-skill-label {
+  font-size: 0.82em;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.expert-skill-block select {
+  margin-top: 0;
+  min-height: 32px;
+  padding: 3px 24px 3px 7px;
+  font-size: 0.85em;
+  background-position: calc(100% - 8px) calc(50% - 3px), calc(100% - 2px) calc(50% - 3px);
+  background-size: 5px 5px;
+}
+
+/* ============================================================
+   GEAR & CHARM TABLE – compact selects (mirrors pet panel)
+   ============================================================ */
+
+.gear-table-block select {
+  margin-top: 0;
+  min-height: 36px;
+  padding: 6px 28px 6px 10px;
+  font-size: 0.9em;
+  background-position: calc(100% - 10px) calc(50% - 3px), calc(100% - 4px) calc(50% - 3px);
+  background-size: 5px 5px;
+}
+
+@media (max-width: 480px) {
+  .expert-row {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .expert-row .expert-sigil-cell {
+    display: none;
+  }
+  .expert-skill-row {
+    grid-template-columns: 70px 1fr 1fr;
+  }
+}
+
+/* ============================================================ */
+/* GitHub Migration Overlay */
+/* ============================================================ */
+.full-screen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--body-bg, #071533);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: var(--text-color, #e0e0e0);
+}
+
+.overlay-content {
+  background: var(--panel, rgba(0, 0, 0, 0.4));
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.3));
+  border: 1px solid var(--border-color, #3a4a6b);
+  max-width: 500px;
+  width: 90%;
+}
+
+.overlay-content h1 {
+  font-size: 2.2em;
+  margin-bottom: 20px;
+  color: #ff6b6b;
+}
+
+.overlay-content p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+/* ============================================================ */
+/* Auth Modal Styles */
+/* ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-panel {
+  background: var(--panel, #122244);
+  color: var(--text-color, #e0e0e0);
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: var(--shadow, 0 10px 20px rgba(0,0,0,0.5));
+  border: 1px solid var(--border-color, #3a4a6b);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color, #3a4a6b);
+  background-color: rgba(0,0,0,0.1);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.4em;
+  color: #fff;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-color, #e0e0e0);
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #ff6b6b;
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-input {
+  background: var(--input-bg, #0b1836);
+  color: var(--text-color, #e0e0e0);
+  border: 1px solid var(--border-color, #3a4a6b);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1em;
+  width: 100%;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.auth-buttons button {
+  flex: 1;
+  padding: 12px;
+}
+
+.secondary-button {
+  background-color: transparent;
+  color: var(--text-color, #e0e0e0);
+  border: 1px solid var(--border-color, #3a4a6b);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.secondary-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #777;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color, #3a4a6b);
+}
+
+.auth-divider span {
+  padding: 0 10px;
+}
+
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #4285F4;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.google-button:hover {
+  background-color: #3367D6;
+}
