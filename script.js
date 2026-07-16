@@ -631,8 +631,15 @@ function switchAccount(id) {
 
   // Instead of trying to parse out which UI modules to call, reload the page
   // so the entire SPA rehydrates correctly for the new account.
-  window.location.reload();
-}
+  if (window.navigateToRoute) {
+    window.navigateToRoute(window.activeCalculator).then(() => {
+      if (typeof loadAllStateFromAccount === 'function') {
+        loadAllStateFromAccount();
+      }
+    });
+  } else {
+    window.location.reload();
+  }
 }
 
 // Reads the active account's saved state and populates all
@@ -772,11 +779,11 @@ function setActiveCalculator(calculatorKey) {
     ? keyToUse
     : CALCULATOR_KEYS.UPGRADE;
 
-  if (activeCalculator === CALCULATOR_KEYS.UPGRADE && safeKey !== CALCULATOR_KEYS.UPGRADE) {
+  if (window.activeCalculator === CALCULATOR_KEYS.UPGRADE && safeKey !== CALCULATOR_KEYS.UPGRADE) {
     captureCurrentStateToAccount();
-  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR && safeKey !== CALCULATOR_KEYS.CHIEF_GEAR) {
+  } else if (window.activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR && safeKey !== CALCULATOR_KEYS.CHIEF_GEAR) {
     saveChiefGearState();
-  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM && safeKey !== CALCULATOR_KEYS.CHIEF_CHARM) {
+  } else if (window.activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM && safeKey !== CALCULATOR_KEYS.CHIEF_CHARM) {
     if (typeof saveChiefCharmState === "function") saveChiefCharmState();
   }
 
@@ -2553,8 +2560,8 @@ function onGearCalculateClick() {
       // Find the slot that can be upgraded the furthest (by one step) and is still below its target
       GEAR_SLOTS.forEach(slot => {
         const curIdx = levelKeyToIndex[optimizedLevels[slot] || "none"] || -1;
-        const tgtIdx = levelKeyToIndex[targetLevels[slot] || "none"] || -1;
-        if (curIdx < tgtIdx && curIdx < CHIEF_GEAR_DATA.levelOrder.length - 1) {
+        // const tgtIdx = levelKeyToIndex[targetLevels[slot] || "none"] || -1;
+        if (curIdx < CHIEF_GEAR_DATA.levelOrder.length - 1) {
           const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[curIdx + 1];
           const cost = CHIEF_GEAR_DATA.levels[nextLevelKey];
           if (cost &&
@@ -3122,8 +3129,8 @@ function calculateCharmOptimizedPlan(currentLevels, targetLevels, materials) {
     // Find the slot that can be upgraded the furthest (by one step) and is still below its target
     CHARM_SLOT_DEFINITIONS.forEach(slot => {
       const curIdx = levelKeyToIndex[optimizedLevels[slot.slotKey] || "none"] || -1;
-      const tgtIdx = levelKeyToIndex[targetLevels[slot.slotKey] || "none"] || -1;
-      if (curIdx < tgtIdx && curIdx < CHIEF_CHARM_DATA.levelOrder.length - 1) {
+      // const tgtIdx = levelKeyToIndex[targetLevels[slot.slotKey] || "none"] || -1;
+        if (curIdx < CHIEF_CHARM_DATA.levelOrder.length - 1) {
         const nextLevelKey = CHIEF_CHARM_DATA.levelOrder[curIdx + 1];
         const cost = CHIEF_CHARM_DATA.levels[nextLevelKey];
         if (cost &&
@@ -3853,6 +3860,9 @@ async function loadData() {
     loadAllStateFromAccount();
 
     applyTheme(loadThemePreference());
+
+    window.appInitialized = true;
+    document.dispatchEvent(new Event('appDataLoaded'));
   } catch (error) {
     console.error("Error loading data:", error);
     alert(translateText("alerts.dataLoadingError", {}, "Error loading calculator data. Please refresh the page."));
@@ -3871,6 +3881,8 @@ const accountSelect = document.getElementById("accountSelect");
 if (accountSelect) {
   accountSelect.addEventListener("change", function() {
     switchAccount(this.value);
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('expanded');
   });
 }
 

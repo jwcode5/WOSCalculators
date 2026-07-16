@@ -1,10 +1,10 @@
-import { renderUpgradeCalculator } from './upgrades.js?v=33';
-import { renderChiefGearCalculator } from './chiefGear.js?v=33';
-import { renderChiefCharmCalculator } from './chiefCharm.js?v=33';
-import { renderPetsCalculator } from './pets.js?v=33';
-import { renderExpertsCalculator } from './experts.js?v=33';
-import { renderExpertSkillsCalculator } from './expertSkills.js?v=33';
-import { renderSvsCalculator } from './svs.js?v=33';
+import { renderUpgradeCalculator } from './upgrades.js?v=41';
+import { renderChiefGearCalculator } from './chiefGear.js?v=41';
+import { renderChiefCharmCalculator } from './chiefCharm.js?v=41';
+import { renderPetsCalculator } from './pets.js?v=41';
+import { renderExpertsCalculator } from './experts.js?v=41';
+import { renderExpertSkillsCalculator } from './expertSkills.js?v=41';
+import { renderSvsCalculator } from './svs.js?v=41';
 
 const appContent = document.getElementById('app-content');
 const navItems = document.querySelectorAll('.nav-item');
@@ -19,6 +19,7 @@ const pages = {
   svs: renderSvsCalculator
 };
 
+window.navigateToRoute = navigateTo;
 async function navigateTo(route) {
   navItems.forEach(item => {
     if (item.dataset.route === route) {
@@ -65,7 +66,13 @@ navItems.forEach(item => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const savedRoute = localStorage.getItem('activeRoute') || 'upgrade';
-  navigateTo(savedRoute);
+  if (window.appInitialized) {
+    navigateTo(savedRoute);
+  } else {
+    document.addEventListener('appDataLoaded', () => {
+      navigateTo(savedRoute);
+    });
+  }
 });
 
 

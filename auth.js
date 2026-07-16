@@ -213,3 +213,19 @@ logoutBtn.addEventListener('click', async () => {
     showError(error.message);
   }
 });
+
+
+window.forceFirebaseSync = async function() {
+  if (window.fbSaveTimeout) clearTimeout(window.fbSaveTimeout);
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    await updateDoc(doc(db, 'users', user.uid), {
+      accounts: localStorage.getItem('wosCalc_accounts'),
+      activeAccountId: localStorage.getItem('wosCalc_activeAccountId'),
+      lastUpdated: new Date().toISOString()
+    });
+  } catch(e) {
+    console.warn('Failed to force sync to Firebase:', e);
+  }
+};
