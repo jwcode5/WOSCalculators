@@ -231,7 +231,8 @@ const SUPPLY_FIELD_IDS = [
   "customChestL2SecuredCount",
   "customChestL2UnsecuredCount",
   "customChestL3SecuredCount",
-  "customChestL3UnsecuredCount"
+  "customChestL3UnsecuredCount",
+  "globalValeriaSkill"
 ];
 
 // ============================================================
@@ -614,37 +615,24 @@ function switchAccount(id) {
   if (id === activeAccountId) return; // Already on this account, nothing to do
   // Save the current calculator state for the active account before switching
   if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
-    captureCurrentStateToAccount();
+    if (typeof captureCurrentStateToAccount === 'function') captureCurrentStateToAccount();
   } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR) {
-    saveChiefGearState();
+    if (typeof saveChiefGearState === 'function') saveChiefGearState();
   } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM) {
     if (typeof saveChiefCharmState === "function") saveChiefCharmState();
   } else if (activeCalculator === CALCULATOR_KEYS.PETS) {
     if (typeof savePetsState === "function") savePetsState();
+  } else if (activeCalculator === CALCULATOR_KEYS.EXPERTS || activeCalculator === CALCULATOR_KEYS.EXPERT_SKILLS) {
+    if (typeof saveExpertsState === "function") saveExpertsState();
   }
 
   activeAccountId = id;
   localStorage.setItem("wosCalc_activeAccountId", id);
 
-  // Load the correct calculator state for the new account
-  if (activeCalculator === CALCULATOR_KEYS.UPGRADE) {
-    loadAllStateFromAccount();
-  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_GEAR) {
-    renderAccountSelector();
-    initChiefGearPanel();
-    loadChiefGearState();
-  } else if (activeCalculator === CALCULATOR_KEYS.CHIEF_CHARM) {
-    renderAccountSelector();
-    if (typeof initChiefCharmPanel === "function") initChiefCharmPanel();
-    if (typeof loadChiefCharmState === "function") loadChiefCharmState();
-  } else if (activeCalculator === CALCULATOR_KEYS.PETS) {
-    renderAccountSelector();
-    if (typeof initPetsPanel === "function") initPetsPanel();
-    if (typeof loadPetsState === "function") loadPetsState();
-  } else {
-    renderAccountSelector();
-    renderComingSoonPanel(activeCalculator);
-  }
+  // Instead of trying to parse out which UI modules to call, reload the page
+  // so the entire SPA rehydrates correctly for the new account.
+  window.location.reload();
+}
 }
 
 // Reads the active account's saved state and populates all
@@ -1008,7 +996,13 @@ function attachSupplyPersistenceListeners() {
     const el = document.getElementById(id);
     if (!el) return;
     const eventName = el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input";
-    el.addEventListener(eventName, saveSuppliesState);
+    el.addEventListener(eventName, (e) => {
+      saveSuppliesState();
+      const panel = document.querySelector("#app-content > section, #app-content > div");
+      if (panel) {
+        panel.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
   });
 }
 
@@ -1162,9 +1156,7 @@ function applyTheme(theme) {
   document.body.dataset.theme = safeTheme;
   const button = document.getElementById("themeToggleBtn");
   if (button) {
-    button.textContent = safeTheme === "dark"
-      ? translateText("theme.lightMode", {}, "Light Mode")
-      : translateText("theme.darkMode", {}, "Dark Mode");
+    button.textContent = safeTheme === "dark" ? "☀️" : "🌙";
   }
 }
 
@@ -1884,14 +1876,21 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, 
     }
 
     let prereqsHTML = `
-      <div style="margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+      <div style="margin-bottom: 16px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
         <div style="flex: 1 1 220px; min-width: 140px;">
           <label for="prereqBatchCurrent">${escapeHtml(translateText("labels.setAllCurrentLevels", {}, "Set all current levels"))}</label>
-          <select id="prereqBatchCurrent"></select>
+          <select id="prereqBatchCurrent" class="global-select" style="width: 100%; padding: 8px; border-radius: 4px;"></select>
         </div>
         <button id="setAllPrereqCurrentBtn" type="button" class="inlineActionBtn inlineActionBtnPrimary">${escapeHtml(translateText("buttons.setAll", {}, "Set All"))}</button>
       </div>
-    `;
+      <div class="gear-table">
+        <div class="gear-table-header" style="display: flex; gap: 16px; font-weight: bold; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--glass-border);">
+          <span style="flex: 1.5;">Building</span>
+          <span style="flex: 1;">Current Level</span>
+          <span style="flex: 1;">Target Level</span>
+          <span style="width: 70px;"></span>
+        </div>
+`;
 
     const savedPrereqState = loadPrerequisiteState(selectedBuilding);
 
@@ -1921,25 +1920,21 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, 
 
       if (hasCostData) {
         prereqsHTML += `
-          <div style="margin-bottom: 10px;">
-            <div style="font-weight: 700; margin-bottom: 6px;">${buildingLabel}</div>
-            <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-              <div style="flex: 1 1 160px; min-width: 140px;">
-                <label for="${buildingName}CurrentLevel">${escapeHtml(translateText("labels.currentLevel", {}, "Current Level"))}</label>
-                <select
-                  id="${buildingName}CurrentLevel" 
-                  data-building="${buildingName}"
-                >${renderOptions(chosenCurrent)}</select>
-              </div>
-              <div style="flex: 1 1 160px; min-width: 140px;">
-                <label for="${buildingName}Level">${escapeHtml(translateText("labels.requiredLevel", {}, "Required Level"))}</label>
-                <select
-                  id="${buildingName}Level" 
-                  data-building="${buildingName}"
-                >${renderOptions(chosenTarget)}</select>
-              </div>
-              <button type="button" class="prereqResetBtn inlineActionBtn inlineActionBtnSecondary" data-building="${escapeAttr(buildingName)}" data-required="${escapeAttr(requiredLevelKey)}" title="${escapeAttr(translateText('buttons.reset', {}, 'Reset'))}">${escapeHtml(translateText("buttons.reset", {}, "Reset"))}</button>
-            </div>
+          <div class="gear-table-block" style="display: flex; gap: 16px; align-items: center; margin-bottom: 12px;">
+            <span style="flex: 1.5; font-weight: 600;">${buildingLabel}</span>
+            <select
+              id="${buildingName}CurrentLevel" 
+              data-building="${buildingName}"
+              class="global-select"
+              style="flex: 1; padding: 6px; border-radius: 4px;"
+            >${renderOptions(chosenCurrent)}</select>
+            <select
+              id="${buildingName}Level" 
+              data-building="${buildingName}"
+              class="global-select"
+              style="flex: 1; padding: 6px; border-radius: 4px;"
+            >${renderOptions(chosenTarget)}</select>
+            <button type="button" class="prereqResetBtn inlineActionBtn inlineActionBtnSecondary" data-building="${escapeAttr(buildingName)}" data-required="${escapeAttr(requiredLevelKey)}" title="Reset" style="width: 70px; height: 32px; padding: 0;">Reset</button>
           </div>
         `;
       } else {
@@ -1952,6 +1947,8 @@ function updatePrerequisites(selectedBuilding, currentLevelKey, targetLevelKey, 
       }
     }
 
+    prereqsHTML += "</div>";
+    prereqsHTML += "</div>";
     prereqsContainer.innerHTML = prereqsHTML;
 
     const prereqBatchCurrent = document.getElementById("prereqBatchCurrent");
@@ -2763,10 +2760,10 @@ function renderChiefCharmRows() {
     const charmWord = translateText("labels.charm", {}, "Charm");
     const charmLabel = escapeHtml(`${charmWord} ${slot.charmNumber}`);
     html += `
-      <div class="gear-table-block">
-        <span class="gear-piece-label">${pieceLabel} ${charmLabel}</span>
-        <select id="${escapeAttr(slot.currentId)}"></select>
-        <select id="${escapeAttr(slot.targetId)}"></select>
+      <div class="gear-table-block" style="display: flex; gap: 16px; align-items: center; margin-bottom: 12px;">
+        <span class="gear-piece-label" style="flex: 1.5; font-weight: 600;">${pieceLabel} ${charmLabel}</span>
+        <select id="${escapeAttr(slot.currentId)}" class="global-select" style="flex: 1;"></select>
+        <select id="${escapeAttr(slot.targetId)}" class="global-select" style="flex: 1;"></select>
       </div>
     `;
   });
@@ -3377,20 +3374,34 @@ function initPetsPanel() {
       const reqLabel = translateText("comingSoon.unlockRequirement", { level: reqLevel }, `Reach Lv.${reqLevel} to unlock next`);
       
       html += `
-        <div class="pet-requirement-line">
-          <span class="pet-requirement-text">${escapeHtml(reqLabel)}</span>
+        <div class="pet-requirement-line" style="display: flex; align-items: center; text-align: center; font-size: 0.85em; color: var(--text-secondary); margin: 16px 0;">
+          <div style="flex: 1; height: 1px; background: var(--glass-border);"></div>
+          <span class="pet-requirement-text" style="padding: 0 16px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">${escapeHtml(reqLabel)}</span>
+          <div style="flex: 1; height: 1px; background: var(--glass-border);"></div>
         </div>
       `;
     }
 
+    let maxLevel = 0;
+    if (petData.customUpgrades) {
+      maxLevel = petData.customUpgrades.length - 1;
+    } else if (PET_UPGRADES.tiers[petData.tier]) {
+      maxLevel = PET_UPGRADES.tiers[petData.tier].upgrades.length - 1;
+    }
+    
+    let optionsHtml = `<option value="-1">${translateText("labels.notObtained", {}, "Not Obtained")}</option>`;
+    for (let i = 0; i <= maxLevel; i++) {
+      optionsHtml += `<option value="${i}">${i}</option>`;
+    }
+
     html += `
-      <div class="pet-row" data-pet="${name}">
-        <div class="pet-name-cell">
-          <span class="pet-name-text">${localizedName}</span>
-          ${tier ? `<span class="pet-tier-tag">${tier}</span>` : ''}
+      <div class="gear-table-block pet-row" data-pet="${name}" style="display: flex; gap: 16px; align-items: center; margin-bottom: 8px;">
+        <div class="pet-name-cell" style="flex: 1.5; display: flex; align-items: center; gap: 8px;">
+          <span class="pet-name-text" style="font-weight: 600;">${localizedName}</span>
+          ${tier ? `<span class="pet-tier-tag" style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">${tier}</span>` : ''}
         </div>
-        <select class="pet-current-select" data-pet="${name}"></select>
-        <select class="pet-target-select" data-pet="${name}"></select>
+        <select class="pet-current-select global-select" data-pet="${name}" style="flex: 1; min-width: 0;">${optionsHtml}</select>
+        <select class="pet-target-select global-select" data-pet="${name}" style="flex: 1; min-width: 0;">${optionsHtml}</select>
       </div>
     `;
   });
@@ -3540,25 +3551,38 @@ function loadPetsState() {
 }
 
 function onPetsCalculateClick() {
-  const targets = [];
-  PET_ORDER.forEach(name => {
-    const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
-    if (row) {
-      const startIdx = parseInt(row.querySelector(".pet-current-select").value);
-      const endIdx = parseInt(row.querySelector(".pet-target-select").value);
-      if (endIdx > startIdx) {
-        targets.push({ name, startIdx, endIdx });
+  try {
+    const targets = [];    let debugStr = "";
+    PET_ORDER.forEach(name => {
+      const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+      if (row) {
+        const startIdx = parseInt(row.querySelector(".pet-current-select").value);
+        const endIdx = parseInt(row.querySelector(".pet-target-select").value);
+        if (name === "Snow Leopard") debugStr = `Snow Leopard: start=${startIdx}, end=${endIdx}`;
+        if (endIdx > startIdx) {
+          targets.push({ name, startIdx, endIdx });
+        }
       }
+    });
+
+    const resEl = document.getElementById("petsResult");
+    if (!resEl) return;
+
+    if (targets.length === 0) {
+      resEl.innerHTML = `<div style="padding:16px;">Debug: No targets. ${debugStr}</div>`;
+      resEl.style.display = "block";
+      return;
     }
-  });
 
-  if (targets.length === 0) {
-    alert(translateText("results.setTargetHigher", {}, "Please set at least one target level higher than current."));
-    return;
+    const result = calculateMultiPetUpgrade(targets);
+    renderPetsResult(result);
+  } catch(err) {
+    const resEl = document.getElementById("petsResult");
+    if (resEl) {
+      resEl.innerHTML = `<div style="color:red; padding:20px;">Error calculating pets: ${err.message}<br>${err.stack}</div>`;
+      resEl.style.display = "block";
+    }
   }
-
-  const result = calculateMultiPetUpgrade(targets);
-  renderPetsResult(result);
 }
 
 function calculateMultiPetUpgrade(targets) {
@@ -3598,7 +3622,7 @@ function calculateMultiPetUpgrade(targets) {
 
     petBreakdown.push({
       name: t.name,
-      startLevel: upgrades[t.startIdx].level,
+      startLevel: t.startIdx === -1 ? 'Not Obtained' : upgrades[t.startIdx].level,
       endLevel: upgrades[t.endIdx].level,
       totals: subTotal
     });
@@ -3725,10 +3749,15 @@ function renderPetsResult(result) {
 
   const { grandTotal, petBreakdown } = result;
 
-  const petFoodOwned = parseInt(document.getElementById("petFoodInput").value) || 0;
-  const tamingManualOwned = parseInt(document.getElementById("tamingManualInput").value) || 0;
-  const energizingPotionOwned = parseInt(document.getElementById("energizingPotionInput").value) || 0;
-  const strengtheningSerumOwned = parseInt(document.getElementById("strengtheningSerumInput").value) || 0;
+  const petFoodEl = document.getElementById("petFoodInput");
+  const tamingManualEl = document.getElementById("tamingManualInput");
+  const energizingPotionEl = document.getElementById("energizingPotionInput");
+  const strengtheningSerumEl = document.getElementById("strengtheningSerumInput");
+
+  const petFoodOwned = petFoodEl ? (parseInt(petFoodEl.value) || 0) : 0;
+  const tamingManualOwned = tamingManualEl ? (parseInt(tamingManualEl.value) || 0) : 0;
+  const energizingPotionOwned = energizingPotionEl ? (parseInt(energizingPotionEl.value) || 0) : 0;
+  const strengtheningSerumOwned = strengtheningSerumEl ? (parseInt(strengtheningSerumEl.value) || 0) : 0;
 
   const petFoodDiff = petFoodOwned - grandTotal.petFood;
   const tamingManualDiff = tamingManualOwned - grandTotal.tamingManual;
@@ -3772,6 +3801,7 @@ function renderPetsResult(result) {
   });
 
   resEl.innerHTML = html;
+  resEl.style.display = "block";
 }
 
 // ============================================================
@@ -3935,7 +3965,7 @@ if (themeToggleBtn) {
 function onUpgradeCalculateClick() {
   // Guard: bail out if data hasn't loaded yet
   if (!BUILDING_COSTS || !PREREQUISITES) {
-    alert(translateText("alerts.dataStillLoading", {}, "Data is still loading. Please wait and try again."));
+    console.log("Data loading...");
     return;
   }
 
@@ -4403,15 +4433,21 @@ function initExpertsPanel() {
     const localizedName = translateText(`expert.${key}`, {}, name);
 
     html += `
-      <div class="expert-row" data-expert="${name}">
-        <div class="expert-name-cell">
-          <span class="expert-name-text">${escapeHtml(localizedName)}</span>
+      <div class="card-panel expert-card" data-expert="${name}" style="display: flex; flex-direction: column; gap: 12px; padding: 16px;">
+        <div class="expert-name-cell" style="border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">
+          <span class="expert-name-text" style="font-weight: 600; font-size: 1.1em;">${escapeHtml(localizedName)}</span>
         </div>
-        <select class="expert-current-select" data-expert="${name}"></select>
-        <select class="expert-target-select" data-expert="${name}"></select>
-        <div class="expert-sigil-cell">
-          <span class="expert-sigil-label">${translateText("labels.expertSigils", {}, "Sigils")}</span>
-          <input type="number" class="expert-specific-sigils expert-sigil-input" data-expert="${name}" min="0" value="0" />
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.9em; color: var(--text-secondary);">Current:</span>
+          <select class="expert-current-select global-select" data-expert="${name}" style="width: 120px;"></select>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.9em; color: var(--text-secondary);">Target:</span>
+          <select class="expert-target-select global-select" data-expert="${name}" style="width: 120px;"></select>
+        </div>
+        <div class="expert-sigil-cell" style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="expert-sigil-label" style="font-size: 0.9em; color: var(--text-secondary);">${translateText("labels.expertSigils", {}, "Sigils")}:</span>
+          <input type="number" class="expert-specific-sigils expert-sigil-input global-select" data-expert="${name}" min="0" value="0" style="width: 120px;" />
         </div>
       </div>
     `;
@@ -5146,27 +5182,32 @@ function initExpertSkillsPanel() {
     const localizedName = translateText(`expert.${key}`, {}, name);
 
     html += `
-      <div class="expert-skill-block" data-expert="${name}">
-        <div class="expert-skill-name-row">${escapeHtml(localizedName)}</div>
-        <div class="expert-skill-row">
-          <span class="expert-skill-label">${translateText("labels.skill1", {}, "Skill 1")}</span>
-          <select class="skill-current-select" data-expert="${name}" data-skill="1"></select>
-          <select class="skill-target-select" data-expert="${name}" data-skill="1"></select>
+      <div class="card-panel expert-skill-card" data-expert="${name}" style="display: flex; flex-direction: column; gap: 12px; padding: 16px;">
+        <div class="expert-skill-name-row" style="border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; font-weight: 600; font-size: 1.1em; text-align: center;">${escapeHtml(localizedName)}</div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; font-size: 0.85em; color: var(--text-secondary); margin-bottom: 4px;">
+          <span>Skill</span><span>Current</span><span>Target</span>
         </div>
-        <div class="expert-skill-row">
-          <span class="expert-skill-label">${translateText("labels.skill2", {}, "Skill 2")}</span>
-          <select class="skill-current-select" data-expert="${name}" data-skill="2"></select>
-          <select class="skill-target-select" data-expert="${name}" data-skill="2"></select>
+        
+        <div class="expert-skill-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center;">
+          <span class="expert-skill-label" style="font-size: 0.9em;">${translateText("labels.skill1", {}, "Skill 1")}</span>
+          <select class="skill-current-select global-select" data-expert="${name}" data-skill="1"></select>
+          <select class="skill-target-select global-select" data-expert="${name}" data-skill="1"></select>
         </div>
-        <div class="expert-skill-row">
-          <span class="expert-skill-label">${translateText("labels.skill3", {}, "Skill 3")}</span>
-          <select class="skill-current-select" data-expert="${name}" data-skill="3"></select>
-          <select class="skill-target-select" data-expert="${name}" data-skill="3"></select>
+        <div class="expert-skill-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center;">
+          <span class="expert-skill-label" style="font-size: 0.9em;">${translateText("labels.skill2", {}, "Skill 2")}</span>
+          <select class="skill-current-select global-select" data-expert="${name}" data-skill="2"></select>
+          <select class="skill-target-select global-select" data-expert="${name}" data-skill="2"></select>
         </div>
-        <div class="expert-skill-row">
-          <span class="expert-skill-label">${translateText("labels.skill4", {}, "Skill 4")}</span>
-          <select class="skill-current-select" data-expert="${name}" data-skill="4"></select>
-          <select class="skill-target-select" data-expert="${name}" data-skill="4"></select>
+        <div class="expert-skill-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center;">
+          <span class="expert-skill-label" style="font-size: 0.9em;">${translateText("labels.skill3", {}, "Skill 3")}</span>
+          <select class="skill-current-select global-select" data-expert="${name}" data-skill="3"></select>
+          <select class="skill-target-select global-select" data-expert="${name}" data-skill="3"></select>
+        </div>
+        <div class="expert-skill-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; align-items: center;">
+          <span class="expert-skill-label" style="font-size: 0.9em;">${translateText("labels.skill4", {}, "Skill 4")}</span>
+          <select class="skill-current-select global-select" data-expert="${name}" data-skill="4"></select>
+          <select class="skill-target-select global-select" data-expert="${name}" data-skill="4"></select>
         </div>
       </div>
     `;
@@ -5562,3 +5603,1410 @@ function onExpertSkillsSmartUpgradeClick() {
   }
 }
 
+
+
+// Auto-calc poller for initial load
+let initialCalcDone = false;
+setInterval(() => {
+  if (initialCalcDone) return;
+  if (typeof BUILDING_COSTS !== 'undefined' && BUILDING_COSTS && Object.keys(BUILDING_COSTS).length > 0) {
+    initialCalcDone = true;
+    if (document.getElementById('upgradeCalculatorPanel') && typeof onUpgradeCalculateClick === 'function') onUpgradeCalculateClick();
+    if (document.getElementById('gearPanel') && typeof onGearCalculateClick === 'function') onGearCalculateClick();
+    if (document.getElementById('charmPanel') && typeof onCharmCalculateClick === 'function') onCharmCalculateClick();
+    if (document.getElementById('petsPanel') && typeof onPetsCalculateClick === 'function') onPetsCalculateClick();
+    if (document.getElementById('expertsPanel') && typeof calculateExperts === 'function') calculateExperts();
+    if (document.getElementById('expertSkillsPanel') && typeof calculateExpertSkills === 'function') calculateExpertSkills();
+  }
+}, 200);
+
+// ==========================================
+// OVERRIDES FOR OPTIMIZED PLANS
+// ==========================================
+
+window.calculatePetsOptimizedPlan = function() {
+  const materials = {
+    petFood: parseInt(document.getElementById("petFoodInput")?.value) || 0,
+    tamingManual: parseInt(document.getElementById("tamingManualInput")?.value) || 0,
+    energizingPotion: parseInt(document.getElementById("energizingPotionInput")?.value) || 0,
+    strengtheningSerum: parseInt(document.getElementById("strengtheningSerumInput")?.value) || 0
+  };
+
+  const currentStates = [];
+  PET_ORDER.forEach(name => {
+    const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+    if (row) {
+      const petData = PET_UPGRADES.pets[name];
+      let upgrades = [];
+      if (petData.customUpgrades) upgrades = petData.customUpgrades;
+      else if (PET_UPGRADES.tiers[petData.tier]) upgrades = PET_UPGRADES.tiers[petData.tier].upgrades;
+      const startIdx = parseInt(row.querySelector(".pet-current-select").value);
+      if (startIdx === -1) return;
+      currentStates.push({ name, upgrades, startIndex: startIdx, currentIndex: startIdx });
+    }
+  });
+
+  const used = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+
+  while (true) {
+    let bestPet = null;
+    let minCostValue = Infinity;
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        const costValue = (next.petFood || 0) + (next.tamingManual || 0) * 10 + (next.energizingPotion || 0) * 50 + (next.strengtheningSerum || 0) * 200;
+        if (costValue < minCostValue &&
+            materials.petFood >= (next.petFood || 0) && materials.tamingManual >= (next.tamingManual || 0) &&
+            materials.energizingPotion >= (next.energizingPotion || 0) && materials.strengtheningSerum >= (next.strengtheningSerum || 0)) {
+          minCostValue = costValue; bestPet = state;
+        }
+      }
+    });
+
+    if (bestPet) {
+      const next = bestPet.upgrades[bestPet.currentIndex + 1];
+      materials.petFood -= (next.petFood || 0); materials.tamingManual -= (next.tamingManual || 0);
+      materials.energizingPotion -= (next.energizingPotion || 0); materials.strengtheningSerum -= (next.strengtheningSerum || 0);
+      used.petFood += (next.petFood || 0); used.tamingManual += (next.tamingManual || 0);
+      used.energizingPotion += (next.energizingPotion || 0); used.strengtheningSerum += (next.strengtheningSerum || 0);
+      used.svsPoints += (next.svsPoints || 0);
+      bestPet.currentIndex++;
+    } else {
+      break;
+    }
+  }
+
+  const upgradedPets = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgradedPets.length > 0) {
+    const breakdown = upgradedPets.map(s => {
+      const subTotal = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+      for (let i = s.startIndex + 1; i <= s.currentIndex; i++) {
+        const u = s.upgrades[i];
+        subTotal.petFood += (u.petFood || 0); subTotal.tamingManual += (u.tamingManual || 0);
+        subTotal.energizingPotion += (u.energizingPotion || 0); subTotal.strengtheningSerum += (u.strengtheningSerum || 0);
+        subTotal.svsPoints += (u.svsPoints || 0);
+      }
+      return { name: s.name, startLevel: s.upgrades[s.startIndex].level, endLevel: s.upgrades[s.currentIndex].level, totals: subTotal };
+    });
+    return { grandTotal: used, petBreakdown: breakdown };
+  }
+  return null;
+};
+
+window.onPetsCalculateClick = function() {
+  try {
+    const targets = [];
+    PET_ORDER.forEach(name => {
+      const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+      if (row) {
+        const startIdx = parseInt(row.querySelector(".pet-current-select").value);
+        const endIdx = parseInt(row.querySelector(".pet-target-select").value);
+        if (endIdx > startIdx) targets.push({ name, startIdx, endIdx });
+      }
+    });
+
+    const resEl = document.getElementById("petsResult");
+    if (!resEl) return;
+
+    const result = targets.length > 0 ? calculateMultiPetUpgrade(targets) : null;
+    const optimized = calculatePetsOptimizedPlan();
+    renderPetsResult(result, optimized);
+  } catch(err) {
+    const resEl = document.getElementById("petsResult");
+    if (resEl) {
+      resEl.innerHTML = `<div style="color:red; padding:20px;">Error calculating pets: ${err.message}<br>${err.stack}</div>`;
+      resEl.style.display = "block";
+    }
+  }
+};
+
+window.renderPetsResult = function(result, optimized) {
+  const resEl = document.getElementById("petsResult");
+  if (!resEl) return;
+
+  let html = "";
+  if (result) {
+    const { grandTotal, petBreakdown } = result;
+    const petFoodEl = document.getElementById("petFoodInput");
+    const tamingManualEl = document.getElementById("tamingManualInput");
+    const energizingPotionEl = document.getElementById("energizingPotionInput");
+    const strengtheningSerumEl = document.getElementById("strengtheningSerumInput");
+
+    const petFoodOwned = petFoodEl ? (parseInt(petFoodEl.value) || 0) : 0;
+    const tamingManualOwned = tamingManualEl ? (parseInt(tamingManualEl.value) || 0) : 0;
+    const energizingPotionOwned = energizingPotionEl ? (parseInt(energizingPotionEl.value) || 0) : 0;
+    const strengtheningSerumOwned = strengtheningSerumEl ? (parseInt(strengtheningSerumEl.value) || 0) : 0;
+
+    const petFoodDiff = petFoodOwned - grandTotal.petFood;
+    const tamingManualDiff = tamingManualOwned - grandTotal.tamingManual;
+    const energizingPotionDiff = energizingPotionOwned - grandTotal.energizingPotion;
+    const strengtheningSerumDiff = strengtheningSerumOwned - grandTotal.strengtheningSerum;
+
+    html += `
+      <div class="card-panel">
+        <h3 style="margin-top:0; color:#ffe08a;">${translateText("results.grandTotal", {}, "TARGET UPGRADES TOTAL")}</h3>
+        ${translateText("labels.petFood", {}, "Pet Food")}: ${formatNumber(grandTotal.petFood)} | 
+        ${translateText("labels.tamingManual", {}, "Taming Manual")}: ${formatNumber(grandTotal.tamingManual)}<br>
+        ${translateText("labels.energizingPotion", {}, "Energizing Potion")}: ${formatNumber(grandTotal.energizingPotion)} | 
+        ${translateText("labels.strengtheningSerum", {}, "Strengthening Serum")}: ${formatNumber(grandTotal.strengtheningSerum)}
+      </div>
+      <div class="card-panel" style="margin-top: 10px;">
+        <strong>${translateText("results.afterUpgradeBalance", {}, "After Upgrade (Material Balance)")}</strong><br>
+        ${translateText("labels.petFood", {}, "Pet Food")}: <span style="color: ${petFoodDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(petFoodDiff)}</span><br>
+        ${translateText("labels.tamingManual", {}, "Taming Manual")}: <span style="color: ${tamingManualDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(tamingManualDiff)}</span><br>
+        ${translateText("labels.energizingPotion", {}, "Energizing Potion")}: <span style="color: ${energizingPotionDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(energizingPotionDiff)}</span><br>
+        ${translateText("labels.strengtheningSerum", {}, "Strengthening Serum")}: <span style="color: ${strengtheningSerumDiff < 0 ? '#ff6b6b' : '#51cf66'}">${formatNumber(strengtheningSerumDiff)}</span>
+      </div>
+      <div class="card-panel" style="margin-top: 10px; background: #1e2a3a; color: #ffe08a; font-size: 1.15em; text-align: center;">
+        <strong>${translateText("results.svsPointsGained", {}, "SVS Points Gained:")}</strong> <span style="font-size:1.2em;">${formatNumber(grandTotal.svsPoints)}</span>
+      </div>
+    `;
+  }
+
+  if (optimized) {
+    html += `<div class='card-panel' style='margin-top:15px; border-left: 3px solid var(--accent-color);'>
+      <strong style="color:var(--accent-color);">OPTIMIZED PLAN</strong><br>
+      Based on your available resources:<br>
+    `;
+    optimized.petBreakdown.forEach(p => {
+      html += `<div style="margin-top: 10px;">
+        <strong>${escapeHtml(translateText(`pet.${p.name}`, {}, p.name))}</strong> (${p.startLevel} → ${p.endLevel})<br>
+        <span style="font-size:0.9em; opacity:0.8;">
+          Food: ${formatNumber(p.totals.petFood)} | Manuals: ${formatNumber(p.totals.tamingManual)} | 
+          Potions: ${formatNumber(p.totals.energizingPotion)} | Serums: ${formatNumber(p.totals.strengtheningSerum)}
+        </span>
+      </div>`;
+    });
+    html += `<div style="margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 10px;">
+      <strong>Total Cost:</strong> 
+      Food: ${formatNumber(optimized.grandTotal.petFood)} | Manuals: ${formatNumber(optimized.grandTotal.tamingManual)} | 
+      Potions: ${formatNumber(optimized.grandTotal.energizingPotion)} | Serums: ${formatNumber(optimized.grandTotal.strengtheningSerum)}
+      <br><strong>Total SVS Points Gained: ${formatNumber(optimized.grandTotal.svsPoints)}</strong>
+    </div>`;
+    html += `</div>`;
+  }
+
+  if (!result && !optimized) {
+    resEl.innerHTML = `<div style="padding:16px;">No target upgrades selected and no optimized upgrades possible with current materials.</div>`;
+  } else {
+    resEl.innerHTML = html;
+  }
+  resEl.style.display = "block";
+};
+
+// Re-assign existing functions
+onPetsCalculateClick = window.onPetsCalculateClick;
+renderPetsResult = window.renderPetsResult;
+
+// Override Experts
+window.calculateExpertsOptimizedPlan = function() {
+  if (!EXPERTS_DATA) return null;
+  const EXPERT_ORDER = Object.keys(EXPERTS_DATA);
+  let commonSigils = parseInt(document.getElementById("expertAdvancementSigils")?.value) || 0;
+  const invCompass = parseInt(document.getElementById("expertCompass")?.value) || 0;
+  const invFieryHeart = parseInt(document.getElementById("expertFieryHeart")?.value) || 0;
+  const invSail = parseInt(document.getElementById("expertSailOfConquest")?.value) || 0;
+  let totalAffinity = (invCompass * 10) + (invFieryHeart * 100) + (invSail * 1000);
+
+  const currentStates = [];
+  EXPERT_ORDER.forEach(name => {
+    const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    if (!currentSel) return;
+    const curLvl = parseInt(currentSel.value) || 1;
+    if (curLvl === -1) return;
+    
+    const specSigilsInp = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+    const specSigilsAvail = parseInt(specSigilsInp?.value) || 0;
+
+    const expertData = EXPERTS_DATA[name];
+    if (expertData && expertData.levels) {
+      currentStates.push({
+        name, upgrades: expertData.levels,
+        startIndex: expertData.levels.findIndex(l => l.level === curLvl),
+        currentIndex: expertData.levels.findIndex(l => l.level === curLvl),
+        specificSigils: specSigilsAvail
+      });
+    }
+  });
+
+  let totalAffinityUsed = 0;
+  let totalSigilsUsed = 0;
+  while (true) {
+    let bestExpert = null;
+    let minCostValue = Infinity;
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        const affinityCost = next.affinity || 0;
+        const sigilCost = next.advancement || 0;
+        const commonCost = Math.max(0, sigilCost - state.specificSigils);
+        if (affinityCost <= totalAffinity && commonCost <= commonSigils) {
+          const costValue = affinityCost + commonCost * 100;
+          if (costValue < minCostValue) {
+            minCostValue = costValue; bestExpert = state;
+          }
+        }
+      }
+    });
+
+    if (!bestExpert) break;
+
+    const next = bestExpert.upgrades[bestExpert.currentIndex + 1];
+    const affinityCost = next.affinity || 0;
+    const sigilCost = next.advancement || 0;
+    
+    totalAffinity -= affinityCost;
+    totalAffinityUsed += affinityCost;
+    
+    if (bestExpert.specificSigils >= sigilCost) {
+      bestExpert.specificSigils -= sigilCost;
+    } else {
+      const remainder = sigilCost - bestExpert.specificSigils;
+      bestExpert.specificSigils = 0;
+      commonSigils -= remainder;
+      totalSigilsUsed += remainder;
+    }
+    bestExpert.currentIndex++;
+  }
+
+  const upgraded = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgraded.length > 0) {
+    return {
+      breakdown: upgraded.map(s => ({
+        name: s.name,
+        startLevel: s.upgrades[s.startIndex].level,
+        endLevel: s.upgrades[s.currentIndex].level
+      })),
+      totalAffinityUsed,
+      totalSigilsUsed
+    };
+  }
+  return null;
+};
+
+const originalCalculateExperts = window.calculateExperts || calculateExperts;
+window.calculateExperts = function() {
+  originalCalculateExperts();
+  
+  const optimized = window.calculateExpertsOptimizedPlan();
+  if (optimized) {
+    const resultEl = document.getElementById("expertsResult");
+    if (!resultEl) return;
+    let html = `<div class='card-panel' style='margin-top:15px; border-left: 3px solid var(--accent-color);'>
+      <strong style="color:var(--accent-color);">OPTIMIZED PLAN</strong><br>
+      Based on your available resources:<br>`;
+    optimized.breakdown.forEach(p => {
+      html += `<div style="margin-top: 10px;">
+        <strong>${escapeHtml(translateText(`expert.${p.name.toLowerCase()}`, {}, p.name))}</strong> (${p.startLevel} → ${p.endLevel})
+      </div>`;
+    });
+    html += `<div style="margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 10px;">
+      <strong>Total Cost:</strong> Affinity: ${formatNumber(optimized.totalAffinityUsed)} | General Sigils: ${formatNumber(optimized.totalSigilsUsed)}
+    </div></div>`;
+    
+    resultEl.innerHTML += html;
+  }
+};
+calculateExperts = window.calculateExperts;
+
+// We will also just suppress the SmartUpgrade buttons entirely by clearing the functions so they don't error
+window.onPetsSmartUpgradeClick = function(){};
+window.onExpertSmartUpgradeClick = function(){};
+window.onExpertSkillsSmartUpgradeClick = function(){};
+window.onGearSmartUpgradeClick = function(){};
+window.onCharmSmartUpgradeClick = function(){};
+
+
+// ==========================================
+// OVERRIDES FIX: OPTIMIZED PLAN USES REMAINING RESOURCES
+// ==========================================
+
+// --- PETS ---
+window.calculatePetsOptimizedPlan = function(manualTargets, remainingMaterials) {
+  // manualTargets is a map of petName -> targetLevel (or currentIndex if not upgraded)
+  const currentStates = [];
+  PET_ORDER.forEach(name => {
+    const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+    if (row) {
+      const petData = PET_UPGRADES.pets[name];
+      let upgrades = [];
+      if (petData.customUpgrades) upgrades = petData.customUpgrades;
+      else if (PET_UPGRADES.tiers[petData.tier]) upgrades = PET_UPGRADES.tiers[petData.tier].upgrades;
+      
+      const startIdxRaw = parseInt(row.querySelector(".pet-current-select").value);
+      if (startIdxRaw === -1) return;
+      
+      // Start the optimization from where the manual targets left off
+      const targetIdx = manualTargets[name] !== undefined ? manualTargets[name] : startIdxRaw;
+      
+      currentStates.push({ name, upgrades, startIndex: targetIdx, currentIndex: targetIdx });
+    }
+  });
+
+  const used = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+  const materials = { ...remainingMaterials }; // Copy to mutate
+
+  while (true) {
+    let bestPet = null;
+    let minCostValue = Infinity;
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        const costValue = (next.petFood || 0) + (next.tamingManual || 0) * 10 + (next.energizingPotion || 0) * 50 + (next.strengtheningSerum || 0) * 200;
+        if (costValue < minCostValue &&
+            materials.petFood >= (next.petFood || 0) && materials.tamingManual >= (next.tamingManual || 0) &&
+            materials.energizingPotion >= (next.energizingPotion || 0) && materials.strengtheningSerum >= (next.strengtheningSerum || 0)) {
+          minCostValue = costValue; bestPet = state;
+        }
+      }
+    });
+
+    if (bestPet) {
+      const next = bestPet.upgrades[bestPet.currentIndex + 1];
+      materials.petFood -= (next.petFood || 0); materials.tamingManual -= (next.tamingManual || 0);
+      materials.energizingPotion -= (next.energizingPotion || 0); materials.strengtheningSerum -= (next.strengtheningSerum || 0);
+      used.petFood += (next.petFood || 0); used.tamingManual += (next.tamingManual || 0);
+      used.energizingPotion += (next.energizingPotion || 0); used.strengtheningSerum += (next.strengtheningSerum || 0);
+      used.svsPoints += (next.svsPoints || 0);
+      bestPet.currentIndex++;
+    } else {
+      break;
+    }
+  }
+
+  const upgradedPets = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgradedPets.length > 0) {
+    const breakdown = upgradedPets.map(s => {
+      const subTotal = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+      for (let i = s.startIndex + 1; i <= s.currentIndex; i++) {
+        const u = s.upgrades[i];
+        subTotal.petFood += (u.petFood || 0); subTotal.tamingManual += (u.tamingManual || 0);
+        subTotal.energizingPotion += (u.energizingPotion || 0); subTotal.strengtheningSerum += (u.strengtheningSerum || 0);
+        subTotal.svsPoints += (u.svsPoints || 0);
+      }
+      return { name: s.name, startLevel: s.upgrades[s.startIndex].level, endLevel: s.upgrades[s.currentIndex].level, totals: subTotal };
+    });
+    return { grandTotal: used, petBreakdown: breakdown };
+  }
+  return null;
+};
+
+window.onPetsCalculateClick = function() {
+  try {
+    const targets = [];
+    const manualTargetsMap = {};
+    PET_ORDER.forEach(name => {
+      const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+      if (row) {
+        const startIdx = parseInt(row.querySelector(".pet-current-select").value);
+        const endIdx = parseInt(row.querySelector(".pet-target-select").value);
+        manualTargetsMap[name] = endIdx > startIdx ? endIdx : startIdx;
+        if (endIdx > startIdx) targets.push({ name, startIdx, endIdx });
+      }
+    });
+
+    const resEl = document.getElementById("petsResult");
+    if (!resEl) return;
+
+    const result = targets.length > 0 ? calculateMultiPetUpgrade(targets) : null;
+    
+    // Calculate remaining resources after manual upgrades
+    const petFoodOwned = parseInt(document.getElementById("petFoodInput")?.value) || 0;
+    const tamingManualOwned = parseInt(document.getElementById("tamingManualInput")?.value) || 0;
+    const energizingPotionOwned = parseInt(document.getElementById("energizingPotionInput")?.value) || 0;
+    const strengtheningSerumOwned = parseInt(document.getElementById("strengtheningSerumInput")?.value) || 0;
+
+    const remainingMaterials = {
+      petFood: Math.max(0, petFoodOwned - (result ? result.grandTotal.petFood : 0)),
+      tamingManual: Math.max(0, tamingManualOwned - (result ? result.grandTotal.tamingManual : 0)),
+      energizingPotion: Math.max(0, energizingPotionOwned - (result ? result.grandTotal.energizingPotion : 0)),
+      strengtheningSerum: Math.max(0, strengtheningSerumOwned - (result ? result.grandTotal.strengtheningSerum : 0))
+    };
+
+    const optimized = calculatePetsOptimizedPlan(manualTargetsMap, remainingMaterials);
+    renderPetsResult(result, optimized);
+  } catch(err) {
+    const resEl = document.getElementById("petsResult");
+    if (resEl) {
+      resEl.innerHTML = `<div style="color:red; padding:20px;">Error calculating pets: ${err.message}<br>${err.stack}</div>`;
+      resEl.style.display = "block";
+    }
+  }
+};
+onPetsCalculateClick = window.onPetsCalculateClick;
+
+// --- EXPERT LEVELS ---
+window.calculateExpertsOptimizedPlan = function(manualTargetsMap, remainingAffinity, remainingSigils) {
+  if (!EXPERTS_DATA) return null;
+  const EXPERT_ORDER = Object.keys(EXPERTS_DATA);
+  
+  // Specific sigils available
+  const currentStates = [];
+  EXPERT_ORDER.forEach(name => {
+    const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    if (!currentSel) return;
+    const startIdxRaw = parseInt(currentSel.value) || 1;
+    if (startIdxRaw === -1) return;
+    
+    const specSigilsInp = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+    const specSigilsAvail = parseInt(specSigilsInp?.value) || 0;
+
+    const expertData = EXPERTS_DATA[name];
+    if (expertData && expertData.levels) {
+      const targetIdx = manualTargetsMap[name] !== undefined ? manualTargetsMap[name] : startIdxRaw;
+      currentStates.push({
+        name, upgrades: expertData.levels,
+        startIndex: expertData.levels.findIndex(l => l.level === targetIdx),
+        currentIndex: expertData.levels.findIndex(l => l.level === targetIdx),
+        specificSigils: specSigilsAvail
+      });
+    }
+  });
+
+  let totalAffinityUsed = 0;
+  let totalSigilsUsed = 0;
+  let commonSigils = remainingSigils;
+  let totalAffinity = remainingAffinity;
+
+  while (true) {
+    let bestExpert = null;
+    let minCostValue = Infinity;
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        const affinityCost = next.affinity || 0;
+        const sigilCost = next.advancement || 0;
+        const commonCost = Math.max(0, sigilCost - state.specificSigils);
+        if (affinityCost <= totalAffinity && commonCost <= commonSigils) {
+          const costValue = affinityCost + commonCost * 100;
+          if (costValue < minCostValue) {
+            minCostValue = costValue; bestExpert = state;
+          }
+        }
+      }
+    });
+
+    if (!bestExpert) break;
+
+    const next = bestExpert.upgrades[bestExpert.currentIndex + 1];
+    const affinityCost = next.affinity || 0;
+    const sigilCost = next.advancement || 0;
+    
+    totalAffinity -= affinityCost;
+    totalAffinityUsed += affinityCost;
+    
+    if (bestExpert.specificSigils >= sigilCost) {
+      bestExpert.specificSigils -= sigilCost;
+    } else {
+      const remainder = sigilCost - bestExpert.specificSigils;
+      bestExpert.specificSigils = 0;
+      commonSigils -= remainder;
+      totalSigilsUsed += remainder;
+    }
+    bestExpert.currentIndex++;
+  }
+
+  const upgraded = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgraded.length > 0) {
+    return {
+      breakdown: upgraded.map(s => ({
+        name: s.name,
+        startLevel: s.upgrades[s.startIndex].level,
+        endLevel: s.upgrades[s.currentIndex].level
+      })),
+      totalAffinityUsed,
+      totalSigilsUsed
+    };
+  }
+  return null;
+};
+
+window.calculateExperts = function() {
+  if (!EXPERTS_DATA) return;
+
+  let totalAffinityNeeded = 0;
+  let totalGeneralSigilsNeeded = 0; // After using specific sigils
+  let resultsHTML = "";
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
+  const manualTargetsMap = {};
+
+  EXPERT_ORDER.forEach(name => {
+    const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    const targetSel = document.querySelector(`.expert-target-select[data-expert="${name}"]`);
+    const specSigilsInp = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+    
+    if (!currentSel || !targetSel) return;
+
+    const curLvl = parseInt(currentSel.value) || 1;
+    const tgtLvl = parseInt(targetSel.value) || 1;
+    manualTargetsMap[name] = tgtLvl > curLvl ? tgtLvl : curLvl;
+    
+    if (curLvl === -1) return;
+    let specSigilsAvail = parseInt(specSigilsInp?.value) || 0;
+
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData || !expertData.levels) return;
+
+    let affinity = 0;
+    let sigils = 0;
+    if (curLvl < tgtLvl) {
+      for (let l = curLvl + 1; l <= tgtLvl; l++) {
+        const row = expertData.levels.find(r => r.level === l);
+        if (row) {
+          affinity += (row.affinity || 0);
+          sigils += (row.advancement || 0);
+        }
+      }
+    }
+    
+    let remainingSigilsForExpert = sigils;
+    if (specSigilsAvail >= remainingSigilsForExpert) {
+      remainingSigilsForExpert = 0;
+    } else {
+      remainingSigilsForExpert -= specSigilsAvail;
+    }
+
+    totalAffinityNeeded += affinity;
+    totalGeneralSigilsNeeded += remainingSigilsForExpert;
+    if (affinity > 0 || sigils > 0 ) {
+      const localizedName = translateText(`expert.${name.toLowerCase()}`, {}, name);
+      resultsHTML += `
+        <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
+          <strong>${escapeHtml(localizedName)}</strong><br>
+          ${affinity > 0 ? `${translateText("labels.affinity", {}, "Affinity Needed")}: ${affinity.toLocaleString()} <br>` : ""}
+          ${sigils > 0 ? `${translateText("labels.advancementSigils", {}, "Advancement Sigils Needed")}: ${sigils.toLocaleString()} (After Specific Sigils: ${remainingSigilsForExpert.toLocaleString()})<br>` : ""}
+        </div>
+      `;
+    }
+  });
+
+  const invGenSigils = parseInt(document.getElementById("expertAdvancementSigils")?.value) || 0;
+  const invCompass = parseInt(document.getElementById("expertCompass")?.value) || 0;
+  const invFieryHeart = parseInt(document.getElementById("expertFieryHeart")?.value) || 0;
+  const invSail = parseInt(document.getElementById("expertSailOfConquest")?.value) || 0;
+  
+  const totalInvAffinity = (invCompass * 10) + (invFieryHeart * 100) + (invSail * 1000);
+
+  const remainingAffinity = Math.max(0, totalInvAffinity - totalAffinityNeeded);
+  const remainingGenSigils = Math.max(0, invGenSigils - totalGeneralSigilsNeeded);
+
+  let grandTotalHTML = `
+    <div class="card-panel" style="margin-top: 15px;">
+      <strong>${translateText("results.grandTotal", {}, "TARGET UPGRADES TOTAL")}</strong><br>
+      ${translateText("labels.totalAffinity", {}, "Total Affinity Required")}: ${totalAffinityNeeded.toLocaleString()}<br>
+      ${translateText("labels.totalSigils", {}, "Total General Sigils Required")}: ${totalGeneralSigilsNeeded.toLocaleString()}<br>
+      <br>
+      <strong>${translateText("results.afterInventory", {}, "Remaining After Upgrades")}</strong><br>
+      ${translateText("labels.remainingAffinity", {}, "Affinity Left")}: ${remainingAffinity.toLocaleString()}<br>
+      ${translateText("labels.remainingSigils", {}, "General Sigils Left")}: ${remainingGenSigils.toLocaleString()}<br>
+    </div>
+  `;
+
+  if (totalAffinityNeeded === 0 && totalGeneralSigilsNeeded === 0 ) {
+    resultsHTML = `<div class="card-panel" style="margin-top: 15px;">${translateText("results.noUpgrades", {}, "No upgrades selected or already at target level.")}</div>`;
+  } else {
+    resultsHTML += grandTotalHTML;
+  }
+
+  // Calculate Optimized Plan
+  const optimized = window.calculateExpertsOptimizedPlan(manualTargetsMap, remainingAffinity, remainingGenSigils);
+  if (optimized) {
+    let optHtml = `<div class='card-panel' style='margin-top:15px; border-left: 3px solid var(--accent-color);'>
+      <strong style="color:var(--accent-color);">OPTIMIZED PLAN</strong><br>
+      Based on your available resources:<br>`;
+    optimized.breakdown.forEach(p => {
+      optHtml += `<div style="margin-top: 10px;">
+        <strong>${escapeHtml(translateText(`expert.${p.name.toLowerCase()}`, {}, p.name))}</strong> (${p.startLevel} → ${p.endLevel})
+      </div>`;
+    });
+    optHtml += `<div style="margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 10px;">
+      <strong>Total Cost:</strong> Affinity: ${formatNumber(optimized.totalAffinityUsed)} | General Sigils: ${formatNumber(optimized.totalSigilsUsed)}
+    </div></div>`;
+    resultsHTML += optHtml;
+  }
+
+  const resultEl = document.getElementById("expertsResult");
+  if (resultEl) {
+    resultEl.dataset.hasResults = "true";
+    resultEl.innerHTML = resultsHTML;
+  }
+};
+calculateExperts = window.calculateExperts;
+
+// --- EXPERT SKILLS ---
+window.calculateExpertSkillsOptimizedPlan = function(manualTargetsMap, remainingExp, remainingBooks) {
+  if (!EXPERTS_DATA) return null;
+  const EXPERT_ORDER = Object.keys(EXPERTS_DATA);
+  const account = getActiveAccount();
+  const expertsState = (account && account.calculators && account.calculators.experts) ? account.calculators.experts : { levels: {} };
+
+  const currentStates = [];
+  EXPERT_ORDER.forEach(name => {
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData) return;
+    
+    // Check affinity prerequisite level
+    const curAffinityLevel = expertsState.levels[name]?.current ? parseInt(expertsState.levels[name].current) : 1;
+
+    [1, 2, 3, 4].forEach(s => {
+      const sCurSel = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+      if (sCurSel) {
+        const startIdxRaw = parseInt(sCurSel.value) || 1;
+        if (startIdxRaw === -1) return;
+        const targetIdx = manualTargetsMap[`${name}_${s}`] !== undefined ? manualTargetsMap[`${name}_${s}`] : startIdxRaw;
+        
+        const sArr = expertData.skills[s.toString()];
+        if (sArr) {
+          currentStates.push({
+            name, skill: s, upgrades: sArr, affinityLevel: curAffinityLevel,
+            startIndex: targetIdx, currentIndex: targetIdx
+          });
+        }
+      }
+    });
+  });
+
+  let totalExpUsed = 0;
+  let totalBooksUsed = 0;
+  let expLeft = remainingExp;
+  let booksLeft = remainingBooks;
+
+  while (true) {
+    let bestSkill = null;
+    let minCostValue = Infinity;
+    currentStates.forEach(state => {
+      // Find the row for the next level
+      const nextLevel = state.currentIndex + 1;
+      const nextRow = state.upgrades.find(r => r.level === nextLevel);
+      if (nextRow) {
+        // Check prerequisite
+        let prereqMet = true;
+        const reqRel = nextRow.relationship;
+        if (reqRel && reqRel !== '-' && reqRel !== '') {
+            const reqLevel = getLevelForRelationship(state.name, reqRel);
+            if (state.affinityLevel < reqLevel) prereqMet = false;
+        }
+
+        if (prereqMet) {
+          const expCost = nextRow.exp || 0;
+          const bookCost = nextRow.book || 0;
+          if (expCost <= expLeft && bookCost <= booksLeft) {
+            const costValue = expCost + (bookCost * 3600); // weight books
+            if (costValue < minCostValue) {
+              minCostValue = costValue;
+              bestSkill = state;
+            }
+          }
+        }
+      }
+    });
+
+    if (!bestSkill) break;
+
+    const nextLevel = bestSkill.currentIndex + 1;
+    const nextRow = bestSkill.upgrades.find(r => r.level === nextLevel);
+    
+    expLeft -= (nextRow.exp || 0);
+    totalExpUsed += (nextRow.exp || 0);
+    booksLeft -= (nextRow.book || 0);
+    totalBooksUsed += (nextRow.book || 0);
+    
+    bestSkill.currentIndex++;
+  }
+
+  const upgraded = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgraded.length > 0) {
+    return {
+      breakdown: upgraded.map(s => ({
+        name: s.name, skill: s.skill,
+        startLevel: s.startIndex,
+        endLevel: s.currentIndex
+      })),
+      totalExpUsed,
+      totalBooksUsed
+    };
+  }
+  return null;
+};
+
+window.calculateExpertSkills = function() {
+  if (!EXPERTS_DATA) return;
+
+  let totalSkillExpNeeded = 0;
+  let totalSkillBooksNeeded = 0;
+  let resultsHTML = "";
+
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
+  const manualTargetsMap = {};
+
+  // Read affinity state for prerequisites
+  const account = getActiveAccount();
+  const expertsState = (account && account.calculators && account.calculators.experts) ? account.calculators.experts : { levels: {} };
+
+  EXPERT_ORDER.forEach(name => {
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData) return;
+
+    let skillExp = 0;
+    let skillBooks = 0;
+    const curAffinityLevel = expertsState.levels[name]?.current ? parseInt(expertsState.levels[name].current) : 1;
+    let expertWarnings = [];
+
+    [1, 2, 3, 4].forEach(s => {
+      const sCurSel = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+      const sTgtSel = document.querySelector(`.skill-target-select[data-expert="${name}"][data-skill="${s}"]`);
+      
+      if (sCurSel && sTgtSel) {
+        const sc = parseInt(sCurSel.value) || 1;
+        const st = parseInt(sTgtSel.value) || 1;
+        manualTargetsMap[`${name}_${s}`] = st > sc ? st : sc;
+        
+        if (sc === -1) return;
+        
+        const opt = sTgtSel.options[sTgtSel.selectedIndex];
+        const reqRel = opt?.dataset?.req;
+        if (reqRel && reqRel !== '-' && reqRel !== '') {
+            const reqLevel = getLevelForRelationship(name, reqRel);
+            if (curAffinityLevel < reqLevel) {
+                expertWarnings.push(`Skill ${s} Target Lv.${st} requires Affinity ${reqRel} (Lv.${reqLevel}). Current is Lv.${curAffinityLevel}.`);
+            }
+        }
+
+        if (sc < st) {
+          const sArr = expertData.skills[s.toString()];
+          if (sArr) {
+            for (let sl = sc + 1; sl <= st; sl++) {
+              const row = sArr.find(r => r.level === sl);
+              if (row) {
+                skillExp += (row.exp || 0);
+                skillBooks += (row.book || 0);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    totalSkillExpNeeded += skillExp;
+    totalSkillBooksNeeded += skillBooks;
+
+    if (skillExp > 0 || skillBooks > 0 || expertWarnings.length > 0) {
+      const localizedName = translateText(`expert.${name.toLowerCase()}`, {}, name);
+      resultsHTML += `
+        <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,165,0,0.5);">
+          <strong>${escapeHtml(localizedName)}</strong><br>
+          ${expertWarnings.map(w => `<div style="color: orange; font-size: 0.9em;">&#9888; ${w}</div>`).join("")}
+          ${skillExp > 0 ? `${translateText("labels.skillExp", {}, "Learning Speedups Needed")}: ${formatDuration(skillExp)} <br>` : ""}
+          ${skillBooks > 0 ? `${translateText("labels.skillBooks", {}, "Skill Books Needed")}: ${skillBooks.toLocaleString()} <br>` : ""}
+        </div>
+      `;
+    }
+  });
+
+  const invSkillExpSeconds = (parseInt(document.getElementById("expertSkillExp")?.value) || 0) * 60;
+  const invSkillBooks = parseInt(document.getElementById("expertSkillBooks")?.value) || 0;
+
+  const remainingSkillExpSeconds = Math.max(0, invSkillExpSeconds - totalSkillExpNeeded);
+  const remainingSkillBooks = Math.max(0, invSkillBooks - totalSkillBooksNeeded);
+
+  let grandTotalHTML = `
+    <div class="card-panel" style="margin-top: 15px;">
+      <strong>${translateText("results.grandTotal", {}, "TARGET UPGRADES TOTAL")}</strong><br>
+      ${translateText("labels.skillExp", {}, "Total Learning Speedups Required")}: ${formatDuration(totalSkillExpNeeded)}<br>
+      ${translateText("labels.skillBooks", {}, "Total Skill Books Required")}: ${totalSkillBooksNeeded.toLocaleString()}<br><br>
+      
+      <strong>${translateText("results.afterInventory", {}, "Remaining After Upgrades")}</strong><br>
+      ${translateText("labels.remainingSkillExp", {}, "Learning Speedups Left")}: ${formatDuration(remainingSkillExpSeconds)}<br>
+      ${translateText("labels.remainingSkillBooks", {}, "Skill Books Left")}: ${remainingSkillBooks.toLocaleString()}
+    </div>
+  `;
+
+  if (totalSkillExpNeeded === 0 && totalSkillBooksNeeded === 0) {
+    resultsHTML += `<div class="card-panel" style="margin-top: 15px;">${translateText("results.noUpgrades", {}, "No target upgrades selected.")}</div>`;
+  } else {
+    resultsHTML += grandTotalHTML;
+  }
+
+  const optimized = window.calculateExpertSkillsOptimizedPlan(manualTargetsMap, remainingSkillExpSeconds, remainingSkillBooks);
+  if (optimized) {
+    let optHtml = `<div class='card-panel' style='margin-top:15px; border-left: 3px solid var(--accent-color);'>
+      <strong style="color:var(--accent-color);">OPTIMIZED PLAN</strong><br>
+      Based on your available resources:<br>`;
+    optimized.breakdown.forEach(p => {
+      optHtml += `<div style="margin-top: 10px;">
+        <strong>${escapeHtml(translateText(`expert.${p.name.toLowerCase()}`, {}, p.name))}</strong> Skill ${p.skill} (${p.startLevel} → ${p.endLevel})
+      </div>`;
+    });
+    optHtml += `<div style="margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 10px;">
+      <strong>Total Cost:</strong> Learning Speedups: ${formatDuration(optimized.totalExpUsed)} | Skill Books: ${formatNumber(optimized.totalBooksUsed)}
+    </div></div>`;
+    resultsHTML += optHtml;
+  }
+
+  const resultEl = document.getElementById("expertSkillsResult");
+  if (resultEl) {
+    resultEl.dataset.hasResults = "true";
+    resultEl.innerHTML = resultsHTML;
+  }
+};
+calculateExpertSkills = window.calculateExpertSkills;
+
+
+// ==========================================
+// OVERRIDES REVERT: OPTIMIZED PLAN USES CURRENT LEVELS AND TOTAL RESOURCES
+// ==========================================
+
+// --- PETS ---
+window.calculatePetsOptimizedPlan = function() {
+  const materials = {
+    petFood: parseInt(document.getElementById("petFoodInput")?.value) || 0,
+    tamingManual: parseInt(document.getElementById("tamingManualInput")?.value) || 0,
+    energizingPotion: parseInt(document.getElementById("energizingPotionInput")?.value) || 0,
+    strengtheningSerum: parseInt(document.getElementById("strengtheningSerumInput")?.value) || 0
+  };
+
+  const currentStates = [];
+  PET_ORDER.forEach(name => {
+    const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+    if (row) {
+      const petData = PET_UPGRADES.pets[name];
+      let upgrades = [];
+      if (petData.customUpgrades) upgrades = petData.customUpgrades;
+      else if (PET_UPGRADES.tiers[petData.tier]) upgrades = PET_UPGRADES.tiers[petData.tier].upgrades;
+      
+      const startIdx = parseInt(row.querySelector(".pet-current-select").value);
+      if (startIdx === -1) return;
+      
+      currentStates.push({ name, upgrades, startIndex: startIdx, currentIndex: startIdx });
+    }
+  });
+
+  const used = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+
+  while (true) {
+    let bestPet = null;
+    let minCostValue = Infinity;
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        const costValue = (next.petFood || 0) + (next.tamingManual || 0) * 10 + (next.energizingPotion || 0) * 50 + (next.strengtheningSerum || 0) * 200;
+        if (costValue < minCostValue &&
+            materials.petFood >= (next.petFood || 0) && materials.tamingManual >= (next.tamingManual || 0) &&
+            materials.energizingPotion >= (next.energizingPotion || 0) && materials.strengtheningSerum >= (next.strengtheningSerum || 0)) {
+          minCostValue = costValue; bestPet = state;
+        }
+      }
+    });
+
+    if (bestPet) {
+      const next = bestPet.upgrades[bestPet.currentIndex + 1];
+      materials.petFood -= (next.petFood || 0); materials.tamingManual -= (next.tamingManual || 0);
+      materials.energizingPotion -= (next.energizingPotion || 0); materials.strengtheningSerum -= (next.strengtheningSerum || 0);
+      used.petFood += (next.petFood || 0); used.tamingManual += (next.tamingManual || 0);
+      used.energizingPotion += (next.energizingPotion || 0); used.strengtheningSerum += (next.strengtheningSerum || 0);
+      used.svsPoints += (next.svsPoints || 0);
+      bestPet.currentIndex++;
+    } else {
+      break;
+    }
+  }
+
+  const upgradedPets = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgradedPets.length > 0) {
+    const breakdown = upgradedPets.map(s => {
+      const subTotal = { petFood: 0, tamingManual: 0, energizingPotion: 0, strengtheningSerum: 0, svsPoints: 0 };
+      for (let i = s.startIndex + 1; i <= s.currentIndex; i++) {
+        const u = s.upgrades[i];
+        subTotal.petFood += (u.petFood || 0); subTotal.tamingManual += (u.tamingManual || 0);
+        subTotal.energizingPotion += (u.energizingPotion || 0); subTotal.strengtheningSerum += (u.strengtheningSerum || 0);
+        subTotal.svsPoints += (u.svsPoints || 0);
+      }
+      return { name: s.name, startLevel: s.upgrades[s.startIndex].level, endLevel: s.upgrades[s.currentIndex].level, totals: subTotal };
+    });
+    return { grandTotal: used, petBreakdown: breakdown };
+  }
+  return null;
+};
+
+window.onPetsCalculateClick = function() {
+  try {
+    const targets = [];
+    PET_ORDER.forEach(name => {
+      const row = document.querySelector(`.pet-row[data-pet="${name}"]`);
+      if (row) {
+        const startIdx = parseInt(row.querySelector(".pet-current-select").value);
+        const endIdx = parseInt(row.querySelector(".pet-target-select").value);
+        if (endIdx > startIdx) targets.push({ name, startIdx, endIdx });
+      }
+    });
+
+    const resEl = document.getElementById("petsResult");
+    if (!resEl) return;
+
+    const result = targets.length > 0 ? calculateMultiPetUpgrade(targets) : null;
+    const optimized = calculatePetsOptimizedPlan(); // Using full inventory and current levels
+    renderPetsResult(result, optimized);
+  } catch(err) {
+    const resEl = document.getElementById("petsResult");
+    if (resEl) {
+      resEl.innerHTML = `<div style="color:red; padding:20px;">Error calculating pets: ${err.message}<br>${err.stack}</div>`;
+      resEl.style.display = "block";
+    }
+  }
+};
+onPetsCalculateClick = window.onPetsCalculateClick;
+
+// --- EXPERT LEVELS ---
+window.calculateExpertsOptimizedPlan = function() {
+  if (!EXPERTS_DATA) return null;
+  const EXPERT_ORDER = Object.keys(EXPERTS_DATA);
+  let commonSigils = parseInt(document.getElementById("expertAdvancementSigils")?.value) || 0;
+  const invCompass = parseInt(document.getElementById("expertCompass")?.value) || 0;
+  const invFieryHeart = parseInt(document.getElementById("expertFieryHeart")?.value) || 0;
+  const invSail = parseInt(document.getElementById("expertSailOfConquest")?.value) || 0;
+  let totalAffinity = (invCompass * 10) + (invFieryHeart * 100) + (invSail * 1000);
+  
+  const currentStates = [];
+  EXPERT_ORDER.forEach(name => {
+    const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    if (!currentSel) return;
+    const startIdxRaw = parseInt(currentSel.value) || 1;
+    if (startIdxRaw === -1) return;
+    
+    const specSigilsInp = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+    const specSigilsAvail = parseInt(specSigilsInp?.value) || 0;
+
+    const expertData = EXPERTS_DATA[name];
+    if (expertData && expertData.levels) {
+      currentStates.push({
+        name, upgrades: expertData.levels,
+        startIndex: expertData.levels.findIndex(l => l.level === startIdxRaw),
+        currentIndex: expertData.levels.findIndex(l => l.level === startIdxRaw),
+        specificSigils: specSigilsAvail
+      });
+    }
+  });
+
+  let totalAffinityUsed = 0;
+  let totalSigilsUsed = 0;
+
+  while (true) {
+    let bestExpert = null;
+    let minCostValue = Infinity;
+    currentStates.forEach(state => {
+      if (state.currentIndex + 1 < state.upgrades.length) {
+        const next = state.upgrades[state.currentIndex + 1];
+        const affinityCost = next.affinity || 0;
+        const sigilCost = next.advancement || 0;
+        const commonCost = Math.max(0, sigilCost - state.specificSigils);
+        if (affinityCost <= totalAffinity && commonCost <= commonSigils) {
+          const costValue = affinityCost + commonCost * 100;
+          if (costValue < minCostValue) {
+            minCostValue = costValue; bestExpert = state;
+          }
+        }
+      }
+    });
+
+    if (!bestExpert) break;
+
+    const next = bestExpert.upgrades[bestExpert.currentIndex + 1];
+    const affinityCost = next.affinity || 0;
+    const sigilCost = next.advancement || 0;
+    
+    totalAffinity -= affinityCost;
+    totalAffinityUsed += affinityCost;
+    
+    if (bestExpert.specificSigils >= sigilCost) {
+      bestExpert.specificSigils -= sigilCost;
+    } else {
+      const remainder = sigilCost - bestExpert.specificSigils;
+      bestExpert.specificSigils = 0;
+      commonSigils -= remainder;
+      totalSigilsUsed += remainder;
+    }
+    bestExpert.currentIndex++;
+  }
+
+  const upgraded = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgraded.length > 0) {
+    return {
+      breakdown: upgraded.map(s => ({
+        name: s.name,
+        startLevel: s.upgrades[s.startIndex].level,
+        endLevel: s.upgrades[s.currentIndex].level
+      })),
+      totalAffinityUsed,
+      totalSigilsUsed
+    };
+  }
+  return null;
+};
+
+window.calculateExperts = function() {
+  if (!EXPERTS_DATA) return;
+
+  let totalAffinityNeeded = 0;
+  let totalGeneralSigilsNeeded = 0; // After using specific sigils
+  let resultsHTML = "";
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
+
+  EXPERT_ORDER.forEach(name => {
+    const currentSel = document.querySelector(`.expert-current-select[data-expert="${name}"]`);
+    const targetSel = document.querySelector(`.expert-target-select[data-expert="${name}"]`);
+    const specSigilsInp = document.querySelector(`.expert-specific-sigils[data-expert="${name}"]`);
+    
+    if (!currentSel || !targetSel) return;
+
+    const curLvl = parseInt(currentSel.value) || 1;
+    const tgtLvl = parseInt(targetSel.value) || 1;
+    
+    if (curLvl === -1) return;
+    let specSigilsAvail = parseInt(specSigilsInp?.value) || 0;
+
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData || !expertData.levels) return;
+
+    let affinity = 0;
+    let sigils = 0;
+    if (curLvl < tgtLvl) {
+      for (let l = curLvl + 1; l <= tgtLvl; l++) {
+        const row = expertData.levels.find(r => r.level === l);
+        if (row) {
+          affinity += (row.affinity || 0);
+          sigils += (row.advancement || 0);
+        }
+      }
+    }
+    
+    let remainingSigilsForExpert = sigils;
+    if (specSigilsAvail >= remainingSigilsForExpert) {
+      remainingSigilsForExpert = 0;
+    } else {
+      remainingSigilsForExpert -= specSigilsAvail;
+    }
+
+    totalAffinityNeeded += affinity;
+    totalGeneralSigilsNeeded += remainingSigilsForExpert;
+    if (affinity > 0 || sigils > 0 ) {
+      const localizedName = translateText(`expert.${name.toLowerCase()}`, {}, name);
+      resultsHTML += `
+        <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,255,255,0.35);">
+          <strong>${escapeHtml(localizedName)}</strong><br>
+          ${affinity > 0 ? `${translateText("labels.affinity", {}, "Affinity Needed")}: ${affinity.toLocaleString()} <br>` : ""}
+          ${sigils > 0 ? `${translateText("labels.advancementSigils", {}, "Advancement Sigils Needed")}: ${sigils.toLocaleString()} (After Specific Sigils: ${remainingSigilsForExpert.toLocaleString()})<br>` : ""}
+        </div>
+      `;
+    }
+  });
+
+  const invGenSigils = parseInt(document.getElementById("expertAdvancementSigils")?.value) || 0;
+  const invCompass = parseInt(document.getElementById("expertCompass")?.value) || 0;
+  const invFieryHeart = parseInt(document.getElementById("expertFieryHeart")?.value) || 0;
+  const invSail = parseInt(document.getElementById("expertSailOfConquest")?.value) || 0;
+  
+  const totalInvAffinity = (invCompass * 10) + (invFieryHeart * 100) + (invSail * 1000);
+
+  const remainingAffinity = Math.max(0, totalInvAffinity - totalAffinityNeeded);
+  const remainingGenSigils = Math.max(0, invGenSigils - totalGeneralSigilsNeeded);
+
+  let grandTotalHTML = `
+    <div class="card-panel" style="margin-top: 15px;">
+      <strong>${translateText("results.grandTotal", {}, "TARGET UPGRADES TOTAL")}</strong><br>
+      ${translateText("labels.totalAffinity", {}, "Total Affinity Required")}: ${totalAffinityNeeded.toLocaleString()}<br>
+      ${translateText("labels.totalSigils", {}, "Total General Sigils Required")}: ${totalGeneralSigilsNeeded.toLocaleString()}<br>
+      <br>
+      <strong>${translateText("results.afterInventory", {}, "Remaining After Upgrades")}</strong><br>
+      ${translateText("labels.remainingAffinity", {}, "Affinity Left")}: ${remainingAffinity.toLocaleString()}<br>
+      ${translateText("labels.remainingSigils", {}, "General Sigils Left")}: ${remainingGenSigils.toLocaleString()}<br>
+    </div>
+  `;
+
+  if (totalAffinityNeeded === 0 && totalGeneralSigilsNeeded === 0 ) {
+    resultsHTML = `<div class="card-panel" style="margin-top: 15px;">${translateText("results.noUpgrades", {}, "No upgrades selected or already at target level.")}</div>`;
+  } else {
+    resultsHTML += grandTotalHTML;
+  }
+
+  // Calculate Optimized Plan
+  const optimized = window.calculateExpertsOptimizedPlan();
+  if (optimized) {
+    let optHtml = `<div class='card-panel' style='margin-top:15px; border-left: 3px solid var(--accent-color);'>
+      <strong style="color:var(--accent-color);">OPTIMIZED PLAN</strong><br>
+      Based on your available resources:<br>`;
+    optimized.breakdown.forEach(p => {
+      optHtml += `<div style="margin-top: 10px;">
+        <strong>${escapeHtml(translateText(`expert.${p.name.toLowerCase()}`, {}, p.name))}</strong> (${p.startLevel} → ${p.endLevel})
+      </div>`;
+    });
+    optHtml += `<div style="margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 10px;">
+      <strong>Total Cost:</strong> Affinity: ${formatNumber(optimized.totalAffinityUsed)} | General Sigils: ${formatNumber(optimized.totalSigilsUsed)}
+    </div></div>`;
+    resultsHTML += optHtml;
+  }
+
+  const resultEl = document.getElementById("expertsResult");
+  if (resultEl) {
+    resultEl.dataset.hasResults = "true";
+    resultEl.innerHTML = resultsHTML;
+  }
+};
+calculateExperts = window.calculateExperts;
+
+// --- EXPERT SKILLS ---
+window.calculateExpertSkillsOptimizedPlan = function() {
+  if (!EXPERTS_DATA) return null;
+  const EXPERT_ORDER = Object.keys(EXPERTS_DATA);
+  const account = getActiveAccount();
+  const expertsState = (account && account.calculators && account.calculators.experts) ? account.calculators.experts : { levels: {} };
+
+  const currentStates = [];
+  EXPERT_ORDER.forEach(name => {
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData) return;
+    
+    // Check affinity prerequisite level
+    const curAffinityLevel = expertsState.levels[name]?.current ? parseInt(expertsState.levels[name].current) : 1;
+
+    [1, 2, 3, 4].forEach(s => {
+      const sCurSel = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+      if (sCurSel) {
+        const startIdxRaw = parseInt(sCurSel.value) || 1;
+        if (startIdxRaw === -1) return;
+        
+        const sArr = expertData.skills[s.toString()];
+        if (sArr) {
+          currentStates.push({
+            name, skill: s, upgrades: sArr, affinityLevel: curAffinityLevel,
+            startIndex: startIdxRaw, currentIndex: startIdxRaw
+          });
+        }
+      }
+    });
+  });
+
+  let totalExpUsed = 0;
+  let totalBooksUsed = 0;
+  let expLeft = (parseInt(document.getElementById("expertSkillExp")?.value) || 0) * 60;
+  let booksLeft = parseInt(document.getElementById("expertSkillBooks")?.value) || 0;
+
+  while (true) {
+    let bestSkill = null;
+    let minCostValue = Infinity;
+    currentStates.forEach(state => {
+      // Find the row for the next level
+      const nextLevel = state.currentIndex + 1;
+      const nextRow = state.upgrades.find(r => r.level === nextLevel);
+      if (nextRow) {
+        // Check prerequisite
+        let prereqMet = true;
+        const reqRel = nextRow.relationship;
+        if (reqRel && reqRel !== '-' && reqRel !== '') {
+            const reqLevel = getLevelForRelationship(state.name, reqRel);
+            if (state.affinityLevel < reqLevel) prereqMet = false;
+        }
+
+        if (prereqMet) {
+          const expCost = nextRow.exp || 0;
+          const bookCost = nextRow.book || 0;
+          if (expCost <= expLeft && bookCost <= booksLeft) {
+            const costValue = expCost + (bookCost * 3600); // weight books
+            if (costValue < minCostValue) {
+              minCostValue = costValue;
+              bestSkill = state;
+            }
+          }
+        }
+      }
+    });
+
+    if (!bestSkill) break;
+
+    const nextLevel = bestSkill.currentIndex + 1;
+    const nextRow = bestSkill.upgrades.find(r => r.level === nextLevel);
+    
+    expLeft -= (nextRow.exp || 0);
+    totalExpUsed += (nextRow.exp || 0);
+    booksLeft -= (nextRow.book || 0);
+    totalBooksUsed += (nextRow.book || 0);
+    
+    bestSkill.currentIndex++;
+  }
+
+  const upgraded = currentStates.filter(s => s.currentIndex > s.startIndex);
+  if (upgraded.length > 0) {
+    return {
+      breakdown: upgraded.map(s => ({
+        name: s.name, skill: s.skill,
+        startLevel: s.startIndex,
+        endLevel: s.currentIndex
+      })),
+      totalExpUsed,
+      totalBooksUsed
+    };
+  }
+  return null;
+};
+
+window.calculateExpertSkills = function() {
+  if (!EXPERTS_DATA) return;
+
+  let totalSkillExpNeeded = 0;
+  let totalSkillBooksNeeded = 0;
+  let resultsHTML = "";
+
+  const EXPERT_ORDER = EXPERTS_DATA ? Object.keys(EXPERTS_DATA) : [];
+
+  // Read affinity state for prerequisites
+  const account = getActiveAccount();
+  const expertsState = (account && account.calculators && account.calculators.experts) ? account.calculators.experts : { levels: {} };
+
+  EXPERT_ORDER.forEach(name => {
+    const expertData = EXPERTS_DATA[name];
+    if (!expertData) return;
+
+    let skillExp = 0;
+    let skillBooks = 0;
+    const curAffinityLevel = expertsState.levels[name]?.current ? parseInt(expertsState.levels[name].current) : 1;
+    let expertWarnings = [];
+
+    [1, 2, 3, 4].forEach(s => {
+      const sCurSel = document.querySelector(`.skill-current-select[data-expert="${name}"][data-skill="${s}"]`);
+      const sTgtSel = document.querySelector(`.skill-target-select[data-expert="${name}"][data-skill="${s}"]`);
+      
+      if (sCurSel && sTgtSel) {
+        const sc = parseInt(sCurSel.value) || 1;
+        const st = parseInt(sTgtSel.value) || 1;
+        
+        if (sc === -1) return;
+        
+        const opt = sTgtSel.options[sTgtSel.selectedIndex];
+        const reqRel = opt?.dataset?.req;
+        if (reqRel && reqRel !== '-' && reqRel !== '') {
+            const reqLevel = getLevelForRelationship(name, reqRel);
+            if (curAffinityLevel < reqLevel) {
+                expertWarnings.push(`Skill ${s} Target Lv.${st} requires Affinity ${reqRel} (Lv.${reqLevel}). Current is Lv.${curAffinityLevel}.`);
+            }
+        }
+
+        if (sc < st) {
+          const sArr = expertData.skills[s.toString()];
+          if (sArr) {
+            for (let sl = sc + 1; sl <= st; sl++) {
+              const row = sArr.find(r => r.level === sl);
+              if (row) {
+                skillExp += (row.exp || 0);
+                skillBooks += (row.book || 0);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    totalSkillExpNeeded += skillExp;
+    totalSkillBooksNeeded += skillBooks;
+
+    if (skillExp > 0 || skillBooks > 0 || expertWarnings.length > 0) {
+      const localizedName = translateText(`expert.${name.toLowerCase()}`, {}, name);
+      resultsHTML += `
+        <div class="card-panel" style="margin-top: 15px; border-left: 3px solid rgba(255,165,0,0.5);">
+          <strong>${escapeHtml(localizedName)}</strong><br>
+          ${expertWarnings.map(w => `<div style="color: orange; font-size: 0.9em;">&#9888; ${w}</div>`).join("")}
+          ${skillExp > 0 ? `${translateText("labels.skillExp", {}, "Learning Speedups Needed")}: ${formatDuration(skillExp)} <br>` : ""}
+          ${skillBooks > 0 ? `${translateText("labels.skillBooks", {}, "Skill Books Needed")}: ${skillBooks.toLocaleString()} <br>` : ""}
+        </div>
+      `;
+    }
+  });
+
+  const invSkillExpSeconds = (parseInt(document.getElementById("expertSkillExp")?.value) || 0) * 60;
+  const invSkillBooks = parseInt(document.getElementById("expertSkillBooks")?.value) || 0;
+
+  const remainingSkillExpSeconds = Math.max(0, invSkillExpSeconds - totalSkillExpNeeded);
+  const remainingSkillBooks = Math.max(0, invSkillBooks - totalSkillBooksNeeded);
+
+  let grandTotalHTML = `
+    <div class="card-panel" style="margin-top: 15px;">
+      <strong>${translateText("results.grandTotal", {}, "TARGET UPGRADES TOTAL")}</strong><br>
+      ${translateText("labels.skillExp", {}, "Total Learning Speedups Required")}: ${formatDuration(totalSkillExpNeeded)}<br>
+      ${translateText("labels.skillBooks", {}, "Total Skill Books Required")}: ${totalSkillBooksNeeded.toLocaleString()}<br><br>
+      
+      <strong>${translateText("results.afterInventory", {}, "Remaining After Upgrades")}</strong><br>
+      ${translateText("labels.remainingSkillExp", {}, "Learning Speedups Left")}: ${formatDuration(remainingSkillExpSeconds)}<br>
+      ${translateText("labels.remainingSkillBooks", {}, "Skill Books Left")}: ${remainingSkillBooks.toLocaleString()}
+    </div>
+  `;
+
+  if (totalSkillExpNeeded === 0 && totalSkillBooksNeeded === 0) {
+    resultsHTML += `<div class="card-panel" style="margin-top: 15px;">${translateText("results.noUpgrades", {}, "No target upgrades selected.")}</div>`;
+  } else {
+    resultsHTML += grandTotalHTML;
+  }
+
+  const optimized = window.calculateExpertSkillsOptimizedPlan();
+  if (optimized) {
+    let optHtml = `<div class='card-panel' style='margin-top:15px; border-left: 3px solid var(--accent-color);'>
+      <strong style="color:var(--accent-color);">OPTIMIZED PLAN</strong><br>
+      Based on your available resources:<br>`;
+    optimized.breakdown.forEach(p => {
+      optHtml += `<div style="margin-top: 10px;">
+        <strong>${escapeHtml(translateText(`expert.${p.name.toLowerCase()}`, {}, p.name))}</strong> Skill ${p.skill} (${p.startLevel} → ${p.endLevel})
+      </div>`;
+    });
+    optHtml += `<div style="margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 10px;">
+      <strong>Total Cost:</strong> Learning Speedups: ${formatDuration(optimized.totalExpUsed)} | Skill Books: ${formatNumber(optimized.totalBooksUsed)}
+    </div></div>`;
+    resultsHTML += optHtml;
+  }
+
+  const resultEl = document.getElementById("expertSkillsResult");
+  if (resultEl) {
+    resultEl.dataset.hasResults = "true";
+    resultEl.innerHTML = resultsHTML;
+  }
+};
+calculateExpertSkills = window.calculateExpertSkills;
+
+
+
+// Sync global Valeria skill to SvS what-if on change
+document.getElementById("globalValeriaSkill")?.addEventListener("input", (e) => {
+    const svsVal = document.getElementById("svsValeriaSkill");
+    if (svsVal) {
+        svsVal.value = e.target.value;
+        if (typeof calculateSvSPoints === 'function') calculateSvSPoints();
+    }
+});
+// Initial sync on load
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        const glob = document.getElementById("globalValeriaSkill");
+        const svsVal = document.getElementById("svsValeriaSkill");
+        if (glob && svsVal && parseInt(svsVal.value) < parseInt(glob.value)) {
+            svsVal.value = glob.value;
+        }
+    }, 500);
+});
+
+
+// ==========================================
+// FIX SVS VALERIA REVERT ON TAB LOAD
+// ==========================================
+const originalInitSvSPanel = window.initSvSPanel || initSvSPanel;
+window.initSvSPanel = function() {
+  originalInitSvSPanel();
+  
+  // Sync on tab load
+  const glob = document.getElementById("globalValeriaSkill");
+  const svsVal = document.getElementById("svsValeriaSkill");
+  if (glob && svsVal) {
+      if (parseInt(svsVal.value) === 0 && parseInt(glob.value) > 0) {
+          svsVal.value = glob.value;
+      } else if (parseInt(svsVal.value) < parseInt(glob.value)) {
+          svsVal.value = glob.value;
+      }
+      if (typeof calculateSvSPoints === 'function') calculateSvSPoints();
+  }
+};
+initSvSPanel = window.initSvSPanel;

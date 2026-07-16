@@ -55,6 +55,12 @@ async function syncDataToFirebase(user) {
           window.loadAccounts();
           if (typeof window.loadAllStateFromAccount === 'function') window.loadAllStateFromAccount();
         }
+        if (!sessionStorage.getItem('wosCalc_justSynced')) {
+          sessionStorage.setItem('wosCalc_justSynced', 'true');
+          window.location.reload();
+        } else {
+          sessionStorage.removeItem('wosCalc_justSynced');
+        }
       }
     } else if (localAccounts) {
       // First login with local data, migrate it up
@@ -104,7 +110,7 @@ localStorage.setItem = function(key, value) {
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    authBtn.textContent = 'Profile';
+    authBtn.textContent = user.email ? user.email.charAt(0).toUpperCase() : 'L';
     loggedInView.style.display = 'block';
     loggedInEmail.textContent = user.email;
     
@@ -119,7 +125,7 @@ onAuthStateChanged(auth, (user) => {
     syncDataToFirebase(user);
     hideModal(); // Optional: close modal automatically on login
   } else {
-    authBtn.textContent = 'Login';
+    authBtn.textContent = 'L';
     loggedInView.style.display = 'none';
     
     // Show inputs
@@ -133,6 +139,19 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // Auth Actions
+
+// Allow submitting with Enter key
+authPassword.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    loginBtn.click();
+  }
+});
+authEmail.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    authPassword.focus();
+  }
+});
+
 loginBtn.addEventListener('click', async () => {
   try {
     await signInWithEmailAndPassword(auth, authEmail.value, authPassword.value);
@@ -179,8 +198,8 @@ getRedirectResult(auth).then(async (cred) => {
 googleAuthBtn.addEventListener('click', async () => {
   try {
     const provider = new GoogleAuthProvider();
-    // Use signInWithRedirect instead of Popup for reliable mobile browser support
-    await signInWithRedirect(auth, provider);
+    // Use signInWithPopup which is more reliable across different domains and prevents third-party cookie blocking issues
+    await signInWithPopup(auth, provider);
   } catch (error) {
     showError(error.message);
   }
