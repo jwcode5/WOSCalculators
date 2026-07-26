@@ -46,11 +46,18 @@ async function syncDataToFirebase(user) {
     if (docSnap.exists()) {
       // Load from Firebase if exists and no local conflicts, or overwrite local (simplified)
       const data = docSnap.data();
-      if (data.accounts) {
-        localStorage.setItem('wosCalc_accounts', data.accounts);
-        if (data.activeAccountId) localStorage.setItem('wosCalc_activeAccountId', data.activeAccountId);
+      const fbLastUpdated = data.lastUpdated;
+      const localLastUpdated = localStorage.getItem('wosCalc_lastLocalUpdate');
+      const shouldPull = !localLastUpdated || !fbLastUpdated || new Date(fbLastUpdated) > new Date(localLastUpdated);
+
+      if (shouldPull && data.accounts) {
+        originalSetItem.call(localStorage, 'wosCalc_accounts', data.accounts);
+        if (data.activeAccountId) originalSetItem.call(localStorage, 'wosCalc_activeAccountId', data.activeAccountId);
         
-        // Trigger a reload of the app data if the function exists
+        if (fbLastUpdated) {
+          originalSetItem.call(localStorage, 'wosCalc_lastLocalUpdate', fbLastUpdated);
+        }
+        
         if (typeof window.loadAccounts === 'function') {
           window.loadAccounts();
           if (typeof window.loadAllStateFromAccount === 'function') window.loadAllStateFromAccount();
@@ -61,6 +68,8 @@ async function syncDataToFirebase(user) {
         } else {
           sessionStorage.removeItem('wosCalc_justSynced');
         }
+      } else if (!shouldPull) {
+        if (window.forceFirebaseSync) window.forceFirebaseSync();
       }
     } else if (localAccounts) {
       // First login with local data, migrate it up
@@ -90,15 +99,18 @@ localStorage.setItem = function(key, value) {
   originalSetItem.apply(this, arguments);
   
   if (key === 'wosCalc_accounts' || key === 'wosCalc_activeAccountId') {
+    const nowISO = new Date().toISOString();
+    originalSetItem.call(this, 'wosCalc_lastLocalUpdate', nowISO);
+    
     const user = auth.currentUser;
     if (user) {
-      // Debounce saving to Firestore
       clearTimeout(window.fbSaveTimeout);
       window.fbSaveTimeout = setTimeout(async () => {
         try {
           await updateDoc(doc(db, 'users', user.uid), {
-            [key === 'wosCalc_accounts' ? 'accounts' : 'activeAccountId']: value,
-            lastUpdated: new Date().toISOString()
+            accounts: localStorage.getItem('wosCalc_accounts'),
+            activeAccountId: localStorage.getItem('wosCalc_activeAccountId'),
+            lastUpdated: nowISO
           });
         } catch(e) {
           console.warn('Failed to sync to Firebase:', e);
@@ -229,3 +241,4 @@ window.forceFirebaseSync = async function() {
     console.warn('Failed to force sync to Firebase:', e);
   }
 };
+window.addEventListener('beforeunload', () => { if (window.fbSaveTimeout && window.forceFirebaseSync) { window.forceFirebaseSync(); } });

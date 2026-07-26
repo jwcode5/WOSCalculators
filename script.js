@@ -9,7 +9,7 @@ let GEAR_SVS_POINTS_LOOKUP = {};
 
 async function loadSvsPointsCsv() {
   // Chief Charm (Sheet4.csv)
-  const response = await fetch('data/WOS%20Calculator%20-%20Sheet4.csv' + window.location.search);
+  const response = await fetch('data/WOS%20Calculator%20-%20Sheet4.csv');
   const text = await response.text();
   const lines = text.split(/\r?\n/).filter(Boolean);
   for (let i = 1; i < lines.length; ++i) {
@@ -19,7 +19,7 @@ async function loadSvsPointsCsv() {
     SVS_POINTS_LOOKUP[level][status] = parseInt(score, 10);
   }
   // Chief Gear (Sheet2.csv)
-  const gearResp = await fetch('data/WOS%20Calculator%20-%20Sheet2.csv' + window.location.search);
+  const gearResp = await fetch('data/WOS%20Calculator%20-%20Sheet2.csv');
   const gearText = await gearResp.text();
   const gearLines = gearText.split(/\r?\n/).filter(Boolean);
   const header = gearLines[0].split(',');
@@ -1005,10 +1005,7 @@ function attachSupplyPersistenceListeners() {
     const eventName = el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input";
     el.addEventListener(eventName, (e) => {
       saveSuppliesState();
-      const panel = document.querySelector("#app-content > section, #app-content > div");
-      if (panel) {
-        panel.dispatchEvent(new Event("input", { bubbles: true }));
-      }
+      
     });
   });
 }
@@ -1572,6 +1569,7 @@ function isValidResourceAmountInput(rawInput) {
 function isValidNonNegativeNumberInput(rawInput, allowDecimal = false) {
   const text = String(rawInput || "").trim();
   if (!text) return true;
+  if (allowDecimal && (text === "." || text.endsWith("."))) return true;
   const pattern = allowDecimal ? /^(?:\d+|\d*\.\d+)$/ : /^\d+$/;
   return pattern.test(text);
 }
@@ -3824,12 +3822,12 @@ async function loadData() {
   try {
     // Load all data files and SVS points CSV in parallel
     const [buildingsResponse, preqResponse, gearResponse, charmResponse, petsResponse, expertsResponse] = await Promise.all([
-      fetch("data/buildings.json" + window.location.search),
-      fetch("data/prerequisites.json" + window.location.search),
-      fetch("data/chiefGear.json" + window.location.search),
-      fetch("data/chiefCharm.json" + window.location.search),
-      fetch("data/petUpgrades.tiered.json" + window.location.search),
-      fetch("data/expertsData.json" + window.location.search)
+      fetch("data/buildings.json"),
+      fetch("data/prerequisites.json"),
+      fetch("data/chiefGear.json"),
+      fetch("data/chiefCharm.json"),
+      fetch("data/petUpgrades.tiered.json"),
+      fetch("data/expertsData.json")
     ]);
     await loadSvsPointsCsv();
 
@@ -3877,6 +3875,21 @@ async function loadData() {
 // ============================================================
 
 // Account dropdown: switch to the selected account
+
+const editAccountBtn = document.getElementById("editAccountBtn");
+if (editAccountBtn) {
+  editAccountBtn.addEventListener("click", () => {
+    const account = getActiveAccount();
+    if (!account) return;
+    const currentName = account.name || "Account";
+    const newName = prompt(translateText("prompts.renameAccount", {}, "Enter a new name for this account:"), currentName);
+    if (newName !== null && newName.trim() !== "") {
+      renameAccount(account.id, newName.trim());
+      if (typeof renderAccountOptions === 'function') renderAccountOptions();
+    }
+  });
+}
+
 const accountSelect = document.getElementById("accountSelect");
 if (accountSelect) {
   accountSelect.addEventListener("change", function() {
