@@ -1,0 +1,26 @@
+{
+  "levelOrder": [
+    "none",
+    "1", "2", "3", "4", "5", "6", "7", "8",
+    "9", "10", "11", "12", "13", "14", "15", "16"
+  ],
+  "levels": {
+    "none": { "label": "Not Crafted", "charmDesigns": 0, "charmGuides": 0, "jewelSecrets": 0, "power": 0 },
+    "1": { "label": "Level 1", "charmDesigns": 5, "charmGuides": 5, "jewelSecrets": 0, "power": 205700 },
+    "2": { "label": "Level 2", "charmDesigns": 15, "charmGuides": 40, "jewelSecrets": 0, "power": 288000 },
+    "3": { "label": "Level 3", "charmDesigns": 40, "charmGuides": 60, "jewelSecrets": 0, "power": 370000 },
+    "4": { "label": "Level 4", "charmDesigns": 100, "charmGuides": 80, "jewelSecrets": 0, "power": 452000 },
+    "5": { "label": "Level 5", "charmDesigns": 200, "charmGuides": 100, "jewelSecrets": 0, "power": 576000 },
+    "6": { "label": "Level 6", "charmDesigns": 300, "charmGuides": 120, "jewelSecrets": 0, "power": 700000 },
+    "7": { "label": "Level 7", "charmDesigns": 400, "charmGuides": 140, "jewelSecrets": 0, "power": 824000 },
+    "8": { "label": "Level 8", "charmDesigns": 400, "charmGuides": 200, "jewelSecrets": 0, "power": 948000 },
+    "9": { "label": "Level 9", "charmDesigns": 400, "charmGuides": 300, "jewelSecrets": 0, "power": 1072000 },
+    "10": { "label": "Level 10", "charmDesigns": 420, "charmGuides": 420, "jewelSecrets": 0, "power": 1196000 },
+    "11": { "label": "Level 11", "charmDesigns": 420, "charmGuides": 560, "jewelSecrets": 0, "power": 1320000 },
+    "12": { "label": "Level 12", "charmDesigns": 450, "charmGuides": 580, "jewelSecrets": 15, "power": 1444000 },
+    "13": { "label": "Level 13", "charmDesigns": 450, "charmGuides": 580, "jewelSecrets": 30, "power": 1568000 },
+    "14": { "label": "Level 14", "charmDesigns": 500, "charmGuides": 600, "jewelSecrets": 45, "power": 1692000 },
+    "15": { "label": "Level 15", "charmDesigns": 500, "charmGuides": 600, "jewelSecrets": 70, "power": 1816000 },
+    "16": { "label": "Level 16", "charmDesigns": 550, "charmGuides": 650, "jewelSecrets": 100, "power": 1940000 }
+  }
+}

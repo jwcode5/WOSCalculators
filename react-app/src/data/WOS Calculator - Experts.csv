@@ -1,0 +1,701 @@
+Expert,Level,Affinity,Advancement,Stat Boosted,Stats,Relationship Status
+Agnes,1,1000,0,Troops Defense,1.58%,Stranger
+Agnes,2,240,0,Troops Defense,1.65%,Stranger
+Agnes,3,260,0,Troops Defense,1.73%,Stranger
+Agnes,4,270,0,Troops Defense,1.80%,Stranger
+Agnes,5,280,0,Troops Defense,1.88%,Stranger
+Agnes,6,290,0,Troops Defense,1.95%,Stranger
+Agnes,7,320,0,Troops Defense,2.03%,Stranger
+Agnes,8,340,0,Troops Defense,2.10%,Stranger
+Agnes,9,360,0,Troops Defense,2.18%,Stranger
+Agnes,10,390,5,Troops Defense,2.85%,Acquaintance 1
+Agnes,11,410,0,Troops Defense,2.93%,Acquaintance 1
+Agnes,12,440,0,Troops Defense,3.00%,Acquaintance 1
+Agnes,13,460,0,Troops Defense,3.08%,Acquaintance 1
+Agnes,14,480,0,Troops Defense,3.15%,Acquaintance 1
+Agnes,15,510,0,Troops Defense,3.23%,Acquaintance 1
+Agnes,16,530,0,Troops Defense,3.30%,Acquaintance 1
+Agnes,17,560,0,Troops Defense,3.38%,Acquaintance 1
+Agnes,18,580,0,Troops Defense,3.45%,Acquaintance 1
+Agnes,19,600,0,Troops Defense,3.53%,Acquaintance 1
+Agnes,20,630,10,Troops Defense,4.20%,Acquaintance 2
+Agnes,21,650,0,Troops Defense,4.28%,Acquaintance 2
+Agnes,22,680,0,Troops Defense,4.35%,Acquaintance 2
+Agnes,23,700,0,Troops Defense,4.43%,Acquaintance 2
+Agnes,24,720,0,Troops Defense,4.50%,Acquaintance 2
+Agnes,25,750,0,Troops Defense,4.58%,Acquaintance 2
+Agnes,26,770,0,Troops Defense,4.65%,Acquaintance 2
+Agnes,27,800,0,Troops Defense,4.73%,Acquaintance 2
+Agnes,28,820,0,Troops Defense,4.80%,Acquaintance 2
+Agnes,29,840,0,Troops Defense,4.88%,Acquaintance 2
+Agnes,30,880,15,Troops Defense,5.55%,Acquaintance 3
+Agnes,31,920,0,Troops Defense,5.63%,Acquaintance 3
+Agnes,32,950,0,Troops Defense,5.70%,Acquaintance 3
+Agnes,33,990,0,Troops Defense,5.78%,Acquaintance 3
+Agnes,34,1020,0,Troops Defense,5.85%,Acquaintance 3
+Agnes,35,1060,0,Troops Defense,5.93%,Acquaintance 3
+Agnes,36,110,0,Troops Defense,6.00%,Acquaintance 3
+Agnes,37,1130,0,Troops Defense,6.08%,Acquaintance 3
+Agnes,38,1170,0,Troops Defense,6.15%,Acquaintance 3
+Agnes,39,1200,0,Troops Defense,6.23%,Acquaintance 3
+Agnes,40,1250,20,Troops Defense,6.90%,Casual 1
+Agnes,41,1300,0,Troops Defense,6.98%,Casual 1
+Agnes,42,1350,0,Troops Defense,7.05%,Casual 1
+Agnes,43,1400,0,Troops Defense,7.13%,Casual 1
+Agnes,44,1440,0,Troops Defense,7.20%,Casual 1
+Agnes,45,1490,0,Troops Defense,7.28%,Casual 1
+Agnes,46,1540,0,Troops Defense,7.35%,Casual 1
+Agnes,47,1590,0,Troops Defense,7.43%,Casual 1
+Agnes,48,1640,0,Troops Defense,7.50%,Casual 1
+Agnes,49,1680,0,Troops Defense,7.58%,Casual 1
+Agnes,50,1740,25,Troops Defense,8.25%,Casual 2
+Agnes,51,1800,0,Troops Defense,8.33%,Casual 2
+Agnes,52,1860,0,Troops Defense,8.40%,Casual 2
+Agnes,53,1920,0,Troops Defense,8.48%,Casual 2
+Agnes,54,1980,0,Troops Defense,8.55%,Casual 2
+Agnes,55,2040,0,Troops Defense,8.63%,Casual 2
+Agnes,56,2100,0,Troops Defense,8.70%,Casual 2
+Agnes,57,2160,0,Troops Defense,8.78%,Casual 2
+Agnes,58,2220,0,Troops Defense,8.85%,Casual 2
+Agnes,59,2280,0,Troops Defense,8.93%,Casual 2
+Agnes,60,2340,30,Troops Defense,9.60%,Casual 3
+Agnes,61,2400,0,Troops Defense,9.68%,Casual 3
+Agnes,62,2460,0,Troops Defense,9.75%,Casual 3
+Agnes,63,2520,0,Troops Defense,9.83%,Casual 3
+Agnes,64,2580,0,Troops Defense,9.90%,Casual 3
+Agnes,65,2640,0,Troops Defense,9.98%,Casual 3
+Agnes,66,2700,0,Troops Defense,10.05%,Casual 3
+Agnes,67,2760,0,Troops Defense,10.13%,Casual 3
+Agnes,68,2820,0,Troops Defense,10.20%,Casual 3
+Agnes,69,2880,0,Troops Defense,10.28%,Casual 3
+Agnes,70,2940,35,Troops Defense,10.95%,Close 1
+Agnes,71,3000,0,Troops Defense,11.03%,Close 1
+Agnes,72,3060,0,Troops Defense,11.10%,Close 1
+Agnes,73,3120,0,Troops Defense,11.18%,Close 1
+Agnes,74,3180,0,Troops Defense,11.25%,Close 1
+Agnes,75,3240,0,Troops Defense,11.33%,Close 1
+Agnes,76,3300,0,Troops Defense,11.40%,Close 1
+Agnes,77,3360,0,Troops Defense,11.48%,Close 1
+Agnes,78,3420,0,Troops Defense,11.55%,Close 1
+Agnes,79,3480,0,Troops Defense,11.63%,Close 1
+Agnes,80,3540,40,Troops Defense,12.30%,Close 2
+Agnes,81,3600,0,Troops Defense,12.38%,Close 2
+Agnes,82,3660,0,Troops Defense,12.45%,Close 2
+Agnes,83,3720,0,Troops Defense,12.53%,Close 2
+Agnes,84,3780,0,Troops Defense,12.60%,Close 2
+Agnes,85,3840,0,Troops Defense,12.68%,Close 2
+Agnes,86,3900,0,Troops Defense,12.75%,Close 2
+Agnes,87,3960,0,Troops Defense,12.83%,Close 2
+Agnes,88,4020,0,Troops Defense,12.90%,Close 2
+Agnes,89,4080,0,Troops Defense,12.98%,Close 2
+Agnes,90,4140,45,Troops Defense,13.65%,Close 3
+Agnes,91,4200,0,Troops Defense,13.73%,Close 3
+Agnes,92,4260,0,Troops Defense,13.80%,Close 3
+Agnes,93,4320,0,Troops Defense,13.88%,Close 3
+Agnes,94,4380,0,Troops Defense,13.95%,Close 3
+Agnes,95,4440,0,Troops Defense,14.03%,Close 3
+Agnes,96,4500,0,Troops Defense,14.10%,Close 3
+Agnes,97,4560,0,Troops Defense,14.18%,Close 3
+Agnes,98,4620,0,Troops Defense,14.25%,Close 3
+Agnes,99,4680,0,Troops Defense,14.33%,Close 3
+Agnes,100,4740,50,Troops Defense,15.00%,Intimate
+Cyrille,1,1000,0,Troops Attack,1.58%,Stranger
+Cyrille,2,200,0,Troops Attack,1.65%,Stranger
+Cyrille,3,210,0,Troops Attack,1.73%,Stranger
+Cyrille,4,220,0,Troops Attack,1.80%,Stranger
+Cyrille,5,230,0,Troops Attack,1.88%,Stranger
+Cyrille,6,240,0,Troops Attack,1.95%,Stranger
+Cyrille,7,260,0,Troops Attack,2.03%,Stranger
+Cyrille,8,280,0,Troops Attack,2.10%,Stranger
+Cyrille,9,300,0,Troops Attack,2.18%,Stranger
+Cyrille,10,320,5,Troops Attack,2.85%,Acquaintance 1
+Cyrille,11,340,0,Troops Attack,2.93%,Acquaintance 1
+Cyrille,12,360,0,Troops Attack,3.00%,Acquaintance 1
+Cyrille,13,380,0,Troops Attack,3.08%,Acquaintance 1
+Cyrille,14,400,0,Troops Attack,3.15%,Acquaintance 1
+Cyrille,15,420,0,Troops Attack,3.23%,Acquaintance 1
+Cyrille,16,440,0,Troops Attack,3.30%,Acquaintance 1
+Cyrille,17,460,0,Troops Attack,3.38%,Acquaintance 1
+Cyrille,18,480,0,Troops Attack,3.45%,Acquaintance 1
+Cyrille,19,500,0,Troops Attack,3.53%,Acquaintance 1
+Cyrille,20,520,10,Troops Attack,4.20%,Acquaintance 2
+Cyrille,21,540,0,Troops Attack,4.28%,Acquaintance 2
+Cyrille,22,560,0,Troops Attack,4.35%,Acquaintance 2
+Cyrille,23,580,0,Troops Attack,4.43%,Acquaintance 2
+Cyrille,24,600,0,Troops Attack,4.50%,Acquaintance 2
+Cyrille,25,620,0,Troops Attack,4.58%,Acquaintance 2
+Cyrille,26,640,0,Troops Attack,4.65%,Acquaintance 2
+Cyrille,27,660,0,Troops Attack,4.73%,Acquaintance 2
+Cyrille,28,680,0,Troops Attack,4.80%,Acquaintance 2
+Cyrille,29,700,0,Troops Attack,4.88%,Acquaintance 2
+Cyrille,30,730,15,Troops Attack,5.55%,Acquaintance 3
+Cyrille,31,760,0,Troops Attack,5.63%,Acquaintance 3
+Cyrille,32,790,0,Troops Attack,5.70%,Acquaintance 3
+Cyrille,33,820,0,Troops Attack,5.78%,Acquaintance 3
+Cyrille,34,850,0,Troops Attack,5.85%,Acquaintance 3
+Cyrille,35,880,0,Troops Attack,5.93%,Acquaintance 3
+Cyrille,36,910,0,Troops Attack,6.00%,Acquaintance 3
+Cyrille,37,940,0,Troops Attack,6.08%,Acquaintance 3
+Cyrille,38,970,0,Troops Attack,6.15%,Acquaintance 3
+Cyrille,39,1000,0,Troops Attack,6.23%,Acquaintance 3
+Cyrille,40,1040,20,Troops Attack,6.90%,Casual 1
+Cyrille,41,1080,0,Troops Attack,6.98%,Casual 1
+Cyrille,42,1120,0,Troops Attack,7.05%,Casual 1
+Cyrille,43,1160,0,Troops Attack,7.13%,Casual 1
+Cyrille,44,1200,0,Troops Attack,7.20%,Casual 1
+Cyrille,45,1240,0,Troops Attack,7.28%,Casual 1
+Cyrille,46,1280,0,Troops Attack,7.35%,Casual 1
+Cyrille,47,1320,0,Troops Attack,7.43%,Casual 1
+Cyrille,48,1360,0,Troops Attack,7.50%,Casual 1
+Cyrille,49,1400,0,Troops Attack,7.58%,Casual 1
+Cyrille,50,1450,25,Troops Attack,8.25%,Casual 2
+Cyrille,51,1500,0,Troops Attack,8.33%,Casual 2
+Cyrille,52,1550,0,Troops Attack,8.40%,Casual 2
+Cyrille,53,1600,0,Troops Attack,8.48%,Casual 2
+Cyrille,54,1650,0,Troops Attack,8.55%,Casual 2
+Cyrille,55,1700,0,Troops Attack,8.63%,Casual 2
+Cyrille,56,1750,0,Troops Attack,8.70%,Casual 2
+Cyrille,57,1800,0,Troops Attack,8.78%,Casual 2
+Cyrille,58,1850,0,Troops Attack,8.85%,Casual 2
+Cyrille,59,1900,0,Troops Attack,8.93%,Casual 2
+Cyrille,60,1950,30,Troops Attack,9.60%,Casual 3
+Cyrille,61,2000,0,Troops Attack,9.68%,Casual 3
+Cyrille,62,2050,0,Troops Attack,9.75%,Casual 3
+Cyrille,63,2100,0,Troops Attack,9.83%,Casual 3
+Cyrille,64,2150,0,Troops Attack,9.90%,Casual 3
+Cyrille,65,2200,0,Troops Attack,9.98%,Casual 3
+Cyrille,66,2250,0,Troops Attack,10.05%,Casual 3
+Cyrille,67,2300,0,Troops Attack,10.13%,Casual 3
+Cyrille,68,2350,0,Troops Attack,10.20%,Casual 3
+Cyrille,69,2400,0,Troops Attack,10.28%,Casual 3
+Cyrille,70,2450,35,Troops Attack,10.95%,Close 1
+Cyrille,71,2500,0,Troops Attack,11.03%,Close 1
+Cyrille,72,2550,0,Troops Attack,11.10%,Close 1
+Cyrille,73,2600,0,Troops Attack,11.18%,Close 1
+Cyrille,74,2650,0,Troops Attack,11.25%,Close 1
+Cyrille,75,2700,0,Troops Attack,11.33%,Close 1
+Cyrille,76,2750,0,Troops Attack,11.40%,Close 1
+Cyrille,77,2800,0,Troops Attack,11.48%,Close 1
+Cyrille,78,2850,0,Troops Attack,11.55%,Close 1
+Cyrille,79,2900,0,Troops Attack,11.63%,Close 1
+Cyrille,80,2950,40,Troops Attack,12.30%,Close 2
+Cyrille,81,3000,0,Troops Attack,12.38%,Close 2
+Cyrille,82,3050,0,Troops Attack,12.45%,Close 2
+Cyrille,83,3100,0,Troops Attack,12.53%,Close 2
+Cyrille,84,3150,0,Troops Attack,12.60%,Close 2
+Cyrille,85,3200,0,Troops Attack,12.68%,Close 2
+Cyrille,86,3250,0,Troops Attack,12.75%,Close 2
+Cyrille,87,3300,0,Troops Attack,12.83%,Close 2
+Cyrille,88,3350,0,Troops Attack,12.90%,Close 2
+Cyrille,89,3400,0,Troops Attack,12.98%,Close 2
+Cyrille,90,3450,45,Troops Attack,13.65%,Close 3
+Cyrille,91,3500,0,Troops Attack,13.73%,Close 3
+Cyrille,92,3550,0,Troops Attack,13.80%,Close 3
+Cyrille,93,3600,0,Troops Attack,13.88%,Close 3
+Cyrille,94,3650,0,Troops Attack,13.95%,Close 3
+Cyrille,95,3700,0,Troops Attack,14.03%,Close 3
+Cyrille,96,3750,0,Troops Attack,14.10%,Close 3
+Cyrille,97,3800,0,Troops Attack,14.18%,Close 3
+Cyrille,98,3850,0,Troops Attack,14.25%,Close 3
+Cyrille,99,3900,0,Troops Attack,14.33%,Close 3
+Cyrille,100,3950,50,Troops Attack,15.00%,Intimate
+Holger,1,1000,0,Troops Attack/Defense,1.58%,Stranger
+Holger,2,600,0,Troops Attack/Defense,1.65%,Stranger
+Holger,3,630,0,Troops Attack/Defense,1.73%,Stranger
+Holger,4,660,0,Troops Attack/Defense,1.80%,Stranger
+Holger,5,690,0,Troops Attack/Defense,1.88%,Stranger
+Holger,6,720,0,Troops Attack/Defense,1.95%,Stranger
+Holger,7,780,0,Troops Attack/Defense,2.03%,Stranger
+Holger,8,840,0,Troops Attack/Defense,2.10%,Stranger
+Holger,9,900,0,Troops Attack/Defense,2.18%,Stranger
+Holger,10,960,8,Troops Attack/Defense,2.85%,Acquaintance 1
+Holger,11,1020,0,Troops Attack/Defense,2.93%,Acquaintance 1
+Holger,12,1080,0,Troops Attack/Defense,3.00%,Acquaintance 1
+Holger,13,1140,0,Troops Attack/Defense,3.08%,Acquaintance 1
+Holger,14,1200,0,Troops Attack/Defense,3.15%,Acquaintance 1
+Holger,15,1260,0,Troops Attack/Defense,3.23%,Acquaintance 1
+Holger,16,1320,0,Troops Attack/Defense,3.30%,Acquaintance 1
+Holger,17,1380,0,Troops Attack/Defense,3.38%,Acquaintance 1
+Holger,18,1440,0,Troops Attack/Defense,3.45%,Acquaintance 1
+Holger,19,1500,0,Troops Attack/Defense,3.53%,Acquaintance 1
+Holger,20,1560,16,Troops Attack/Defense,4.20%,Acquaintance 2
+Holger,21,1620,0,Troops Attack/Defense,4.28%,Acquaintance 2
+Holger,22,1680,0,Troops Attack/Defense,4.35%,Acquaintance 2
+Holger,23,1740,0,Troops Attack/Defense,4.43%,Acquaintance 2
+Holger,24,1800,0,Troops Attack/Defense,4.50%,Acquaintance 2
+Holger,25,1860,0,Troops Attack/Defense,4.58%,Acquaintance 2
+Holger,26,1920,0,Troops Attack/Defense,4.65%,Acquaintance 2
+Holger,27,1980,0,Troops Attack/Defense,4.73%,Acquaintance 2
+Holger,28,2040,0,Troops Attack/Defense,4.80%,Acquaintance 2
+Holger,29,2100,0,Troops Attack/Defense,4.88%,Acquaintance 2
+Holger,30,2190,24,Troops Attack/Defense,5.55%,Acquaintance 3
+Holger,31,2280,0,Troops Attack/Defense,5.63%,Acquaintance 3
+Holger,32,2370,0,Troops Attack/Defense,5.70%,Acquaintance 3
+Holger,33,2460,0,Troops Attack/Defense,5.78%,Acquaintance 3
+Holger,34,2550,0,Troops Attack/Defense,5.85%,Acquaintance 3
+Holger,35,2640,0,Troops Attack/Defense,5.93%,Acquaintance 3
+Holger,36,2730,0,Troops Attack/Defense,6.00%,Acquaintance 3
+Holger,37,2820,0,Troops Attack/Defense,6.08%,Acquaintance 3
+Holger,38,2910,0,Troops Attack/Defense,6.15%,Acquaintance 3
+Holger,39,300,0,Troops Attack/Defense,6.23%,Acquaintance 3
+Holger,40,3120,32,Troops Attack/Defense,6.90%,Casual 1
+Holger,41,3240,0,Troops Attack/Defense,6.98%,Casual 1
+Holger,42,3360,0,Troops Attack/Defense,7.05%,Casual 1
+Holger,43,3480,0,Troops Attack/Defense,7.13%,Casual 1
+Holger,44,3600,0,Troops Attack/Defense,7.20%,Casual 1
+Holger,45,3720,0,Troops Attack/Defense,7.28%,Casual 1
+Holger,46,3840,0,Troops Attack/Defense,7.35%,Casual 1
+Holger,47,3960,0,Troops Attack/Defense,7.43%,Casual 1
+Holger,48,4080,0,Troops Attack/Defense,7.50%,Casual 1
+Holger,49,4200,0,Troops Attack/Defense,7.58%,Casual 1
+Holger,50,4350,40,Troops Attack/Defense,8.25%,Casual 2
+Holger,51,4500,0,Troops Attack/Defense,8.33%,Casual 2
+Holger,52,4650,0,Troops Attack/Defense,8.40%,Casual 2
+Holger,53,4800,0,Troops Attack/Defense,8.48%,Casual 2
+Holger,54,4950,0,Troops Attack/Defense,8.55%,Casual 2
+Holger,55,5100,0,Troops Attack/Defense,8.63%,Casual 2
+Holger,56,5250,0,Troops Attack/Defense,8.70%,Casual 2
+Holger,57,5400,0,Troops Attack/Defense,8.78%,Casual 2
+Holger,58,5550,0,Troops Attack/Defense,8.85%,Casual 2
+Holger,59,5700,0,Troops Attack/Defense,8.93%,Casual 2
+Holger,60,5850,48,Troops Attack/Defense,9.60%,Casual 3
+Holger,61,6000,0,Troops Attack/Defense,9.68%,Casual 3
+Holger,62,6150,0,Troops Attack/Defense,9.75%,Casual 3
+Holger,63,6300,0,Troops Attack/Defense,9.83%,Casual 3
+Holger,64,6450,0,Troops Attack/Defense,9.90%,Casual 3
+Holger,65,6600,0,Troops Attack/Defense,9.98%,Casual 3
+Holger,66,6750,0,Troops Attack/Defense,10.05%,Casual 3
+Holger,67,6900,0,Troops Attack/Defense,10.13%,Casual 3
+Holger,68,7050,0,Troops Attack/Defense,10.20%,Casual 3
+Holger,69,7200,0,Troops Attack/Defense,10.28%,Casual 3
+Holger,70,7350,56,Troops Attack/Defense,10.95%,Close 1
+Holger,71,7500,0,Troops Attack/Defense,11.03%,Close 1
+Holger,72,7650,0,Troops Attack/Defense,11.10%,Close 1
+Holger,73,7800,0,Troops Attack/Defense,11.18%,Close 1
+Holger,74,7950,0,Troops Attack/Defense,11.25%,Close 1
+Holger,75,8100,0,Troops Attack/Defense,11.33%,Close 1
+Holger,76,8250,0,Troops Attack/Defense,11.40%,Close 1
+Holger,77,8400,0,Troops Attack/Defense,11.48%,Close 1
+Holger,78,8550,0,Troops Attack/Defense,11.55%,Close 1
+Holger,79,8700,0,Troops Attack/Defense,11.63%,Close 1
+Holger,80,8850,64,Troops Attack/Defense,12.30%,Close 2
+Holger,81,9000,0,Troops Attack/Defense,12.38%,Close 2
+Holger,82,9150,0,Troops Attack/Defense,12.45%,Close 2
+Holger,83,9300,0,Troops Attack/Defense,12.53%,Close 2
+Holger,84,9450,0,Troops Attack/Defense,12.60%,Close 2
+Holger,85,9600,0,Troops Attack/Defense,12.68%,Close 2
+Holger,86,9750,0,Troops Attack/Defense,12.75%,Close 2
+Holger,87,9900,0,Troops Attack/Defense,12.83%,Close 2
+Holger,88,10050,0,Troops Attack/Defense,12.90%,Close 2
+Holger,89,10200,0,Troops Attack/Defense,12.98%,Close 2
+Holger,90,10350,72,Troops Attack/Defense,13.65%,Close 3
+Holger,91,10500,0,Troops Attack/Defense,13.73%,Close 3
+Holger,92,10650,0,Troops Attack/Defense,13.80%,Close 3
+Holger,93,10800,0,Troops Attack/Defense,13.88%,Close 3
+Holger,94,10950,0,Troops Attack/Defense,13.95%,Close 3
+Holger,95,11100,0,Troops Attack/Defense,14.03%,Close 3
+Holger,96,11250,0,Troops Attack/Defense,14.10%,Close 3
+Holger,97,11400,0,Troops Attack/Defense,14.18%,Close 3
+Holger,98,11550,0,Troops Attack/Defense,14.25%,Close 3
+Holger,99,11700,0,Troops Attack/Defense,14.33%,Close 3
+Holger,100,11850,80,Troops Attack/Defense,15.00%,Intimate
+Romulus,1,1000,0,Troops Lethality/Health,2.10%,Stranger
+Romulus,2,1100,0,Troops Lethality/Health,2.20%,Stranger
+Romulus,3,1160,0,Troops Lethality/Health,2.30%,Stranger
+Romulus,4,1210,0,Troops Lethality/Health,2.40%,Stranger
+Romulus,5,1270,0,Troops Lethality/Health,2.50%,Stranger
+Romulus,6,1320,0,Troops Lethality/Health,2.60%,Stranger
+Romulus,7,1430,0,Troops Lethality/Health,2.70%,Stranger
+Romulus,8,1540,0,Troops Lethality/Health,2.80%,Stranger
+Romulus,9,1650,0,Troops Lethality/Health,2.90%,Stranger
+Romulus,10,1760,20,Troops Lethality/Health,3.80%,Acquaintance 1
+Romulus,11,1870,0,Troops Lethality/Health,3.90%,Acquaintance 1
+Romulus,12,1980,0,Troops Lethality/Health,4.00%,Acquaintance 1
+Romulus,13,2090,0,Troops Lethality/Health,4.10%,Acquaintance 1
+Romulus,14,2200,0,Troops Lethality/Health,4.20%,Acquaintance 1
+Romulus,15,2310,0,Troops Lethality/Health,4.30%,Acquaintance 1
+Romulus,16,2420,0,Troops Lethality/Health,4.40%,Acquaintance 1
+Romulus,17,2530,0,Troops Lethality/Health,4.50%,Acquaintance 1
+Romulus,18,2640,0,Troops Lethality/Health,4.60%,Acquaintance 1
+Romulus,19,2750,0,Troops Lethality/Health,4.70%,Acquaintance 1
+Romulus,20,2860,40,Troops Lethality/Health,5.60%,Acquaintance 2
+Romulus,21,2970,0,Troops Lethality/Health,5.70%,Acquaintance 2
+Romulus,22,3080,0,Troops Lethality/Health,5.80%,Acquaintance 2
+Romulus,23,3190,0,Troops Lethality/Health,5.90%,Acquaintance 2
+Romulus,24,3300,0,Troops Lethality/Health,6.00%,Acquaintance 2
+Romulus,25,3410,0,Troops Lethality/Health,6.10%,Acquaintance 2
+Romulus,26,3520,0,Troops Lethality/Health,6.20%,Acquaintance 2
+Romulus,27,3630,0,Troops Lethality/Health,6.30%,Acquaintance 2
+Romulus,28,3740,0,Troops Lethality/Health,6.40%,Acquaintance 2
+Romulus,29,3850,0,Troops Lethality/Health,6.50%,Acquaintance 2
+Romulus,30,4020,80,Troops Lethality/Health,7.40%,Acquaintance 3
+Romulus,31,4180,0,Troops Lethality/Health,7.50%,Acquaintance 3
+Romulus,32,4650,0,Troops Lethality/Health,7.60%,Acquaintance 3
+Romulus,33,4510,0,Troops Lethality/Health,7.70%,Acquaintance 3
+Romulus,34,4680,0,Troops Lethality/Health,7.80%,Acquaintance 3
+Romulus,35,4840,0,Troops Lethality/Health,7.90%,Acquaintance 3
+Romulus,36,5010,0,Troops Lethality/Health,8.00%,Acquaintance 3
+Romulus,37,5170,0,Troops Lethality/Health,8.10%,Acquaintance 3
+Romulus,38,5340,0,Troops Lethality/Health,8.20%,Acquaintance 3
+Romulus,39,5500,0,Troops Lethality/Health,8.30%,Acquaintance 3
+Romulus,40,5720,120,Troops Lethality/Health,9.20%,Casual 1
+Romulus,41,5940,0,Troops Lethality/Health,9.30%,Casual 1
+Romulus,42,6160,0,Troops Lethality/Health,9.40%,Casual 1
+Romulus,43,6380,0,Troops Lethality/Health,9.50%,Casual 1
+Romulus,44,6600,0,Troops Lethality/Health,9.60%,Casual 1
+Romulus,45,6820,0,Troops Lethality/Health,9.70%,Casual 1
+Romulus,46,7040,0,Troops Lethality/Health,9.80%,Casual 1
+Romulus,47,7260,0,Troops Lethality/Health,9.90%,Casual 1
+Romulus,48,7480,0,Troops Lethality/Health,10.00%,Casual 1
+Romulus,49,7700,0,Troops Lethality/Health,10.10%,Casual 1
+Romulus,50,7980,160,Troops Lethality/Health,11.00%,Casual 2
+Romulus,51,8250,0,Troops Lethality/Health,11.10%,Casual 2
+Romulus,52,8530,0,Troops Lethality/Health,11.20%,Casual 2
+Romulus,53,8800,0,Troops Lethality/Health,11.30%,Casual 2
+Romulus,54,9080,0,Troops Lethality/Health,11.40%,Casual 2
+Romulus,55,9350,0,Troops Lethality/Health,11.50%,Casual 2
+Romulus,56,9630,0,Troops Lethality/Health,11.60%,Casual 2
+Romulus,57,9900,0,Troops Lethality/Health,11.70%,Casual 2
+Romulus,58,10180,0,Troops Lethality/Health,11.80%,Casual 2
+Romulus,59,10450,0,Troops Lethality/Health,11.90%,Casual 2
+Romulus,60,10730,200,Troops Lethality/Health,12.80%,Casual 3
+Romulus,61,11000,0,Troops Lethality/Health,12.90%,Casual 3
+Romulus,62,11280,0,Troops Lethality/Health,13.00%,Casual 3
+Romulus,63,11550,0,Troops Lethality/Health,13.10%,Casual 3
+Romulus,64,11830,0,Troops Lethality/Health,13.20%,Casual 3
+Romulus,65,12100,0,Troops Lethality/Health,13.30%,Casual 3
+Romulus,66,12380,0,Troops Lethality/Health,13.40%,Casual 3
+Romulus,67,12650,0,Troops Lethality/Health,13.50%,Casual 3
+Romulus,68,12930,0,Troops Lethality/Health,13.60%,Casual 3
+Romulus,69,13200,0,Troops Lethality/Health,13.70%,Casual 3
+Romulus,70,13480,240,Troops Lethality/Health,14.60%,Close 1
+Romulus,71,13750,0,Troops Lethality/Health,14.70%,Close 1
+Romulus,72,14030,0,Troops Lethality/Health,14.80%,Close 1
+Romulus,73,14300,0,Troops Lethality/Health,14.90%,Close 1
+Romulus,74,14580,0,Troops Lethality/Health,15.00%,Close 1
+Romulus,75,14850,0,Troops Lethality/Health,15.10%,Close 1
+Romulus,76,15130,0,Troops Lethality/Health,15.20%,Close 1
+Romulus,77,15400,0,Troops Lethality/Health,15.30%,Close 1
+Romulus,78,15680,0,Troops Lethality/Health,15.40%,Close 1
+Romulus,79,15950,0,Troops Lethality/Health,15.50%,Close 1
+Romulus,80,16230,280,Troops Lethality/Health,16.40%,Close 2
+Romulus,81,16500,0,Troops Lethality/Health,16.50%,Close 2
+Romulus,82,16780,0,Troops Lethality/Health,16.60%,Close 2
+Romulus,83,17050,0,Troops Lethality/Health,16.70%,Close 2
+Romulus,84,17330,0,Troops Lethality/Health,16.80%,Close 2
+Romulus,85,17600,0,Troops Lethality/Health,16.90%,Close 2
+Romulus,86,17880,0,Troops Lethality/Health,17.00%,Close 2
+Romulus,87,18150,0,Troops Lethality/Health,17.10%,Close 2
+Romulus,88,18430,0,Troops Lethality/Health,17.20%,Close 2
+Romulus,89,18700,0,Troops Lethality/Health,17.30%,Close 2
+Romulus,90,18980,320,Troops Lethality/Health,18.20%,Close 3
+Romulus,91,19250,0,Troops Lethality/Health,18.30%,Close 3
+Romulus,92,19530,0,Troops Lethality/Health,18.40%,Close 3
+Romulus,93,19800,0,Troops Lethality/Health,18.50%,Close 3
+Romulus,94,20080,0,Troops Lethality/Health,18.60%,Close 3
+Romulus,95,20350,0,Troops Lethality/Health,18.70%,Close 3
+Romulus,96,20630,0,Troops Lethality/Health,18.80%,Close 3
+Romulus,97,20900,0,Troops Lethality/Health,18.90%,Close 3
+Romulus,98,21180,0,Troops Lethality/Health,19.00%,Close 3
+Romulus,99,21450,0,Troops Lethality/Health,19.10%,Close 3
+Romulus,100,21730,360,Troops Lethality/Health,20.00%,Intimate
+Valeria,1,1000,0,Troops Lethality/Health,2.10%,Stranger
+Valeria,2,1840,0,Troops Lethality/Health,2.20%,Stranger
+Valeria,3,1940,0,Troops Lethality/Health,2.30%,Stranger
+Valeria,4,2030,0,Troops Lethality/Health,2.40%,Stranger
+Valeria,5,2120,0,Troops Lethality/Health,2.50%,Stranger
+Valeria,6,2210,0,Troops Lethality/Health,2.60%,Stranger
+Valeria,7,2400,0,Troops Lethality/Health,2.70%,Stranger
+Valeria,8,2580,0,Troops Lethality/Health,2.80%,Stranger
+Valeria,9,2760,0,Troops Lethality/Health,2.90%,Stranger
+Valeria,10,2950,20,Troops Lethality/Health,3.80%,Acquaintance 1
+Valeria,11,3130,0,Troops Lethality/Health,3.90%,Acquaintance 1
+Valeria,12,3320,0,Troops Lethality/Health,4.00%,Acquaintance 1
+Valeria,13,3500,0,Troops Lethality/Health,4.10%,Acquaintance 1
+Valeria,14,3680,0,Troops Lethality/Health,4.20%,Acquaintance 1
+Valeria,15,3870,0,Troops Lethality/Health,4.30%,Acquaintance 1
+Valeria,16,4050,0,Troops Lethality/Health,4.40%,Acquaintance 1
+Valeria,17,4240,0,Troops Lethality/Health,4.50%,Acquaintance 1
+Valeria,18,4420,0,Troops Lethality/Health,4.60%,Acquaintance 1
+Valeria,19,4600,0,Troops Lethality/Health,4.70%,Acquaintance 1
+Valeria,20,4790,40,Troops Lethality/Health,5.60%,Acquaintance 2
+Valeria,21,4970,0,Troops Lethality/Health,5.70%,Acquaintance 2
+Valeria,22,5160,0,Troops Lethality/Health,5.80%,Acquaintance 2
+Valeria,23,5340,0,Troops Lethality/Health,5.90%,Acquaintance 2
+Valeria,24,5520,0,Troops Lethality/Health,6.00%,Acquaintance 2
+Valeria,25,5710,0,Troops Lethality/Health,6.10%,Acquaintance 2
+Valeria,26,5890,0,Troops Lethality/Health,6.20%,Acquaintance 2
+Valeria,27,6080,0,Troops Lethality/Health,6.30%,Acquaintance 2
+Valeria,28,6260,0,Troops Lethality/Health,6.40%,Acquaintance 2
+Valeria,29,6440,0,Troops Lethality/Health,6.50%,Acquaintance 2
+Valeria,30,6720,60,Troops Lethality/Health,7.40%,Acquaintance 3
+Valeria,31,7000,0,Troops Lethality/Health,7.50%,Acquaintance 3
+Valeria,32,7270,0,Troops Lethality/Health,7.60%,Acquaintance 3
+Valeria,33,7550,0,Troops Lethality/Health,7.70%,Acquaintance 3
+Valeria,34,7820,0,Troops Lethality/Health,7.80%,Acquaintance 3
+Valeria,35,8100,0,Troops Lethality/Health,7.90%,Acquaintance 3
+Valeria,36,8380,0,Troops Lethality/Health,8.00%,Acquaintance 3
+Valeria,37,8650,0,Troops Lethality/Health,8.10%,Acquaintance 3
+Valeria,38,8930,0,Troops Lethality/Health,8.20%,Acquaintance 3
+Valeria,39,9200,0,Troops Lethality/Health,8.30%,Acquaintance 3
+Valeria,40,9570,80,Troops Lethality/Health,9.20%,Casual 1
+Valeria,41,9940,0,Troops Lethality/Health,9.30%,Casual 1
+Valeria,42,10310,0,Troops Lethality/Health,9.40%,Casual 1
+Valeria,43,10680,0,Troops Lethality/Health,9.50%,Casual 1
+Valeria,44,11040,0,Troops Lethality/Health,9.60%,Casual 1
+Valeria,45,11410,0,Troops Lethality/Health,9.70%,Casual 1
+Valeria,46,11780,0,Troops Lethality/Health,9.80%,Casual 1
+Valeria,47,12150,0,Troops Lethality/Health,9.90%,Casual 1
+Valeria,48,12520,0,Troops Lethality/Health,10.00%,Casual 1
+Valeria,49,12880,0,Troops Lethality/Health,10.10%,Casual 1
+Valeria,50,13340,100,Troops Lethality/Health,11.00%,Casual 2
+Valeria,51,13800,0,Troops Lethality/Health,11.10%,Casual 2
+Valeria,52,14260,0,Troops Lethality/Health,11.20%,Casual 2
+Valeria,53,14720,0,Troops Lethality/Health,11.30%,Casual 2
+Valeria,54,15180,0,Troops Lethality/Health,11.40%,Casual 2
+Valeria,55,15640,0,Troops Lethality/Health,11.50%,Casual 2
+Valeria,56,16100,0,Troops Lethality/Health,11.60%,Casual 2
+Valeria,57,16560,0,Troops Lethality/Health,11.70%,Casual 2
+Valeria,58,17020,0,Troops Lethality/Health,11.80%,Casual 2
+Valeria,59,17480,0,Troops Lethality/Health,11.90%,Casual 2
+Valeria,60,17940,120,Troops Lethality/Health,12.80%,Casual 3
+Valeria,61,18400,0,Troops Lethality/Health,12.90%,Casual 3
+Valeria,62,18860,0,Troops Lethality/Health,13.00%,Casual 3
+Valeria,63,19320,0,Troops Lethality/Health,13.10%,Casual 3
+Valeria,64,19780,0,Troops Lethality/Health,13.20%,Casual 3
+Valeria,65,20240,0,Troops Lethality/Health,13.30%,Casual 3
+Valeria,66,20700,0,Troops Lethality/Health,13.40%,Casual 3
+Valeria,67,21160,0,Troops Lethality/Health,13.50%,Casual 3
+Valeria,68,21620,0,Troops Lethality/Health,13.60%,Casual 3
+Valeria,69,22080,0,Troops Lethality/Health,13.70%,Casual 3
+Valeria,70,22540,140,Troops Lethality/Health,14.60%,Close 1
+Valeria,71,23000,0,Troops Lethality/Health,14.70%,Close 1
+Valeria,72,23460,0,Troops Lethality/Health,14.80%,Close 1
+Valeria,73,23920,0,Troops Lethality/Health,14.90%,Close 1
+Valeria,74,24380,0,Troops Lethality/Health,15.00%,Close 1
+Valeria,75,24840,0,Troops Lethality/Health,15.10%,Close 1
+Valeria,76,25300,0,Troops Lethality/Health,15.20%,Close 1
+Valeria,77,25760,0,Troops Lethality/Health,15.30%,Close 1
+Valeria,78,26200,0,Troops Lethality/Health,15.40%,Close 1
+Valeria,79,26680,0,Troops Lethality/Health,15.50%,Close 1
+Valeria,80,27140,160,Troops Lethality/Health,16.40%,Close 2
+Valeria,81,27600,0,Troops Lethality/Health,16.50%,Close 2
+Valeria,82,28060,0,Troops Lethality/Health,16.60%,Close 2
+Valeria,83,28520,0,Troops Lethality/Health,16.70%,Close 2
+Valeria,84,28980,0,Troops Lethality/Health,16.80%,Close 2
+Valeria,85,29440,0,Troops Lethality/Health,16.90%,Close 2
+Valeria,86,29900,0,Troops Lethality/Health,17.00%,Close 2
+Valeria,87,30360,0,Troops Lethality/Health,17.10%,Close 2
+Valeria,88,30820,0,Troops Lethality/Health,17.20%,Close 2
+Valeria,89,31280,0,Troops Lethality/Health,17.30%,Close 2
+Valeria,90,31740,180,Troops Lethality/Health,18.20%,Close 3
+Valeria,91,32200,0,Troops Lethality/Health,18.30%,Close 3
+Valeria,92,32660,0,Troops Lethality/Health,18.40%,Close 3
+Valeria,93,33120,0,Troops Lethality/Health,18.50%,Close 3
+Valeria,94,33580,0,Troops Lethality/Health,18.60%,Close 3
+Valeria,95,34040,0,Troops Lethality/Health,18.70%,Close 3
+Valeria,96,34500,0,Troops Lethality/Health,18.80%,Close 3
+Valeria,97,34960,0,Troops Lethality/Health,18.90%,Close 3
+Valeria,98,34960,0,Troops Lethality/Health,19.00%,Close 3
+Valeria,99,35880,0,Troops Lethality/Health,19.10%,Close 3
+Valeria,100,36340,200,Troops Lethality/Health,20.00%,Intimate
+Baldur,1,1000,0,Troops Attack/Defense,1.05%,Stranger
+Baldur,2,400,0,Troops Attack/Defense,1.10%,Stranger
+Baldur,3,420,0,Troops Attack/Defense,1.15%,Stranger
+Baldur,4,440,0,Troops Attack/Defense,1.20%,Stranger
+Baldur,5,460,0,Troops Attack/Defense,1.25%,Stranger
+Baldur,6,480,0,Troops Attack/Defense,1.30%,Stranger
+Baldur,7,520,0,Troops Attack/Defense,1.35%,Stranger
+Baldur,8,560,0,Troops Attack/Defense,1.40%,Stranger
+Baldur,9,600,0,Troops Attack/Defense,1.45%,Stranger
+Baldur,10,640,6,Troops Attack/Defense,1.90%,Acquaintance 1
+Baldur,11,680,0,Troops Attack/Defense,1.95%,Acquaintance 1
+Baldur,12,720,0,Troops Attack/Defense,2.00%,Acquaintance 1
+Baldur,13,760,0,Troops Attack/Defense,2.05%,Acquaintance 1
+Baldur,14,800,0,Troops Attack/Defense,2.10%,Acquaintance 1
+Baldur,15,840,0,Troops Attack/Defense,2.15%,Acquaintance 1
+Baldur,16,880,0,Troops Attack/Defense,2.20%,Acquaintance 1
+Baldur,17,920,0,Troops Attack/Defense,2.25%,Acquaintance 1
+Baldur,18,960,0,Troops Attack/Defense,2.30%,Acquaintance 1
+Baldur,19,1000,0,Troops Attack/Defense,2.35%,Acquaintance 1
+Baldur,20,1040,12,Troops Attack/Defense,2.80%,Acquaintance 2
+Baldur,21,1080,0,Troops Attack/Defense,2.85%,Acquaintance 2
+Baldur,22,1120,0,Troops Attack/Defense,2.90%,Acquaintance 2
+Baldur,23,1160,0,Troops Attack/Defense,2.95%,Acquaintance 2
+Baldur,24,1200,0,Troops Attack/Defense,3.00%,Acquaintance 2
+Baldur,25,1240,0,Troops Attack/Defense,3.05%,Acquaintance 2
+Baldur,26,1280,0,Troops Attack/Defense,3.10%,Acquaintance 2
+Baldur,27,1320,0,Troops Attack/Defense,3.15%,Acquaintance 2
+Baldur,28,1360,0,Troops Attack/Defense,3.20%,Acquaintance 2
+Baldur,29,1400,0,Troops Attack/Defense,3.25%,Acquaintance 2
+Baldur,30,1460,18,Troops Attack/Defense,3.70%,Acquaintance 3
+Baldur,31,1520,0,Troops Attack/Defense,3.75%,Acquaintance 3
+Baldur,32,1580,0,Troops Attack/Defense,3.80%,Acquaintance 3
+Baldur,33,1640,0,Troops Attack/Defense,3.85%,Acquaintance 3
+Baldur,34,1700,0,Troops Attack/Defense,3.90%,Acquaintance 3
+Baldur,35,1760,0,Troops Attack/Defense,3.95%,Acquaintance 3
+Baldur,36,1820,0,Troops Attack/Defense,4.00%,Acquaintance 3
+Baldur,37,1880,0,Troops Attack/Defense,4.05%,Acquaintance 3
+Baldur,38,1940,0,Troops Attack/Defense,4.10%,Acquaintance 3
+Baldur,39,2000,0,Troops Attack/Defense,4.15%,Acquaintance 3
+Baldur,40,2080,24,Troops Attack/Defense,4.60%,Casual 1
+Baldur,41,2160,0,Troops Attack/Defense,4.65%,Casual 1
+Baldur,42,2240,0,Troops Attack/Defense,4.70%,Casual 1
+Baldur,43,2320,0,Troops Attack/Defense,4.75%,Casual 1
+Baldur,44,2400,0,Troops Attack/Defense,4.80%,Casual 1
+Baldur,45,2480,0,Troops Attack/Defense,4.85%,Casual 1
+Baldur,46,2560,0,Troops Attack/Defense,4.90%,Casual 1
+Baldur,47,2640,0,Troops Attack/Defense,4.95%,Casual 1
+Baldur,48,2720,0,Troops Attack/Defense,5.00%,Casual 1
+Baldur,49,2800,0,Troops Attack/Defense,5.05%,Casual 1
+Baldur,50,2900,30,Troops Attack/Defense,5.50%,Casual 2
+Baldur,51,3000,0,Troops Attack/Defense,5.55%,Casual 2
+Baldur,52,3100,0,Troops Attack/Defense,5.60%,Casual 2
+Baldur,53,3200,0,Troops Attack/Defense,5.65%,Casual 2
+Baldur,54,3300,0,Troops Attack/Defense,5.70%,Casual 2
+Baldur,55,3400,0,Troops Attack/Defense,5.75%,Casual 2
+Baldur,56,3500,0,Troops Attack/Defense,5.80%,Casual 2
+Baldur,57,3600,0,Troops Attack/Defense,5.85%,Casual 2
+Baldur,58,3700,0,Troops Attack/Defense,5.90%,Casual 2
+Baldur,59,3800,0,Troops Attack/Defense,5.95%,Casual 2
+Baldur,60,3900,36,Troops Attack/Defense,6.40%,Casual 3
+Baldur,61,4000,0,Troops Attack/Defense,6.45%,Casual 3
+Baldur,62,4100,0,Troops Attack/Defense,6.50%,Casual 3
+Baldur,63,4200,0,Troops Attack/Defense,6.55%,Casual 3
+Baldur,64,4300,0,Troops Attack/Defense,6.60%,Casual 3
+Baldur,65,4400,0,Troops Attack/Defense,6.65%,Casual 3
+Baldur,66,4500,0,Troops Attack/Defense,6.70%,Casual 3
+Baldur,67,4600,0,Troops Attack/Defense,6.75%,Casual 3
+Baldur,68,4700,0,Troops Attack/Defense,6.80%,Casual 3
+Baldur,69,4800,0,Troops Attack/Defense,6.85%,Casual 3
+Baldur,70,4900,42,Troops Attack/Defense,7.30%,Close 1
+Baldur,71,5000,0,Troops Attack/Defense,7.35%,Close 1
+Baldur,72,5100,0,Troops Attack/Defense,7.40%,Close 1
+Baldur,73,5200,0,Troops Attack/Defense,7.45%,Close 1
+Baldur,74,5300,0,Troops Attack/Defense,7.50%,Close 1
+Baldur,75,5400,0,Troops Attack/Defense,7.55%,Close 1
+Baldur,76,5500,0,Troops Attack/Defense,7.60%,Close 1
+Baldur,77,5600,0,Troops Attack/Defense,7.65%,Close 1
+Baldur,78,5700,0,Troops Attack/Defense,7.70%,Close 1
+Baldur,79,5800,0,Troops Attack/Defense,7.75%,Close 1
+Baldur,80,5900,48,Troops Attack/Defense,8.20%,Close 2
+Baldur,81,6000,0,Troops Attack/Defense,8.25%,Close 2
+Baldur,82,6100,0,Troops Attack/Defense,8.30%,Close 2
+Baldur,83,6200,0,Troops Attack/Defense,8.35%,Close 2
+Baldur,84,6300,0,Troops Attack/Defense,8.40%,Close 2
+Baldur,85,6400,0,Troops Attack/Defense,8.45%,Close 2
+Baldur,86,6500,0,Troops Attack/Defense,8.50%,Close 2
+Baldur,87,6600,0,Troops Attack/Defense,8.55%,Close 2
+Baldur,88,6700,0,Troops Attack/Defense,8.60%,Close 2
+Baldur,89,6800,0,Troops Attack/Defense,8.65%,Close 2
+Baldur,90,6900,54,Troops Attack/Defense,9.10%,Close 3
+Baldur,91,7000,0,Troops Attack/Defense,9.15%,Close 3
+Baldur,92,7100,0,Troops Attack/Defense,9.20%,Close 3
+Baldur,93,7200,0,Troops Attack/Defense,9.25%,Close 3
+Baldur,94,7300,0,Troops Attack/Defense,9.30%,Close 3
+Baldur,95,7400,0,Troops Attack/Defense,9.35%,Close 3
+Baldur,96,7500,0,Troops Attack/Defense,9.40%,Close 3
+Baldur,97,7600,0,Troops Attack/Defense,9.45%,Close 3
+Baldur,98,7700,0,Troops Attack/Defense,9.50%,Close 3
+Baldur,99,7800,0,Troops Attack/Defense,9.55%,Close 3
+Baldur,100,7900,60,Troops Attack/Defense,10.00%,Intimate
+Fabian,1,1000,0,Troops Lethality/Health,1.58%,Stranger
+Fabian,2,1000,0,Troops Lethality/Health,1.65%,Stranger
+Fabian,3,1050,0,Troops Lethality/Health,1.73%,Stranger
+Fabian,4,1100,0,Troops Lethality/Health,1.80%,Stranger
+Fabian,5,1150,0,Troops Lethality/Health,1.88%,Stranger
+Fabian,6,1200,0,Troops Lethality/Health,1.95%,Stranger
+Fabian,7,1300,0,Troops Lethality/Health,2.03%,Stranger
+Fabian,8,1400,0,Troops Lethality/Health,2.10%,Stranger
+Fabian,9,1500,0,Troops Lethality/Health,2.18%,Stranger
+Fabian,10,1600,12,Troops Lethality/Health,2.85%,Acquaintance 1
+Fabian,11,1700,0,Troops Lethality/Health,2.93%,Acquaintance 1
+Fabian,12,1800,0,Troops Lethality/Health,3.00%,Acquaintance 1
+Fabian,13,1900,0,Troops Lethality/Health,3.08%,Acquaintance 1
+Fabian,14,2000,0,Troops Lethality/Health,3.15%,Acquaintance 1
+Fabian,15,2100,0,Troops Lethality/Health,3.23%,Acquaintance 1
+Fabian,16,2200,0,Troops Lethality/Health,3.30%,Acquaintance 1
+Fabian,17,2300,0,Troops Lethality/Health,3.38%,Acquaintance 1
+Fabian,18,2400,0,Troops Lethality/Health,3.45%,Acquaintance 1
+Fabian,19,2500,0,Troops Lethality/Health,3.53%,Acquaintance 1
+Fabian,20,2600,24,Troops Lethality/Health,4.20%,Acquaintance 2
+Fabian,21,2700,0,Troops Lethality/Health,4.28%,Acquaintance 2
+Fabian,22,2800,0,Troops Lethality/Health,4.35%,Acquaintance 2
+Fabian,23,2900,0,Troops Lethality/Health,4.43%,Acquaintance 2
+Fabian,24,3000,0,Troops Lethality/Health,4.50%,Acquaintance 2
+Fabian,25,3100,0,Troops Lethality/Health,4.58%,Acquaintance 2
+Fabian,26,3200,0,Troops Lethality/Health,4.65%,Acquaintance 2
+Fabian,27,3300,0,Troops Lethality/Health,4.73%,Acquaintance 2
+Fabian,28,3400,0,Troops Lethality/Health,4.80%,Acquaintance 2
+Fabian,29,3500,0,Troops Lethality/Health,4.88%,Acquaintance 2
+Fabian,30,3650,36,Troops Lethality/Health,5.55%,Acquaintance 3
+Fabian,31,3800,0,Troops Lethality/Health,5.63%,Acquaintance 3
+Fabian,32,3950,0,Troops Lethality/Health,5.70%,Acquaintance 3
+Fabian,33,4100,0,Troops Lethality/Health,5.78%,Acquaintance 3
+Fabian,34,4250,0,Troops Lethality/Health,5.85%,Acquaintance 3
+Fabian,35,4400,0,Troops Lethality/Health,5.93%,Acquaintance 3
+Fabian,36,4550,0,Troops Lethality/Health,6.00%,Acquaintance 3
+Fabian,37,4700,0,Troops Lethality/Health,6.08%,Acquaintance 3
+Fabian,38,4850,0,Troops Lethality/Health,6.15%,Acquaintance 3
+Fabian,39,5000,0,Troops Lethality/Health,6.23%,Acquaintance 3
+Fabian,40,5200,48,Troops Lethality/Health,6.90%,Casual 1
+Fabian,41,5400,0,Troops Lethality/Health,6.98%,Casual 1
+Fabian,42,5600,0,Troops Lethality/Health,7.05%,Casual 1
+Fabian,43,5800,0,Troops Lethality/Health,7.13%,Casual 1
+Fabian,44,6000,0,Troops Lethality/Health,7.20%,Casual 1
+Fabian,45,6200,0,Troops Lethality/Health,7.28%,Casual 1
+Fabian,46,6400,0,Troops Lethality/Health,7.35%,Casual 1
+Fabian,47,6600,0,Troops Lethality/Health,7.43%,Casual 1
+Fabian,48,6800,0,Troops Lethality/Health,7.50%,Casual 1
+Fabian,49,7000,0,Troops Lethality/Health,7.58%,Casual 1
+Fabian,50,7250,60,Troops Lethality/Health,8.25%,Casual 2
+Fabian,51,7500,0,Troops Lethality/Health,8.33%,Casual 2
+Fabian,52,7750,0,Troops Lethality/Health,8.40%,Casual 2
+Fabian,53,8000,0,Troops Lethality/Health,8.48%,Casual 2
+Fabian,54,8250,0,Troops Lethality/Health,8.55%,Casual 2
+Fabian,55,8500,0,Troops Lethality/Health,8.63%,Casual 2
+Fabian,56,8750,0,Troops Lethality/Health,8.70%,Casual 2
+Fabian,57,9000,0,Troops Lethality/Health,8.78%,Casual 2
+Fabian,58,9250,0,Troops Lethality/Health,8.85%,Casual 2
+Fabian,59,9500,0,Troops Lethality/Health,8.93%,Casual 2
+Fabian,60,9750,72,Troops Lethality/Health,9.60%,Casual 3
+Fabian,61,10000,0,Troops Lethality/Health,9.68%,Casual 3
+Fabian,62,10250,0,Troops Lethality/Health,9.75%,Casual 3
+Fabian,63,10500,0,Troops Lethality/Health,9.83%,Casual 3
+Fabian,64,10750,0,Troops Lethality/Health,9.90%,Casual 3
+Fabian,65,11000,0,Troops Lethality/Health,9.98%,Casual 3
+Fabian,66,11250,0,Troops Lethality/Health,10.05%,Casual 3
+Fabian,67,11500,0,Troops Lethality/Health,10.13%,Casual 3
+Fabian,68,11750,0,Troops Lethality/Health,10.20%,Casual 3
+Fabian,69,12000,0,Troops Lethality/Health,10.28%,Casual 3
+Fabian,70,12250,84,Troops Lethality/Health,10.95%,Close 1
+Fabian,71,12500,0,Troops Lethality/Health,11.03%,Close 1
+Fabian,72,12750,0,Troops Lethality/Health,11.10%,Close 1
+Fabian,73,13000,0,Troops Lethality/Health,11.18%,Close 1
+Fabian,74,13250,0,Troops Lethality/Health,11.25%,Close 1
+Fabian,75,13500,0,Troops Lethality/Health,11.33%,Close 1
+Fabian,76,13750,0,Troops Lethality/Health,11.40%,Close 1
+Fabian,77,14000,0,Troops Lethality/Health,11.48%,Close 1
+Fabian,78,14250,0,Troops Lethality/Health,11.55%,Close 1
+Fabian,79,14500,0,Troops Lethality/Health,11.63%,Close 1
+Fabian,80,14750,96,Troops Lethality/Health,12.30%,Close 2
+Fabian,81,15000,0,Troops Lethality/Health,12.38%,Close 2
+Fabian,82,15250,0,Troops Lethality/Health,12.45%,Close 2
+Fabian,83,15500,0,Troops Lethality/Health,12.53%,Close 2
+Fabian,84,15750,0,Troops Lethality/Health,12.60%,Close 2
+Fabian,85,16000,0,Troops Lethality/Health,12.68%,Close 2
+Fabian,86,16250,0,Troops Lethality/Health,12.75%,Close 2
+Fabian,87,16500,0,Troops Lethality/Health,12.83%,Close 2
+Fabian,88,16750,0,Troops Lethality/Health,12.90%,Close 2
+Fabian,89,17000,0,Troops Lethality/Health,12.98%,Close 2
+Fabian,90,17250,108,Troops Lethality/Health,13.65%,Close 3
+Fabian,91,17500,0,Troops Lethality/Health,13.73%,Close 3
+Fabian,92,17750,0,Troops Lethality/Health,13.80%,Close 3
+Fabian,93,18000,0,Troops Lethality/Health,13.88%,Close 3
+Fabian,94,18250,0,Troops Lethality/Health,13.95%,Close 3
+Fabian,95,18500,0,Troops Lethality/Health,14.03%,Close 3
+Fabian,96,18750,0,Troops Lethality/Health,14.10%,Close 3
+Fabian,97,19000,0,Troops Lethality/Health,14.18%,Close 3
+Fabian,98,19250,0,Troops Lethality/Health,14.25%,Close 3
+Fabian,99,19500,0,Troops Lethality/Health,14.33%,Close 3
+Fabian,100,19750,120,Troops Lethality/Health,15.00%,Intimate
