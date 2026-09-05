@@ -50,7 +50,7 @@ const Layout = ({ children }) => {
         {links.length > 1 && (
           <div className="quick-links-bar" style={{ 
             display: 'flex', gap: '8px', padding: '12px var(--base-padding)', 
-            overflowX: 'auto', background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(12px)',
+            overflowX: 'auto', background: 'var(--bg-secondary)', backdropFilter: 'blur(12px)',
             borderBottom: '1px solid var(--glass-border)', scrollbarWidth: 'none', 
             flexShrink: 0, zIndex: 10
           }}>

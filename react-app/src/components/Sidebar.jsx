@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const { accounts, activeAccountId, setActiveAccountId, addAccount, renameAccount, deleteAccount } = useAccounts();
-  const { currentUser, setIsAuthModalOpen } = useAuth();
+  const { currentUser, setIsAuthModalOpen, pullFromCloud, isSyncing } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -118,7 +118,16 @@ const Sidebar = () => {
           </select>
         </div>
         <select id="languageSelect" className="language-select" style={{ display: 'none' }}></select>
-        <button id="forceUpdateBtn" className="secondary-button" style={{ padding: '10px', fontSize: '0.9em' }}>Update App</button>
+        {currentUser && (
+          <button 
+            className="secondary-button" 
+            style={{ padding: '10px', fontSize: '0.9em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            onClick={() => pullFromCloud(true)}
+            disabled={isSyncing}
+          >
+            {isSyncing ? 'Syncing...' : 'Sync with Cloud'}
+          </button>
+        )}
       </div>
     </aside>
   );

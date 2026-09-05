@@ -31,25 +31,27 @@ const ChiefCharm = () => {
     charmGuides: '',
     jewelSecrets: ''
   });
-  const [batchCurrent, setBatchCurrent] = useState('none');
-  const [batchTarget, setBatchTarget] = useState('none');
+  const [initializedAccountId, setInitializedAccountId] = useState(null);
 
   useEffect(() => {
-    if (activeAccount && activeAccount.state && activeAccount.state.chiefCharm) {
-      const loadedLevels = { ...activeAccount.state.chiefCharm.levels };
-      Object.keys(loadedLevels).forEach(k => {
-        if (loadedLevels[k] === 'Lv.0') loadedLevels[k] = 'none';
-      });
-      setCharmState(prev => ({ ...prev, ...loadedLevels }));
-      setMaterials(prev => ({ ...prev, ...activeAccount.state.chiefCharm.materials }));
+    if (activeAccount) {
+      if (activeAccount.state && activeAccount.state.chiefCharm) {
+        const loadedLevels = { ...activeAccount.state.chiefCharm.levels };
+        Object.keys(loadedLevels).forEach(k => {
+          if (loadedLevels[k] === 'Lv.0') loadedLevels[k] = 'none';
+        });
+        setCharmState(prev => ({ ...prev, ...loadedLevels }));
+        setMaterials(prev => ({ ...prev, ...activeAccount.state.chiefCharm.materials }));
+      }
+      setInitializedAccountId(activeAccount.id);
     }
   }, [activeAccount?.id]);
 
   useEffect(() => {
-    if (activeAccount) {
+    if (activeAccount && initializedAccountId === activeAccount.id) {
       updateAccountState('chiefCharm', { levels: charmState, materials });
     }
-  }, [charmState, materials]);
+  }, [charmState, materials, initializedAccountId]);
 
   const handleChangeCharm = (key, type, value) => {
     setCharmState(prev => {
@@ -69,41 +71,6 @@ const ChiefCharm = () => {
     setMaterials(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSetAllCurrent = () => {
-    const newState = { ...charmState };
-    PIECES.forEach(piece => {
-      [1, 2, 3].forEach(num => {
-        const key = `${piece.id}_charm_${num}`;
-        newState[`${key}_Current`] = batchCurrent;
-        
-        // Ensure Target is at least the new Current
-        const curIdx = levels.indexOf(batchCurrent);
-        const tgtIdx = levels.indexOf(newState[`${key}_Target`]);
-        if (curIdx > tgtIdx) {
-          newState[`${key}_Target`] = batchCurrent;
-        }
-      });
-    });
-    setCharmState(newState);
-  };
-
-  const handleSetAllTarget = () => {
-    const newState = { ...charmState };
-    PIECES.forEach(piece => {
-      [1, 2, 3].forEach(num => {
-        const key = `${piece.id}_charm_${num}`;
-        newState[`${key}_Target`] = batchTarget;
-        
-        // Ensure Current is at most the new Target
-        const curIdx = levels.indexOf(newState[`${key}_Current`]);
-        const tgtIdx = levels.indexOf(batchTarget);
-        if (curIdx > tgtIdx && tgtIdx !== -1) {
-          newState[`${key}_Current`] = batchTarget;
-        }
-      });
-    });
-    setCharmState(newState);
-  };
 
   const results = useMemo(() => {
     try {
@@ -134,27 +101,7 @@ const ChiefCharm = () => {
     <section id="chiefCharmPanel">
       <div className="card-panel">
         <h2 style={{ marginBottom: '16px' }}>Chief Charm Levels</h2>
-        
-        <div className="charm-batch-row" style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <div className="charm-batch-controls" style={{ flex: 1, padding: '16px', background: 'var(--glass-bg)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <label style={{ fontSize: '0.95em', display: 'block', marginBottom: '8px' }}>Set all current levels</label>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <select className="global-select" style={{ flex: 2 }} value={batchCurrent} onChange={e => setBatchCurrent(e.target.value)}>
-                {levels.map(l => <option key={l} value={l}>{charmData.levels[l]?.label || l}</option>)}
-              </select>
-              <button type="button" className="inlineActionBtn inlineActionBtnPrimary" style={{ flex: 1 }} onClick={handleSetAllCurrent}>Set All</button>
-            </div>
-          </div>
-          <div className="charm-batch-controls" style={{ flex: 1, padding: '16px', background: 'var(--glass-bg)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <label style={{ fontSize: '0.95em', display: 'block', marginBottom: '8px' }}>Set all target levels</label>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <select className="global-select" style={{ flex: 2 }} value={batchTarget} onChange={e => setBatchTarget(e.target.value)}>
-                {levels.map(l => <option key={l} value={l}>{charmData.levels[l]?.label || l}</option>)}
-              </select>
-              <button type="button" className="inlineActionBtn inlineActionBtnPrimary" style={{ flex: 1 }} onClick={handleSetAllTarget}>Set All</button>
-            </div>
-          </div>
-        </div>
+
 
         <div className="gear-table" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div className="gear-table-header" style={{ display: 'flex', gap: '16px', fontWeight: 'bold', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>
@@ -214,36 +161,53 @@ const ChiefCharm = () => {
         <div className="card-panel" style={{ marginTop: '24px' }}>
           <h2 style={{ marginBottom: '16px' }}>Totals</h2>
           
-          <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ marginBottom: '8px', color: '#ffeb3b' }}>Materials Required for Target</h3>
-            <p><strong>Charm Designs Needed:</strong> {results.costs.charmDesigns.toLocaleString()}</p>
-            <p><strong>Charm Guides Needed:</strong> {results.costs.charmGuides.toLocaleString()}</p>
-            <p><strong>Jewel Secrets Needed:</strong> {results.costs.jewelSecrets.toLocaleString()}</p>
+          <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+            <strong style={{ color: 'var(--accent-color)' }}>MATERIALS REQUIRED FOR TARGET</strong><br />
+            Charm Designs: {results.costs.charmDesigns.toLocaleString()}<br />
+            Charm Guides: {results.costs.charmGuides.toLocaleString()}<br />
+            Jewel Secrets: {results.costs.jewelSecrets.toLocaleString()}<br />
+            
+            <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>REMAINING MATERIALS AFTER UPGRADES</strong>
+            Charm Designs: {results.remaining.charmDesigns.toLocaleString()}<br />
+            Charm Guides: {results.remaining.charmGuides.toLocaleString()}<br />
+            Jewel Secrets: {results.remaining.jewelSecrets.toLocaleString()}<br />
+            
+            <div className="card-panel" style={{ marginTop: '10px', background: '#1e2a3a', color: '#ffe08a', fontSize: '1.15em', textAlign: 'center' }}>
+              <strong>SVS Points Gained:</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
+            </div>
           </div>
 
-          <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <h3 style={{ marginBottom: '12px', color: '#4CAF50' }}>SvS Points</h3>
-            <p style={{ fontSize: '1.2em' }}><strong>{results.totalSvsPoints.toLocaleString()} Points</strong></p>
-          </div>
-
-          <div>
-            <h3 style={{ marginBottom: '12px', color: '#03A9F4' }}>Smart Upgrade Plan (Based on Your Materials)</h3>
-            {results.optimized && results.optimized.plan.length > 0 ? (
-              <>
-                <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '16px' }}>
-                  {results.optimized.plan.map((step, idx) => (
-                    <li key={idx} style={{ marginBottom: '4px' }}>
-                      Upgrade <strong>{step.slotLabel || step.slot}</strong> to {step.label}
-                    </li>
-                  ))}
-                </ul>
-                <h4 style={{ marginBottom: '8px' }}>Remaining Materials After Plan:</h4>
-                <p>Designs: {results.optimized.resources.charmDesigns.toLocaleString()} | Guides: {results.optimized.resources.charmGuides.toLocaleString()} | Secrets: {results.optimized.resources.jewelSecrets.toLocaleString()}</p>
-              </>
-            ) : (
-              <p>You don't have enough materials to make any upgrades toward your target.</p>
-            )}
-          </div>
+          {results.optimized && (
+            <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+              <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
+              {results.optimized.plan.length > 0 ? (
+                <>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>Charm Slot</th>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>Final Level</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {results.optimized.plan.map((step, idx) => (
+                        <tr key={idx}>
+                          <td style={{ padding: '4px' }}>{step.slot.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
+                          <td style={{ padding: '4px' }}>{step.label}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div style={{ marginTop: '10px' }}>
+                    <strong>Materials Remaining:</strong><br />
+                    Charm Designs: {results.optimized.resources.charmDesigns.toLocaleString()} | Charm Guides: {results.optimized.resources.charmGuides.toLocaleString()} | Jewel Secrets: {results.optimized.resources.jewelSecrets.toLocaleString()}
+                  </div>
+                </>
+              ) : (
+                <em style={{ display: 'block', marginTop: '8px' }}>No upgrades possible with current resources.</em>
+              )}
+            </div>
+          )}
         </div>
       )}
     </section>

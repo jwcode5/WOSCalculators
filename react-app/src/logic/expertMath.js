@@ -8,11 +8,21 @@ import EXPERTS_DATA from '../data/expertsData.json';
 export function calculateExpertUpgrade(expertTargets, inventory) {
   let totalAffinityNeeded = 0;
   let totalGeneralSigilsNeeded = 0;
-  const expertBreakdown = [];
+
+  // Track state for smart upgrade
+  const curLevels = {};
+  const targetLevels = {};
+  const optimizedLevels = {};
+  const specificSigils = {};
 
   expertTargets.forEach(t => {
     const expertData = EXPERTS_DATA[t.name];
     if (!expertData || !expertData.levels) return;
+
+    curLevels[t.name] = t.curLvl;
+    targetLevels[t.name] = t.tgtLvl;
+    optimizedLevels[t.name] = t.curLvl;
+    specificSigils[t.name] = t.specSigilsAvail || 0;
 
     let affinity = 0;
     let sigils = 0;
@@ -36,27 +46,76 @@ export function calculateExpertUpgrade(expertTargets, inventory) {
 
     totalAffinityNeeded += affinity;
     totalGeneralSigilsNeeded += remainingSigilsForExpert;
+  });
 
-    if (affinity > 0 || sigils > 0) {
-      expertBreakdown.push({
-        name: t.name,
-        affinity,
-        sigils,
-        remainingSigilsForExpert
+  // Calculate Smart Upgrade Plan
+  const resources = { ...inventory };
+  let currentAffinity = (resources.compass || 0) * 10 + (resources.fieryHeart || 0) * 100 + (resources.sail || 0) * 1000;
+  let currentSigils = resources.genSigils || 0;
+  
+  let upgradesMade = true;
+  while (upgradesMade) {
+    upgradesMade = false;
+    let bestExpert = null;
+    let bestCost = null;
+    let bestCostValue = Infinity;
+
+    Object.keys(curLevels).forEach(name => {
+      const curLvl = optimizedLevels[name];
+      const targetLvl = targetLevels[name];
+      const expertData = EXPERTS_DATA[name];
+
+      if (curLvl < targetLvl && expertData && expertData.levels) {
+        const next = expertData.levels.find(r => r.level === curLvl + 1);
+        if (next) {
+          const affinityCost = next.affinity || 0;
+          const totalSigilCost = next.advancement || 0;
+          const commonCost = Math.max(0, totalSigilCost - specificSigils[name]);
+          
+          if (affinityCost <= currentAffinity && commonCost <= currentSigils) {
+            const costValue = affinityCost + commonCost * 100;
+            if (costValue < bestCostValue) {
+              bestCostValue = costValue;
+              bestExpert = name;
+              bestCost = { affinityCost, commonCost, totalSigilCost };
+            }
+          }
+        }
+      }
+    });
+
+    if (bestExpert) {
+      optimizedLevels[bestExpert]++;
+      currentAffinity -= bestCost.affinityCost;
+      currentSigils -= bestCost.commonCost;
+      specificSigils[bestExpert] = Math.max(0, specificSigils[bestExpert] - bestCost.totalSigilCost);
+      upgradesMade = true;
+    }
+  }
+
+  const plan = [];
+  Object.keys(curLevels).forEach(name => {
+    if (optimizedLevels[name] > curLevels[name]) {
+      plan.push({
+        slot: name,
+        to: optimizedLevels[name],
+        label: `Lv. ${optimizedLevels[name]}`
       });
     }
   });
 
-  const totalInvAffinity = (inventory.compass * 10) + (inventory.fieryHeart * 100) + (inventory.sail * 1000);
-  const remainingAffinity = Math.max(0, totalAffinityNeeded - totalInvAffinity);
-  const remainingGenSigils = Math.max(0, totalGeneralSigilsNeeded - inventory.genSigils);
-
   return {
-    totalAffinityNeeded,
-    totalGeneralSigilsNeeded,
-    remainingAffinity,
-    remainingGenSigils,
-    expertBreakdown
+    costs: {
+      affinity: totalAffinityNeeded,
+      generalSigils: totalGeneralSigilsNeeded
+    },
+    optimized: {
+      plan,
+      resources: {
+        affinity: currentAffinity,
+        generalSigils: currentSigils
+      }
+    }
   };
 }
 
@@ -130,22 +189,26 @@ export function getLevelForRelationship(expertName, relTitle) {
 export function calculateExpertSkillsUpgrade(skillTargets, inventory) {
   let totalSkillExpNeeded = 0;
   let totalSkillBooksNeeded = 0;
-  const expertBreakdown = {};
+  const warnings = [];
+
+  const curLevels = {};
+  const targetLevels = {};
+  const optimizedLevels = {};
+  const affinityLevels = {};
+  const specificSavedExp = {};
 
   skillTargets.forEach(t => {
+    const key = `${t.name}_${t.skillId}`;
     const expertData = EXPERTS_DATA[t.name];
     if (!expertData) return;
 
-    if (!expertBreakdown[t.name]) {
-      expertBreakdown[t.name] = { skillExp: 0, skillBooks: 0, warnings: [] };
-    }
+    curLevels[key] = t.curLvl;
+    targetLevels[key] = t.tgtLvl;
+    optimizedLevels[key] = t.curLvl;
+    affinityLevels[t.name] = t.curAffinityLevel;
+    specificSavedExp[key] = t.savedExp || 0;
 
-    if (t.reqRel && t.reqRel !== "-" && t.reqRel !== "") {
-      const reqLevel = getLevelForRelationship(t.name, t.reqRel);
-      if (t.curAffinityLevel < reqLevel) {
-        expertBreakdown[t.name].warnings.push(`Skill ${t.skillId} Target Lv.${t.tgtLvl} requires Affinity ${t.reqRel} (Lv.${reqLevel}). Current is Lv.${t.curAffinityLevel}.`);
-      }
-    }
+    let skillExpForThisTarget = 0;
 
     if (t.curLvl < t.tgtLvl) {
       const sArr = expertData.skills[t.skillId.toString()];
@@ -153,98 +216,112 @@ export function calculateExpertSkillsUpgrade(skillTargets, inventory) {
         for (let sl = t.curLvl + 1; sl <= t.tgtLvl; sl++) {
           const row = sArr.find(r => r.level === sl);
           if (row) {
-            expertBreakdown[t.name].skillExp += (row.exp || 0);
-            expertBreakdown[t.name].skillBooks += (row.book || 0);
-            totalSkillExpNeeded += (row.exp || 0);
+            skillExpForThisTarget += (row.exp || 0);
             totalSkillBooksNeeded += (row.book || 0);
+            
+            // Check warnings for target level
+            if (row.relationship && row.relationship !== "-") {
+              const reqLevel = getLevelForRelationship(t.name, row.relationship);
+              if (t.curAffinityLevel < reqLevel && !warnings.some(w => w.includes(`${t.name} Skill ${t.skillId}`))) {
+                warnings.push(`${t.name} Skill ${t.skillId} Target Lv.${t.tgtLvl} requires Affinity '${row.relationship}' (Lv.${reqLevel}). Current is Lv.${t.curAffinityLevel}.`);
+              }
+            }
           }
         }
       }
     }
+    
+    // Apply saved exp discount to total
+    const expAfterDiscount = Math.max(0, skillExpForThisTarget - specificSavedExp[key]);
+    totalSkillExpNeeded += expAfterDiscount;
   });
 
-  const remainingSkillExpSeconds = Math.max(0, totalSkillExpNeeded - inventory.skillExpSeconds);
-  const remainingSkillBooks = Math.max(0, totalSkillBooksNeeded - inventory.skillBooks);
+  // Calculate Smart Upgrade Plan
+  const resources = { ...inventory };
+  let currentExp = resources.skillExpSeconds || 0;
+  let currentBooks = resources.skillBooks || 0;
 
-  const breakdownArray = Object.keys(expertBreakdown)
-    .filter(name => expertBreakdown[name].skillExp > 0 || expertBreakdown[name].skillBooks > 0 || expertBreakdown[name].warnings.length > 0)
-    .map(name => ({
-      name,
-      ...expertBreakdown[name]
-    }));
-
-  return {
-    totalSkillExpNeeded,
-    totalSkillBooksNeeded,
-    remainingSkillExpSeconds,
-    remainingSkillBooks,
-    expertBreakdown: breakdownArray
-  };
-}
-
-export function calculateExpertSkillsSmartUpgrade(skillStates, inventory) {
-  let invSkillExpSeconds = inventory.skillExpSeconds;
-  let invSkillBooks = inventory.skillBooks;
-
-  const currentStates = [];
-  skillStates.forEach(s => {
-    const expertData = EXPERTS_DATA[s.name];
-    if (!expertData) return;
-    const skillArr = expertData.skills[s.skillId.toString()];
-    if (skillArr) {
-      currentStates.push({
-        name: s.name,
-        skillId: s.skillId,
-        upgrades: skillArr,
-        startIndex: skillArr.findIndex(l => l.level === s.curLvl),
-        currentIndex: skillArr.findIndex(l => l.level === s.curLvl),
-        maxAffinity: s.maxAffinity
-      });
-    }
-  });
-
-  let upgradesDone = 0;
-  while (true) {
+  let upgradesMade = true;
+  while (upgradesMade) {
+    upgradesMade = false;
     let bestSkill = null;
-    let minCostValue = Infinity;
+    let bestCost = null;
+    let bestCostValue = Infinity;
 
-    currentStates.forEach(state => {
-      if (state.currentIndex + 1 < state.upgrades.length) {
-        const next = state.upgrades[state.currentIndex + 1];
-        const reqRel = next.relationship;
-        let reqLevel = 1;
-        if (reqRel && reqRel !== "-" && reqRel !== "") {
-          reqLevel = getLevelForRelationship(state.name, reqRel);
-        }
+    Object.keys(curLevels).forEach(key => {
+      const [name, skillId] = key.split('_');
+      const curLvl = optimizedLevels[key];
+      const targetLvl = targetLevels[key];
+      const expertData = EXPERTS_DATA[name];
 
-        if (state.maxAffinity >= reqLevel) {
-          const expCost = next.exp || 0;
-          const bookCost = next.book || 0;
-          
-          if (expCost <= invSkillExpSeconds && bookCost <= invSkillBooks) {
-            const costValue = expCost + (bookCost * 50);
-            if (costValue < minCostValue) {
-              minCostValue = costValue;
-              bestSkill = state;
+      if (curLvl < targetLvl && expertData && expertData.skills[skillId]) {
+        const next = expertData.skills[skillId].find(r => r.level === curLvl + 1);
+        if (next) {
+          // Check if we meet relationship reqs for smart upgrade
+          let canUpgrade = true;
+          if (next.relationship && next.relationship !== "-") {
+            const reqLevel = getLevelForRelationship(name, next.relationship);
+            if (affinityLevels[name] < reqLevel) {
+              canUpgrade = false;
+            }
+          }
+
+          if (canUpgrade) {
+            let expCost = next.exp || 0;
+            const bookCost = next.book || 0;
+            
+            // Apply saved exp discount to this specific level up
+            const discount = Math.min(expCost, specificSavedExp[key]);
+            expCost -= discount;
+            
+            if (expCost <= currentExp && bookCost <= currentBooks) {
+              const costValue = expCost + (bookCost * 50);
+              if (costValue < bestCostValue) {
+                bestCostValue = costValue;
+                bestSkill = key;
+                bestCost = { expCost, bookCost, discountApplied: discount };
+              }
             }
           }
         }
       }
     });
 
-    if (!bestSkill) break;
-
-    const next = bestSkill.upgrades[bestSkill.currentIndex + 1];
-    invSkillExpSeconds -= (next.exp || 0);
-    invSkillBooks -= (next.book || 0);
-    bestSkill.currentIndex++;
-    upgradesDone++;
+    if (bestSkill) {
+      optimizedLevels[bestSkill]++;
+      currentExp -= bestCost.expCost;
+      currentBooks -= bestCost.bookCost;
+      specificSavedExp[bestSkill] -= bestCost.discountApplied;
+      upgradesMade = true;
+    }
   }
 
-  const upgradedSkills = currentStates
-    .filter(s => s.currentIndex > s.startIndex)
-    .map(s => ({ name: s.name, skillId: s.skillId, newTargetLvl: s.upgrades[s.currentIndex].level }));
+  const plan = [];
+  Object.keys(curLevels).forEach(key => {
+    if (optimizedLevels[key] > curLevels[key]) {
+      const [name, skillId] = key.split('_');
+      plan.push({
+        slot: `${name} - Skill ${skillId}`,
+        to: optimizedLevels[key],
+        label: `Lv. ${optimizedLevels[key]}`
+      });
+    }
+  });
 
-  return { upgradesDone, upgradedSkills };
+  return {
+    costs: {
+      skillExp: totalSkillExpNeeded,
+      skillBooks: totalSkillBooksNeeded
+    },
+    optimized: {
+      plan,
+      resources: {
+        skillExp: currentExp,
+        skillBooks: currentBooks
+      }
+    },
+    warnings
+  };
 }
+
 

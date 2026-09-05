@@ -601,8 +601,8 @@ const Buildings = () => {
               ))}
 
               {/* Grand Total */}
-              <div className="card-panel" style={{ marginTop: '15px' }}>
-                <strong>GRAND TOTAL</strong><br />
+              <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+                <strong style={{ color: 'var(--accent-color)' }}>GRAND TOTAL</strong><br />
                 Meat: {results.totals.meat.toLocaleString()} | Wood: {results.totals.wood.toLocaleString()} | Coal: {results.totals.coal.toLocaleString()} | Iron: {results.totals.iron.toLocaleString()}<br />
                 {(results.totals.fireCrystals > 0 || results.totals.refinedFireCrystals > 0) && (
                   <>Fire Crystals: {results.totals.fireCrystals.toLocaleString()} | Refined Fire Crystals: {results.totals.refinedFireCrystals.toLocaleString()}<br /></>
@@ -617,7 +617,7 @@ const Buildings = () => {
                   <><br />Agnus' Project Management Skill: {formatDuration(results.time.agnusAdjustedSeconds)} ({formatDuration(results.time.agnusTimeSavedSeconds)} saved)</>
                 )}
                 <br /><br />
-                <strong>After Upgrade (Backpack Balance)</strong><br />
+                <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>AFTER UPGRADE (BACKPACK BALANCE)</strong>
                 Meat: {results.remaining.meat.toLocaleString()} | Wood: {results.remaining.wood.toLocaleString()} | Coal: {results.remaining.coal.toLocaleString()} | Iron: {results.remaining.iron.toLocaleString()}<br />
                 {(results.totals.fireCrystals > 0 || results.totals.refinedFireCrystals > 0) && (
                   <>Fire Crystals: {results.remaining.fireCrystals.toLocaleString()} | Refined Fire Crystals: {results.remaining.refinedFireCrystals.toLocaleString()}<br /></>
@@ -630,10 +630,10 @@ const Buildings = () => {
 
               {/* Chest Plan */}
               {results.chestPlan && (
-                <div className="card-panel" style={{ marginTop: '15px' }}>
-                  <strong>CUSTOM CHEST RECOMMENDATION</strong><br />
+                <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+                  <strong style={{ color: 'var(--accent-color)' }}>CUSTOM CHEST RECOMMENDATION</strong><br />
                   Chests Used: L3 {(results.chestPlan.used.unsecuredLv3 || 0) + (results.chestPlan.used.securedLv3 || 0)} | L2 {(results.chestPlan.used.unsecuredLv2 || 0) + (results.chestPlan.used.securedLv2 || 0)} | L1 {(results.chestPlan.used.unsecuredLv1 || 0) + (results.chestPlan.used.securedLv1 || 0)}<br /><br />
-                  <strong>After Recommended Chest Use</strong><br />
+                  <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>AFTER RECOMMENDED CHEST USE</strong>
                   Meat: {results.remaining.postChest.meat.toLocaleString()} | Wood: {results.remaining.postChest.wood.toLocaleString()} | Coal: {results.remaining.postChest.coal.toLocaleString()} | Iron: {results.remaining.postChest.iron.toLocaleString()}
                 </div>
               )}

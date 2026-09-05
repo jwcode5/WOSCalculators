@@ -33,22 +33,28 @@ const ChiefGear = () => {
     lunarAmber: ''
   });
 
+  const [initializedAccountId, setInitializedAccountId] = useState(null);
+
   useEffect(() => {
-    if (activeAccount && activeAccount.state && activeAccount.state.chiefGear) {
-      const loadedLevels = { ...activeAccount.state.chiefGear.levels };
-      Object.keys(loadedLevels).forEach(k => {
-        if (loadedLevels[k] === 'Lv.0') loadedLevels[k] = 'none';
-      });
-      setGearState(prev => ({ ...prev, ...loadedLevels }));
-      setMaterials(prev => ({ ...prev, ...activeAccount.state.chiefGear.materials }));
+    if (activeAccount) {
+      if (activeAccount.state && activeAccount.state.chiefGear) {
+        const loadedLevels = { ...activeAccount.state.chiefGear.levels };
+        // Normalize 'Lv.0' to 'none' if present from older data
+        Object.keys(loadedLevels).forEach(k => {
+          if (loadedLevels[k] === 'Lv.0') loadedLevels[k] = 'none';
+        });
+        setGearState(prev => ({ ...prev, ...loadedLevels }));
+        setMaterials(prev => ({ ...prev, ...activeAccount.state.chiefGear.materials }));
+      }
+      setInitializedAccountId(activeAccount.id);
     }
   }, [activeAccount?.id]);
 
   useEffect(() => {
-    if (activeAccount) {
+    if (activeAccount && initializedAccountId === activeAccount.id) {
       updateAccountState('chiefGear', { levels: gearState, materials });
     }
-  }, [gearState, materials]);
+  }, [gearState, materials, initializedAccountId]);
 
   const handleChangeGear = (id, type, value) => {
     setGearState(prev => {
@@ -99,7 +105,7 @@ const ChiefGear = () => {
       <div className="card-panel">
         <h2 style={{ marginBottom: '16px' }}>Chief Gear Levels</h2>
         <div className="gear-table" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div className="gear-table-header" style={{ display: 'flex', gap: '16px', fontWeight: 'bold', marginBottom: '8px' }}>
+          <div className="gear-table-header" style={{ display: 'flex', gap: '16px', fontWeight: 'bold', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>
             <span style={{ flex: 1 }}>Piece</span>
             <span style={{ flex: 1 }}>Current Level</span>
             <span style={{ flex: 1 }}>Target Level</span>
@@ -153,37 +159,55 @@ const ChiefGear = () => {
         <div className="card-panel" style={{ marginTop: '24px' }}>
           <h2 style={{ marginBottom: '16px' }}>Totals</h2>
           
-          <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ marginBottom: '8px', color: '#ffeb3b' }}>Materials Required for Target</h3>
-            <p><strong>Hardened Alloy Needed:</strong> {results.costs.hardenedAlloy.toLocaleString()}</p>
-            <p><strong>Polishing Solution Needed:</strong> {results.costs.polishingSolution.toLocaleString()}</p>
-            <p><strong>Design Plans Needed:</strong> {results.costs.designPlans.toLocaleString()}</p>
-            <p><strong>Lunar Amber Needed:</strong> {results.costs.lunarAmber.toLocaleString()}</p>
+          <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+            <strong style={{ color: 'var(--accent-color)' }}>MATERIALS REQUIRED FOR TARGET</strong><br />
+            Hardened Alloy: {results.costs.hardenedAlloy.toLocaleString()}<br />
+            Polishing Solution: {results.costs.polishingSolution.toLocaleString()}<br />
+            Design Plans: {results.costs.designPlans.toLocaleString()}<br />
+            Lunar Amber: {results.costs.lunarAmber.toLocaleString()}<br />
+            
+            <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>REMAINING MATERIALS AFTER UPGRADES</strong>
+            Hardened Alloy: {results.remainingMaterials.hardenedAlloy.toLocaleString()}<br />
+            Polishing Solution: {results.remainingMaterials.polishingSolution.toLocaleString()}<br />
+            Design Plans: {results.remainingMaterials.designPlans.toLocaleString()}<br />
+            Lunar Amber: {results.remainingMaterials.lunarAmber.toLocaleString()}<br />
+            
+            <div className="card-panel" style={{ marginTop: '10px', background: '#1e2a3a', color: '#ffe08a', fontSize: '1.15em', textAlign: 'center' }}>
+              <strong>SVS Points Gained:</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
+            </div>
           </div>
 
-          <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <h3 style={{ marginBottom: '12px', color: '#4CAF50' }}>SvS Points</h3>
-            <p style={{ fontSize: '1.2em' }}><strong>{results.totalSvsPoints.toLocaleString()} Points</strong></p>
-          </div>
-
-          <div>
-            <h3 style={{ marginBottom: '12px', color: '#03A9F4' }}>Smart Upgrade Plan (Based on Your Materials)</h3>
-            {results.optimized && results.optimized.plan.length > 0 ? (
-              <>
-                <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '16px' }}>
-                  {results.optimized.plan.map((step, idx) => (
-                    <li key={idx} style={{ marginBottom: '4px' }}>
-                      Upgrade <strong>{PIECES.find(p => p.id === step.slot)?.label || step.slot}</strong> to {step.label}
-                    </li>
-                  ))}
-                </ul>
-                <h4 style={{ marginBottom: '8px' }}>Remaining Materials After Plan:</h4>
-                <p>Alloy: {results.optimized.resources.hardenedAlloy.toLocaleString()} | Solution: {results.optimized.resources.polishingSolution.toLocaleString()} | Plans: {results.optimized.resources.designPlans.toLocaleString()} | Amber: {results.optimized.resources.lunarAmber.toLocaleString()}</p>
-              </>
-            ) : (
-              <p>You don't have enough materials to make any upgrades toward your target.</p>
-            )}
-          </div>
+          {results.optimized && (
+            <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+              <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
+              {results.optimized.plan.length > 0 ? (
+                <>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>Gear Piece</th>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>Final Level</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {results.optimized.plan.map((step, idx) => (
+                        <tr key={idx}>
+                          <td style={{ padding: '4px' }}>{step.slot.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
+                          <td style={{ padding: '4px' }}>{step.label}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div style={{ marginTop: '10px' }}>
+                    <strong>Materials Remaining:</strong><br />
+                    Hardened Alloy: {results.optimized.resources.hardenedAlloy.toLocaleString()} | Polishing Solution: {results.optimized.resources.polishingSolution.toLocaleString()} | Design Plans: {results.optimized.resources.designPlans.toLocaleString()} | Lunar Amber: {results.optimized.resources.lunarAmber.toLocaleString()}
+                  </div>
+                </>
+              ) : (
+                <em style={{ display: 'block', marginTop: '8px' }}>No upgrades possible with current resources.</em>
+              )}
+            </div>
+          )}
         </div>
       )}
     </section>

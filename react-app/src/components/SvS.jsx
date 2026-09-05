@@ -6,17 +6,22 @@ const SvS = () => {
   const { activeAccount, updateAccountState } = useAccounts();
   const [svsState, setSvsState] = useState({});
 
+  const [initializedAccountId, setInitializedAccountId] = useState(null);
+
   useEffect(() => {
-    if (activeAccount && activeAccount.state && activeAccount.state.svs) {
-      setSvsState(activeAccount.state.svs);
+    if (activeAccount) {
+      if (activeAccount.state && activeAccount.state.svs) {
+        setSvsState(activeAccount.state.svs);
+      }
+      setInitializedAccountId(activeAccount.id);
     }
   }, [activeAccount?.id]);
 
   useEffect(() => {
-    if (activeAccount) {
+    if (activeAccount && initializedAccountId === activeAccount.id) {
       updateAccountState('svs', svsState);
     }
-  }, [svsState]);
+  }, [svsState, initializedAccountId]);
 
   const handleChange = (id, value) => {
     setSvsState(prev => ({ ...prev, [id]: parseFloat(value) || 0 }));

@@ -47,12 +47,14 @@ export function calculateMultiPetUpgrade(targets, inventory) {
       costs.tamingManual += (u.tamingManual || 0);
       costs.energizingPotion += (u.energizingPotion || 0);
       costs.strengtheningSerum += (u.strengtheningSerum || 0);
+      totalSvsPoints += (u.svsPoints || 0);
     }
   });
 
   // Calculate Smart Upgrade Plan
   const resources = { ...inventory };
   let upgradesMade = true;
+  let optimizedSvsPoints = 0;
   
   while (upgradesMade) {
     upgradesMade = false;
@@ -93,7 +95,7 @@ export function calculateMultiPetUpgrade(targets, inventory) {
       resources.tamingManual -= (bestCost.tamingManual || 0);
       resources.energizingPotion -= (bestCost.energizingPotion || 0);
       resources.strengtheningSerum -= (bestCost.strengtheningSerum || 0);
-      totalSvsPoints += (bestCost.svsPoints || 0);
+      optimizedSvsPoints += (bestCost.svsPoints || 0);
       upgradesMade = true;
     }
   }
@@ -113,7 +115,7 @@ export function calculateMultiPetUpgrade(targets, inventory) {
   return { 
     costs, 
     totalSvsPoints, 
-    optimized: { plan, resources } 
+    optimized: { plan, resources, svsPoints: optimizedSvsPoints } 
   };
 }
 

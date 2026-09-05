@@ -19,21 +19,23 @@ const Pets = () => {
     energizingPotion: '',
     strengtheningSerum: ''
   });
-  const [batchCurrent, setBatchCurrent] = useState('Not Tamed');
-  const [batchTarget, setBatchTarget] = useState('Not Tamed');
+  const [initializedAccountId, setInitializedAccountId] = useState(null);
 
   useEffect(() => {
-    if (activeAccount && activeAccount.state && activeAccount.state.pets) {
-      setPetState(prev => ({ ...prev, ...activeAccount.state.pets.levels }));
-      setMaterials(prev => ({ ...prev, ...activeAccount.state.pets.materials }));
+    if (activeAccount) {
+      if (activeAccount.state && activeAccount.state.pets) {
+        setPetState(prev => ({ ...prev, ...activeAccount.state.pets.levels }));
+        setMaterials(prev => ({ ...prev, ...activeAccount.state.pets.materials }));
+      }
+      setInitializedAccountId(activeAccount.id);
     }
   }, [activeAccount?.id]);
 
   useEffect(() => {
-    if (activeAccount) {
+    if (activeAccount && initializedAccountId === activeAccount.id) {
       updateAccountState('pets', { levels: petState, materials });
     }
-  }, [petState, materials]);
+  }, [petState, materials, initializedAccountId]);
 
   const getPetKey = (name) => name.charAt(0).toLowerCase() + name.slice(1).replace(/ /g, '').replace(/-/g, '');
 
@@ -68,43 +70,6 @@ const Pets = () => {
     setMaterials(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSetAllCurrent = () => {
-    const newState = { ...petState };
-    PET_ORDER.forEach(name => {
-      const petInfo = petData.pets[name];
-      if (!petInfo) return;
-      const levels = getLevels(petInfo);
-      const key = getPetKey(name);
-      newState[`${key}Current`] = String(batchCurrent);
-      
-      const curIdx = levels.findIndex(l => String(l) === String(batchCurrent));
-      const tgtIdx = levels.findIndex(l => String(l) === String(newState[`${key}Target`] || levels[0]));
-      
-      if (curIdx > tgtIdx && curIdx !== -1) {
-        newState[`${key}Target`] = String(levels[curIdx]);
-      }
-    });
-    setPetState(newState);
-  };
-
-  const handleSetAllTarget = () => {
-    const newState = { ...petState };
-    PET_ORDER.forEach(name => {
-      const petInfo = petData.pets[name];
-      if (!petInfo) return;
-      const levels = getLevels(petInfo);
-      const key = getPetKey(name);
-      newState[`${key}Target`] = String(batchTarget);
-      
-      const curIdx = levels.findIndex(l => String(l) === String(newState[`${key}Current`] || levels[0]));
-      const tgtIdx = levels.findIndex(l => String(l) === String(batchTarget));
-      
-      if (curIdx > tgtIdx && tgtIdx !== -1) {
-        newState[`${key}Current`] = String(levels[tgtIdx]);
-      }
-    });
-    setPetState(newState);
-  };
 
   const results = useMemo(() => {
     try {
@@ -142,28 +107,6 @@ const Pets = () => {
       <div className="card-panel">
         <h2 style={{ marginBottom: '16px' }}>Pet Collection</h2>
         
-        <div className="pet-batch-controls" style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <div className="pet-batch-group" style={{ flex: 1, padding: '16px', background: 'var(--glass-bg)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.95em' }}>Set all current levels</label>
-            <div className="pet-batch-inline" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <select className="global-select" style={{ flex: 2 }} value={batchCurrent} onChange={e => setBatchCurrent(e.target.value)}>
-                <option value="Not Tamed">Not Tamed</option>
-                {Array.from({length: 120}, (_, i) => i + 1).map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
-              <button type="button" className="inlineActionBtn inlineActionBtnPrimary" style={{ flex: 1 }} onClick={handleSetAllCurrent}>Set All</button>
-            </div>
-          </div>
-          <div className="pet-batch-group" style={{ flex: 1, padding: '16px', background: 'var(--glass-bg)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.95em' }}>Set all target levels</label>
-            <div className="pet-batch-inline" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <select className="global-select" style={{ flex: 2 }} value={batchTarget} onChange={e => setBatchTarget(e.target.value)}>
-                <option value="Not Tamed">Not Tamed</option>
-                {Array.from({length: 120}, (_, i) => i + 1).map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
-              <button type="button" className="inlineActionBtn inlineActionBtnPrimary" style={{ flex: 1 }} onClick={handleSetAllTarget}>Set All</button>
-            </div>
-          </div>
-        </div>
 
         <div className="gear-table" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)', padding: '20px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
           <div className="gear-table-header" style={{ display: 'flex', gap: '16px', fontWeight: 'bold', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>
@@ -172,30 +115,50 @@ const Pets = () => {
             <span style={{ flex: 1 }}>Target Level</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {PET_ORDER.map(name => {
+            {PET_ORDER.map((name, index) => {
               const petInfo = petData.pets[name];
               if (!petInfo) return null;
               const key = getPetKey(name);
               const levels = getLevels(petInfo);
+              const tier = petInfo.tier || "";
+              
+              let divider = null;
+              if (index > 0) {
+                const prevName = PET_ORDER[index - 1];
+                const prevData = petData.pets[prevName];
+                const reqLevel = (prevData.tier === "SSR") ? 30 : 15;
+                
+                divider = (
+                  <div key={`div-${name}`} style={{ height: '2px', background: 'linear-gradient(90deg, transparent, rgba(255,224,138,0.3), transparent)', margin: '10px 0', position: 'relative' }}>
+                    <span style={{ position: 'absolute', right: '10px', top: '-12px', fontSize: '0.65em', color: '#ffe08a', fontStyle: 'italic', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reach Lv.{reqLevel} to unlock next</span>
+                  </div>
+                );
+              }
               
               return (
-                <div key={name} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                  <span style={{ flex: 1.5 }}>{name} ({petInfo.tier})</span>
-                  <select 
-                    className="global-select" style={{ flex: 1 }}
-                    value={petState[`${key}Current`] || 'Not Tamed'}
-                    onChange={(e) => handleChangePet(key, 'Current', e.target.value, levels)}
-                  >
-                    {levels.map(l => <option key={l} value={l}>{l}</option>)}
-                  </select>
-                  <select 
-                    className="global-select" style={{ flex: 1 }}
-                    value={petState[`${key}Target`] || 'Not Tamed'}
-                    onChange={(e) => handleChangePet(key, 'Target', e.target.value, levels)}
-                  >
-                    {levels.map(l => <option key={l} value={l}>{l}</option>)}
-                  </select>
-                </div>
+                <React.Fragment key={name}>
+                  {divider}
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '8px 10px', borderBottom: index < PET_ORDER.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                    <div style={{ flex: 1.5, display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontWeight: 500, fontSize: '0.95em' }}>{name}</span>
+                      {tier && <span style={{ fontSize: '0.7em', fontWeight: 'bold', opacity: 0.7, textTransform: 'uppercase' }}>{tier}</span>}
+                    </div>
+                    <select 
+                      className="global-select" style={{ flex: 1 }}
+                      value={petState[`${key}Current`] || 'Not Tamed'}
+                      onChange={(e) => handleChangePet(key, 'Current', e.target.value, levels)}
+                    >
+                      {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                    </select>
+                    <select 
+                      className="global-select" style={{ flex: 1 }}
+                      value={petState[`${key}Target`] || 'Not Tamed'}
+                      onChange={(e) => handleChangePet(key, 'Target', e.target.value, levels)}
+                    >
+                      {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                    </select>
+                  </div>
+                </React.Fragment>
               );
             })}
           </div>
@@ -228,37 +191,40 @@ const Pets = () => {
         <div className="card-panel" style={{ marginTop: '24px' }}>
           <h2 style={{ marginBottom: '16px' }}>Totals</h2>
           
-          <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ marginBottom: '8px', color: '#ffeb3b' }}>Materials Required for Target</h3>
-            <p><strong>Pet Food Needed:</strong> {results.costs.petFood.toLocaleString()}</p>
-            <p><strong>Taming Manuals Needed:</strong> {results.costs.tamingManual.toLocaleString()}</p>
-            <p><strong>Energizing Potions Needed:</strong> {results.costs.energizingPotion.toLocaleString()}</p>
-            <p><strong>Strengthening Serums Needed:</strong> {results.costs.strengtheningSerum.toLocaleString()}</p>
+          <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+            <strong style={{ color: 'var(--accent-color)' }}>TARGET UPGRADES TOTAL</strong><br />
+            Pet Food: {results.costs.petFood.toLocaleString()}<br />
+            Taming Manuals: {results.costs.tamingManual.toLocaleString()}<br />
+            Energizing Potions: {results.costs.energizingPotion.toLocaleString()}<br />
+            Strengthening Serums: {results.costs.strengtheningSerum.toLocaleString()}<br />
+            
+            <div className="card-panel" style={{ marginTop: '10px', background: '#1e2a3a', color: '#ffe08a', fontSize: '1.15em', textAlign: 'center' }}>
+              <strong>SVS Points Gained:</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
+            </div>
           </div>
 
-          <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <h3 style={{ marginBottom: '12px', color: '#4CAF50' }}>SvS Points</h3>
-            <p style={{ fontSize: '1.2em' }}><strong>{results.totalSvsPoints.toLocaleString()} Points</strong></p>
-          </div>
-
-          <div>
-            <h3 style={{ marginBottom: '12px', color: '#03A9F4' }}>Smart Upgrade Plan (Based on Your Materials)</h3>
-            {results.optimized && results.optimized.plan.length > 0 ? (
-              <>
-                <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '16px' }}>
+          {results.optimized && (
+            <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+              <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
+              Based on your available resources:<br />
+              {results.optimized.plan.length > 0 ? (
+                <>
                   {results.optimized.plan.map((step, idx) => (
-                    <li key={idx} style={{ marginBottom: '4px' }}>
-                      Upgrade <strong>{step.slot}</strong> to {step.label}
-                    </li>
+                    <div key={idx} style={{ marginTop: '10px' }}>
+                      <strong>{step.slot}</strong> (→ {step.label})
+                    </div>
                   ))}
-                </ul>
-                <h4 style={{ marginBottom: '8px' }}>Remaining Materials After Plan:</h4>
-                <p>Food: {results.optimized.resources.petFood.toLocaleString()} | Manuals: {results.optimized.resources.tamingManual.toLocaleString()} | Potions: {results.optimized.resources.energizingPotion.toLocaleString()} | Serums: {results.optimized.resources.strengtheningSerum.toLocaleString()}</p>
-              </>
-            ) : (
-              <p>You don't have enough materials to make any upgrades toward your target.</p>
-            )}
-          </div>
+                  <div style={{ marginTop: '10px', borderTop: '1px solid var(--glass-border)', paddingTop: '10px' }}>
+                    <strong>Total Cost:</strong><br />
+                    Food: {((parseFloat(materials.petFood)||0) - results.optimized.resources.petFood).toLocaleString()} | Manuals: {((parseFloat(materials.tamingManual)||0) - results.optimized.resources.tamingManual).toLocaleString()} | Potions: {((parseFloat(materials.energizingPotion)||0) - results.optimized.resources.energizingPotion).toLocaleString()} | Serums: {((parseFloat(materials.strengtheningSerum)||0) - results.optimized.resources.strengtheningSerum).toLocaleString()}<br />
+                    <strong>Total SVS Points Gained: {results.optimized.svsPoints.toLocaleString()}</strong>
+                  </div>
+                </>
+              ) : (
+                <em style={{ display: 'block', marginTop: '8px' }}>No target upgrades selected and no optimized upgrades possible with current materials.</em>
+              )}
+            </div>
+          )}
         </div>
       )}
     </section>

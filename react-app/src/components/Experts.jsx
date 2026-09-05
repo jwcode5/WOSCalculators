@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAccounts } from '../context/AccountContext';
 import expertData from '../data/expertsData.json';
-import { calculateExpertUpgrade } from '../logic/expertMath';
+import { calculateExpertUpgrade, calculateExpertSkillsUpgrade } from '../logic/expertMath';
 
 const EXPERT_NAMES = Object.keys(expertData);
 
@@ -12,33 +12,57 @@ const Experts = () => {
     advancementSigils: '',
     compass: '',
     fieryHeart: '',
-    sailOfConquest: ''
+    sailOfConquest: '',
+    skillExp: '',
+    skillBooks: ''
   });
-  const [batchCurrent, setBatchCurrent] = useState('1');
-  const [batchTarget, setBatchTarget] = useState('1');
+  const [initializedAccountId, setInitializedAccountId] = useState(null);
 
   useEffect(() => {
-    if (activeAccount && activeAccount.state && activeAccount.state.experts) {
-      setExpertState(prev => ({ ...prev, ...activeAccount.state.experts.levels }));
-      setMaterials(prev => ({ ...prev, ...activeAccount.state.experts.materials }));
+    if (activeAccount) {
+      if (activeAccount.state && activeAccount.state.experts) {
+        setExpertState(prev => ({ ...prev, ...activeAccount.state.experts.levels }));
+        setMaterials(prev => ({ ...prev, ...activeAccount.state.experts.materials }));
+      }
+      setInitializedAccountId(activeAccount.id);
     }
   }, [activeAccount?.id]);
 
   useEffect(() => {
-    if (activeAccount) {
+    if (activeAccount && initializedAccountId === activeAccount.id) {
       updateAccountState('experts', { levels: expertState, materials });
     }
-  }, [expertState, materials]);
+  }, [expertState, materials, initializedAccountId]);
 
   const handleChangeExpert = (name, type, value) => {
     setExpertState(prev => {
       const newState = { ...prev, [`${name}${type}`]: value };
-      const curLvl = parseInt(type === 'Current' ? value : prev[`${name}Current`] || 1, 10);
-      const tgtLvl = parseInt(type === 'Target' ? value : prev[`${name}Target`] || 1, 10);
       
-      if (curLvl > tgtLvl) {
-        if (type === 'Current') newState[`${name}Target`] = curLvl.toString();
-        else newState[`${name}Current`] = tgtLvl.toString();
+      if (type !== 'Sigils' && !type.includes('skill')) {
+        const curLvl = parseInt(type === 'Current' ? value : prev[`${name}Current`] || 1, 10);
+        const tgtLvl = parseInt(type === 'Target' ? value : prev[`${name}Target`] || 1, 10);
+        
+        if (curLvl > tgtLvl) {
+          if (type === 'Current') newState[`${name}Target`] = curLvl.toString();
+          else newState[`${name}Current`] = tgtLvl.toString();
+        }
+      } else if (type.includes('skill')) {
+        if (!type.includes('Exp')) {
+          const base = `${name}_skill${type.split('skill')[1].split('_')[0]}`;
+          const isCur = type.includes('Current');
+          
+          let curLvl = parseInt(isCur ? value : prev[`${base}_Current`] || -1, 10);
+          let tgtLvl = parseInt(!isCur ? value : prev[`${base}_Target`] || -1, 10);
+
+          // If Not Obtained, treat it as level 0 for comparison
+          const curCompare = curLvl === -1 ? 0 : curLvl;
+          const tgtCompare = tgtLvl === -1 ? 0 : tgtLvl;
+
+          if (curCompare > tgtCompare) {
+            if (isCur) newState[`${base}_Target`] = value; // Push target up
+            else newState[`${base}_Current`] = value; // Push current down
+          }
+        }
       }
       return newState;
     });
@@ -48,39 +72,41 @@ const Experts = () => {
     setMaterials(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSetAllCurrent = () => {
-    const newState = { ...expertState };
-    EXPERT_NAMES.forEach(name => {
-      newState[`${name}Current`] = batchCurrent;
-    });
-    setExpertState(newState);
-  };
-
-  const handleSetAllTarget = () => {
-    const newState = { ...expertState };
-    EXPERT_NAMES.forEach(name => {
-      newState[`${name}Target`] = batchTarget;
-    });
-    setExpertState(newState);
-  };
-
   const results = useMemo(() => {
     try {
       const targets = EXPERT_NAMES.map(name => ({
         name,
         curLvl: parseInt(expertState[`${name}Current`] || 1),
         tgtLvl: parseInt(expertState[`${name}Target`] || 1),
-        specSigilsAvail: 0
+        specSigilsAvail: parseFloat(expertState[`${name}Sigils`]) || 0
       })).filter(t => t.curLvl < t.tgtLvl);
+
+      const skillTargets = [];
+      EXPERT_NAMES.forEach(name => {
+        const curAffinityLevel = parseInt(expertState[`${name}Current`] || 1);
+        [1, 2, 3, 4].forEach(skillId => {
+          const curLvl = parseInt(expertState[`${name}_skill${skillId}_Current`] || -1);
+          const tgtLvl = parseInt(expertState[`${name}_skill${skillId}_Target`] || -1);
+          const savedExp = parseFloat(expertState[`${name}_skill${skillId}_Exp`]) || 0;
+          if (curLvl !== -1 && tgtLvl !== -1 && curLvl < tgtLvl) {
+            skillTargets.push({ name, skillId, curLvl, tgtLvl, curAffinityLevel, savedExp });
+          }
+        });
+      });
 
       const inventory = {
         genSigils: parseFloat(materials.advancementSigils) || 0,
         compass: parseFloat(materials.compass) || 0,
         fieryHeart: parseFloat(materials.fieryHeart) || 0,
-        sail: parseFloat(materials.sailOfConquest) || 0
+        sail: parseFloat(materials.sailOfConquest) || 0,
+        skillExpSeconds: (parseFloat(materials.skillExp) || 0) * 60,
+        skillBooks: parseFloat(materials.skillBooks) || 0
       };
 
-      return calculateExpertUpgrade(targets, inventory);
+      return {
+        affinityResults: calculateExpertUpgrade(targets, inventory),
+        skillResults: calculateExpertSkillsUpgrade(skillTargets, inventory)
+      };
     } catch (e) {
       console.error(e);
       return null;
@@ -91,27 +117,6 @@ const Experts = () => {
     <section id="expertsPanel">
       <div className="card-panel">
         <h2 style={{ marginBottom: '16px' }}>Expert Levels</h2>
-        
-        <div className="pet-batch-controls" style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <div className="pet-batch-group" style={{ flex: 1, padding: '16px', background: 'var(--glass-bg)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.95em' }}>Set all current levels</label>
-            <div className="pet-batch-inline" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <select className="global-select" style={{ flex: 2 }} value={batchCurrent} onChange={e => setBatchCurrent(e.target.value)}>
-                {Array.from({length: 80}, (_, i) => i + 1).map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
-              <button type="button" className="inlineActionBtn inlineActionBtnPrimary" style={{ flex: 1 }} onClick={handleSetAllCurrent}>Set All</button>
-            </div>
-          </div>
-          <div className="pet-batch-group" style={{ flex: 1, padding: '16px', background: 'var(--glass-bg)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.95em' }}>Set all target levels</label>
-            <div className="pet-batch-inline" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <select className="global-select" style={{ flex: 2 }} value={batchTarget} onChange={e => setBatchTarget(e.target.value)}>
-                {Array.from({length: 80}, (_, i) => i + 1).map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
-              <button type="button" className="inlineActionBtn inlineActionBtnPrimary" style={{ flex: 1 }} onClick={handleSetAllTarget}>Set All</button>
-            </div>
-          </div>
-        </div>
 
         <div className="gear-table">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
@@ -119,23 +124,45 @@ const Experts = () => {
               const maxLvl = expertData[name]?.levels?.length || 80;
               const levels = Array.from({length: maxLvl}, (_, i) => i + 1);
               return (
-                <div key={name} style={{ background: 'var(--glass-bg)', padding: '12px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>{name}</div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                <div key={name} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '12px', textAlign: 'center', borderBottom: '1px solid var(--glass-border)', paddingBottom: '8px' }}>
+                    {name}
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center', fontSize: '0.85em', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                    <span>Current</span><span>Target</span><span>Specific Sigils</span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', alignItems: 'center' }}>
                     <select 
-                      className="global-select" style={{ flex: 1 }}
+                      className="global-select" 
                       value={expertState[`${name}Current`] || 1}
                       onChange={(e) => handleChangeExpert(name, 'Current', e.target.value)}
                     >
-                      {levels.map(l => <option key={l} value={l}>Lv {l}</option>)}
+                      {expertData[name]?.levels?.map(row => (
+                        <option key={row.level} value={row.level}>
+                          {row.level} {row.relationship && row.relationship !== "-" ? `- ${row.relationship}` : ""}
+                        </option>
+                      ))}
                     </select>
                     <select 
-                      className="global-select" style={{ flex: 1 }}
+                      className="global-select" 
                       value={expertState[`${name}Target`] || 1}
                       onChange={(e) => handleChangeExpert(name, 'Target', e.target.value)}
                     >
-                      {levels.map(l => <option key={l} value={l}>Lv {l}</option>)}
+                      {expertData[name]?.levels?.map(row => (
+                        <option key={row.level} value={row.level}>
+                          {row.level} {row.relationship && row.relationship !== "-" ? `- ${row.relationship}` : ""}
+                        </option>
+                      ))}
                     </select>
+                    <input
+                      type="text"
+                      className="global-select"
+                      placeholder="0"
+                      value={expertState[`${name}Sigils`] || ''}
+                      onChange={(e) => handleChangeExpert(name, 'Sigils', e.target.value)}
+                    />
                   </div>
                 </div>
               );
@@ -166,18 +193,185 @@ const Experts = () => {
         </div>
       </div>
 
-      {results && results.totals && (
-        <div className="card-panel" style={{ marginTop: '24px' }}>
-          <h2 style={{ marginBottom: '16px' }}>Totals</h2>
-          <div>
-            <p><strong>Total Affinity Needed:</strong> {results.totals.affinity.toLocaleString()}</p>
-            <p><strong>Total General Sigils Needed:</strong> {results.totals.generalSigils.toLocaleString()}</p>
-            <hr style={{ margin: '12px 0', borderColor: 'var(--glass-border)' }} />
-            <p><strong>Affinity Remaining:</strong> {results.remaining.affinity.toLocaleString()}</p>
-            <p><strong>General Sigils Remaining:</strong> {results.remaining.generalSigils.toLocaleString()}</p>
+      {results && results.affinityResults && (() => {
+        const totalInvAffinity = (parseFloat(materials.compass) || 0) * 10 + (parseFloat(materials.fieryHeart) || 0) * 100 + (parseFloat(materials.sailOfConquest) || 0) * 1000;
+        const totalInvSigils = parseFloat(materials.advancementSigils) || 0;
+        const remainingAffinity = Math.max(0, totalInvAffinity - results.affinityResults.costs.affinity);
+        const remainingSigils = Math.max(0, totalInvSigils - results.affinityResults.costs.generalSigils);
+        
+        return (
+          <div className="card-panel" style={{ marginTop: '24px' }}>
+            <h2 style={{ marginBottom: '16px' }}>Totals</h2>
+            
+            <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+              <strong style={{ color: 'var(--accent-color)' }}>TARGET UPGRADES TOTAL</strong><br />
+              Total Affinity Required: {results.affinityResults.costs.affinity.toLocaleString()}<br />
+              Total General Sigils Required: {results.affinityResults.costs.generalSigils.toLocaleString()}<br />
+              
+              <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>Remaining After Upgrades</strong>
+              Affinity Left: {remainingAffinity.toLocaleString()}<br />
+              General Sigils Left: {remainingSigils.toLocaleString()}<br />
+            </div>
+
+            {results.affinityResults.optimized && (
+              <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+                <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
+                Based on your available resources:<br />
+                {results.affinityResults.optimized.plan.length > 0 ? (
+                  <>
+                    {results.affinityResults.optimized.plan.map((step, idx) => (
+                      <div key={idx} style={{ marginTop: '10px' }}>
+                        <strong>{step.slot}</strong> ({step.startLevel || 1} → {step.label})
+                      </div>
+                    ))}
+                    <div style={{ marginTop: '10px', borderTop: '1px solid var(--glass-border)', paddingTop: '10px' }}>
+                      <strong>Total Cost:</strong> Affinity: {(totalInvAffinity - results.affinityResults.optimized.resources.affinity).toLocaleString()} | General Sigils: {(totalInvSigils - results.affinityResults.optimized.resources.generalSigils).toLocaleString()}
+                    </div>
+                  </>
+                ) : (
+                  <em style={{ display: 'block', marginTop: '8px' }}>No target upgrades selected and no optimized upgrades possible with current materials.</em>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* --- EXPERT SKILLS SECTION --- */}
+      
+      <div className="card-panel" style={{ marginTop: '32px' }}>
+        <h2 style={{ marginBottom: '16px' }}>Expert Skills</h2>
+        <div className="card-panel" style={{ background: 'rgba(255,165,0,0.05)', borderLeft: '4px solid #f59e0b', marginBottom: '24px' }}>
+          <strong style={{ color: '#f59e0b' }}>Note:</strong> Skill prerequisites depend on your Affinity levels. Please ensure you have filled out your current/target Affinity levels above first to accurately see what skill targets you are eligible for.
+        </div>
+
+        <div className="gear-table">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            {EXPERT_NAMES.map(name => {
+              const skillsData = expertData[name]?.skills;
+              if (!skillsData) return null;
+              
+              return (
+                <div key={`${name}-skills`} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '12px', textAlign: 'center', borderBottom: '1px solid var(--glass-border)', paddingBottom: '8px' }}>
+                    {name}
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', textAlign: 'center', fontSize: '0.85em', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                    <span>Skill</span><span>Current</span><span>Target</span><span>Saved EXP</span>
+                  </div>
+
+                  {[1, 2, 3, 4].map(skillId => {
+                    const sArr = skillsData[skillId.toString()];
+                    if (!sArr) return null;
+                    const maxLvl = sArr.length;
+                    const levels = Array.from({length: maxLvl}, (_, i) => i + 1);
+
+                    return (
+                      <div key={skillId} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '0.9em' }}>Skill {skillId}</span>
+                        <select 
+                          className="global-select" 
+                          value={expertState[`${name}_skill${skillId}_Current`] || -1}
+                          onChange={(e) => handleChangeExpert(name, `_skill${skillId}_Current`, e.target.value)}
+                        >
+                          <option value="-1">Not Obtained</option>
+                          {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                        </select>
+                        <select 
+                          className="global-select"
+                          value={expertState[`${name}_skill${skillId}_Target`] || -1}
+                          onChange={(e) => handleChangeExpert(name, `_skill${skillId}_Target`, e.target.value)}
+                        >
+                          <option value="-1">Not Obtained</option>
+                          {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                        </select>
+                        <input
+                          type="text"
+                          className="global-select"
+                          placeholder="0"
+                          title="Enter saved EXP points (not minutes)"
+                          value={expertState[`${name}_skill${skillId}_Exp`] || ''}
+                          onChange={(e) => handleChangeExpert(name, `_skill${skillId}_Exp`, e.target.value)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
-      )}
+      </div>
+
+      <div className="card-panel">
+        <h2 style={{ marginBottom: '16px' }}>Your Skill Materials</h2>
+        <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Learning Speedups (minutes)</label>
+            <input type="text" value={materials.skillExp} onChange={(e) => handleChangeMat('skillExp', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px' }}>Skill Books</label>
+            <input type="text" value={materials.skillBooks} onChange={(e) => handleChangeMat('skillBooks', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
+          </div>
+        </div>
+      </div>
+
+      {results && results.skillResults && (() => {
+        const totalInvSkillExp = (parseFloat(materials.skillExp) || 0) * 60;
+        const totalInvSkillBooks = parseFloat(materials.skillBooks) || 0;
+        const remainingSkillExp = Math.max(0, totalInvSkillExp - results.skillResults.costs.skillExp);
+        const remainingSkillBooks = Math.max(0, totalInvSkillBooks - results.skillResults.costs.skillBooks);
+
+        return (
+          <div className="card-panel" style={{ marginTop: '24px' }}>
+            <h2 style={{ marginBottom: '16px' }}>Skill Totals</h2>
+            
+            {results.skillResults.warnings && results.skillResults.warnings.length > 0 && (
+              <div style={{ marginBottom: '24px', background: 'rgba(244,67,54,0.1)', borderLeft: '4px solid #f44336', padding: '12px' }}>
+                <h3 style={{ color: '#f44336', marginBottom: '8px' }}>Requirements Not Met</h3>
+                <ul style={{ listStyleType: 'circle', paddingLeft: '20px' }}>
+                  {results.skillResults.warnings.map((w, idx) => (
+                    <li key={idx} style={{ marginBottom: '4px' }}>{w}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+              <strong style={{ color: 'var(--accent-color)' }}>TARGET UPGRADES TOTAL</strong><br />
+              Total Learning Speedups Required: {Math.ceil(results.skillResults.costs.skillExp / 60).toLocaleString()} mins<br />
+              Total Skill Books Required: {results.skillResults.costs.skillBooks.toLocaleString()}<br />
+              
+              <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>Remaining After Upgrades</strong>
+              Learning Speedups Left: {Math.floor(remainingSkillExp / 60).toLocaleString()} mins<br />
+              Skill Books Left: {remainingSkillBooks.toLocaleString()}<br />
+            </div>
+
+            {results.skillResults.optimized && (
+              <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
+                <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
+                Based on your available resources:<br />
+                {results.skillResults.optimized.plan.length > 0 ? (
+                  <>
+                    {results.skillResults.optimized.plan.map((step, idx) => (
+                      <div key={idx} style={{ marginTop: '10px' }}>
+                        <strong>{step.slot}</strong> ({step.startLevel || 1} → {step.label})
+                      </div>
+                    ))}
+                    <div style={{ marginTop: '10px', borderTop: '1px solid var(--glass-border)', paddingTop: '10px' }}>
+                      <strong>Total Cost:</strong> Speedups: {Math.ceil((totalInvSkillExp - results.skillResults.optimized.resources.skillExp) / 60).toLocaleString()} mins | Skill Books: {(totalInvSkillBooks - results.skillResults.optimized.resources.skillBooks).toLocaleString()}
+                    </div>
+                  </>
+                ) : (
+                  <em style={{ display: 'block', marginTop: '8px' }}>No target upgrades selected and no optimized upgrades possible with current materials.</em>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })()}
     </section>
   );
 };

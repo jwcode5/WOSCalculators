@@ -85,8 +85,8 @@ export function calculateChiefGear(inputs) {
       let bestCost = null;
       
       GEAR_SLOTS.forEach(slot => {
-        const curIdx = levelKeyToIndex[optimizedLevels[slot] || "none"] || -1;
-        const tgtIdx = levelKeyToIndex[tgtLevels[slot] || "none"] || -1;
+        const curIdx = levelKeyToIndex[optimizedLevels[slot] || "none"] ?? -1;
+        const tgtIdx = levelKeyToIndex[tgtLevels[slot] || "none"] ?? -1;
         
         if (curIdx < tgtIdx && curIdx < CHIEF_GEAR_DATA.levelOrder.length - 1) {
           const nextLevelKey = CHIEF_GEAR_DATA.levelOrder[curIdx + 1];

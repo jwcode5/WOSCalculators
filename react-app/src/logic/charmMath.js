@@ -101,8 +101,8 @@ export function calculateChiefCharm(inputs) {
       
       CHARM_SLOT_DEFINITIONS.forEach(slotDef => {
         const slot = slotDef.slotKey;
-        const curIdx = levelKeyToIndex[optimizedLevels[slot] || "none"] || -1;
-        const tgtIdx = levelKeyToIndex[tgtLevels[slot] || "none"] || -1;
+        const curIdx = levelKeyToIndex[optimizedLevels[slot] || "none"] ?? -1;
+        const tgtIdx = levelKeyToIndex[tgtLevels[slot] || "none"] ?? -1;
         
         if (curIdx < tgtIdx && curIdx < CHIEF_CHARM_DATA.levelOrder.length - 1) {
           const nextLevelKey = CHIEF_CHARM_DATA.levelOrder[curIdx + 1];
