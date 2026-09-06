@@ -1,3 +1,4 @@
+import { useLanguage } from '../context/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAccounts } from '../context/AccountContext';
 import expertData from '../data/expertsData.json';
@@ -6,6 +7,7 @@ import { calculateExpertUpgrade, calculateExpertSkillsUpgrade } from '../logic/e
 const EXPERT_NAMES = Object.keys(expertData);
 
 const Experts = () => {
+  const { t } = useLanguage();
   const { activeAccount, updateAccountState } = useAccounts();
   const [expertState, setExpertState] = useState({});
   const [materials, setMaterials] = useState({
@@ -116,7 +118,7 @@ const Experts = () => {
   return (
     <section id="expertsPanel">
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Expert Levels</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.expertLevels', {}, 'Expert Levels')}</h2>
 
         <div className="gear-table">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
@@ -126,11 +128,11 @@ const Experts = () => {
               return (
                 <div key={name} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
                   <div style={{ fontWeight: 'bold', marginBottom: '12px', textAlign: 'center', borderBottom: '1px solid var(--glass-border)', paddingBottom: '8px' }}>
-                    {name}
+                    {t(`experts.${name.replace(/\s+/g, '')}`, {}, name)}
                   </div>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center', fontSize: '0.85em', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                    <span>Current</span><span>Target</span><span>Specific Sigils</span>
+                    <span>{t('labels.current', {}, 'Current')}</span><span>{t('labels.target', {}, 'Target')}</span><span>{t('labels.specificSigils', {}, 'Specific Sigils')}</span>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', alignItems: 'center' }}>
@@ -172,22 +174,22 @@ const Experts = () => {
       </div>
 
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Your Materials</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.expertSkillsMaterials', {}, 'Your Materials')}</h2>
         <div className="four-col-grid">
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Common Expert Sigil</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.generalAdvancementSigils', {}, 'Common Expert Sigil')}</label>
             <input type="text" value={materials.advancementSigils} onChange={(e) => handleChangeMat('advancementSigils', e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Compass (10 Affinity)</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.compass', {}, 'Compass (10 Affinity)')}</label>
             <input type="text" value={materials.compass} onChange={(e) => handleChangeMat('compass', e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Fiery Heart (100 Affinity)</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.fieryHeart', {}, 'Fiery Heart (100 Affinity)')}</label>
             <input type="text" value={materials.fieryHeart} onChange={(e) => handleChangeMat('fieryHeart', e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Sail of Conquest (1000 Affinity)</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.sailOfConquest', {}, 'Sail of Conquest (1000 Affinity)')}</label>
             <input type="text" value={materials.sailOfConquest} onChange={(e) => handleChangeMat('sailOfConquest', e.target.value)} className="global-select" placeholder="0" />
           </div>
         </div>
@@ -201,35 +203,35 @@ const Experts = () => {
         
         return (
           <div className="card-panel" style={{ marginTop: '24px' }}>
-            <h2 style={{ marginBottom: '16px' }}>Totals</h2>
+            <h2 style={{ marginBottom: '16px' }}>{t('results.totals', {}, 'Totals')}</h2>
             
             <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-              <strong style={{ color: 'var(--accent-color)' }}>TARGET UPGRADES TOTAL</strong><br />
-              Total Affinity Required: {results.affinityResults.costs.affinity.toLocaleString()}<br />
-              Total General Sigils Required: {results.affinityResults.costs.generalSigils.toLocaleString()}<br />
+              <strong style={{ color: 'var(--accent-color)' }}>{t('results.targetUpgradesTotal', {}, 'TARGET UPGRADES TOTAL')}</strong><br />
+              {t('results.totalAffinityRequired', {}, 'Total Affinity Required:')} {results.affinityResults.costs.affinity.toLocaleString()}<br />
+              {t('results.totalGeneralSigilsRequired', {}, 'Total General Sigils Required:')} {results.affinityResults.costs.generalSigils.toLocaleString()}<br />
               
-              <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>Remaining After Upgrades</strong>
-              Affinity Left: {remainingAffinity.toLocaleString()}<br />
-              General Sigils Left: {remainingSigils.toLocaleString()}<br />
+              <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>{t('results.remainingAfterUpgrades', {}, 'Remaining After Upgrades')}</strong>
+              {t('results.affinityLeft', {}, 'Affinity Left:')} {remainingAffinity.toLocaleString()}<br />
+              {t('results.generalSigilsLeft', {}, 'General Sigils Left:')} {remainingSigils.toLocaleString()}<br />
             </div>
 
             {results.affinityResults.optimized && (
               <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-                <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
-                Based on your available resources:<br />
+                <strong style={{ color: 'var(--accent-color)' }}>{t('results.optimizedPlan', {}, 'OPTIMIZED PLAN')}</strong><br />
+                {t('results.basedOnResources', {}, 'Based on your available resources:')}<br />
                 {results.affinityResults.optimized.plan.length > 0 ? (
                   <>
                     {results.affinityResults.optimized.plan.map((step, idx) => (
                       <div key={idx} style={{ marginTop: '10px' }}>
-                        <strong>{step.slot}</strong> ({step.startLevel || 1} → {step.label})
+                        <strong>{t(`experts.${step.slot.replace(/\s+/g, '')}`, {}, step.slot)}</strong> ({step.startLevel || 1} → {step.label})
                       </div>
                     ))}
                     <div style={{ marginTop: '10px', borderTop: '1px solid var(--glass-border)', paddingTop: '10px' }}>
-                      <strong>Total Cost:</strong> Affinity: {(totalInvAffinity - results.affinityResults.optimized.resources.affinity).toLocaleString()} | General Sigils: {(totalInvSigils - results.affinityResults.optimized.resources.generalSigils).toLocaleString()}
+                      <strong>{t('results.totalCost', {}, 'Total Cost:')}</strong> {t('labels.affinity', {}, 'Affinity')}: {(totalInvAffinity - results.affinityResults.optimized.resources.affinity).toLocaleString()} | {t('labels.generalAdvancementSigils', {}, 'General Sigils')}: {(totalInvSigils - results.affinityResults.optimized.resources.generalSigils).toLocaleString()}
                     </div>
                   </>
                 ) : (
-                  <em style={{ display: 'block', marginTop: '8px' }}>No target upgrades selected and no optimized upgrades possible with current materials.</em>
+                  <em style={{ display: 'block', marginTop: '8px' }}>{t('results.noPetUpgrades', {}, 'No target upgrades selected and no optimized upgrades possible with current materials.')}</em>
                 )}
               </div>
             )}
@@ -240,9 +242,9 @@ const Experts = () => {
       {/* --- EXPERT SKILLS SECTION --- */}
       
       <div className="card-panel" style={{ marginTop: '32px' }}>
-        <h2 style={{ marginBottom: '16px' }}>Expert Skills</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.expertSkillsLevels', {}, 'Expert Skills')}</h2>
         <div className="card-panel" style={{ background: 'rgba(255,165,0,0.05)', borderLeft: '4px solid #f59e0b', marginBottom: '24px' }}>
-          <strong style={{ color: '#f59e0b' }}>Note:</strong> Skill prerequisites depend on your Affinity levels. Please ensure you have filled out your current/target Affinity levels above first to accurately see what skill targets you are eligible for.
+          <strong style={{ color: '#f59e0b' }}>{t('labels.note', {}, 'Note:')}</strong> {t('labels.skillPrerequisitesNote', {}, 'Skill prerequisites depend on your Affinity levels. Please ensure you have filled out your current/target Affinity levels above first to accurately see what skill targets you are eligible for.')}
         </div>
 
         <div className="gear-table">
@@ -254,11 +256,11 @@ const Experts = () => {
               return (
                 <div key={`${name}-skills`} style={{ background: 'var(--glass-bg)', padding: '16px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
                   <div style={{ fontWeight: 'bold', marginBottom: '12px', textAlign: 'center', borderBottom: '1px solid var(--glass-border)', paddingBottom: '8px' }}>
-                    {name}
+                    {t(`experts.${name.replace(/\s+/g, '')}`, {}, name)}
                   </div>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', textAlign: 'center', fontSize: '0.85em', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                    <span>Skill</span><span>Current</span><span>Target</span><span>Saved EXP</span>
+                    <span>{t('labels.skill', {}, 'Skill')}</span><span>{t('labels.current', {}, 'Current')}</span><span>{t('labels.target', {}, 'Target')}</span><span>{t('labels.savedExp', {}, 'Saved EXP')}</span>
                   </div>
 
                   {[1, 2, 3, 4].map(skillId => {
@@ -269,28 +271,28 @@ const Experts = () => {
 
                     return (
                       <div key={skillId} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '0.9em' }}>Skill {skillId}</span>
+                        <span style={{ fontSize: '0.9em' }}>{t('labels.skill', {}, 'Skill')} {skillId}</span>
                         <select 
                           className="global-select" 
                           value={expertState[`${name}_skill${skillId}_Current`] || -1}
                           onChange={(e) => handleChangeExpert(name, `_skill${skillId}_Current`, e.target.value)}
                         >
-                          <option value="-1">Not Obtained</option>
-                          {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                          <option value="-1">{t('labels.notObtained', {}, 'Not Obtained')}</option>
+                          {levels.map(l => <option key={l} value={l}>{t(`expertLevels.${l}`, {}, l)}</option>)}
                         </select>
                         <select 
                           className="global-select"
                           value={expertState[`${name}_skill${skillId}_Target`] || -1}
                           onChange={(e) => handleChangeExpert(name, `_skill${skillId}_Target`, e.target.value)}
                         >
-                          <option value="-1">Not Obtained</option>
-                          {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                          <option value="-1">{t('labels.notObtained', {}, 'Not Obtained')}</option>
+                          {levels.map(l => <option key={l} value={l}>{t(`expertLevels.${l}`, {}, l)}</option>)}
                         </select>
                         <input
                           type="text"
                           className="global-select"
                           placeholder="0"
-                          title="Enter saved EXP points (not minutes)"
+                          title={t('labels.enterSavedExp', {}, 'Enter saved EXP points (not minutes)')}
                           value={expertState[`${name}_skill${skillId}_Exp`] || ''}
                           onChange={(e) => handleChangeExpert(name, `_skill${skillId}_Exp`, e.target.value)}
                         />
@@ -305,14 +307,14 @@ const Experts = () => {
       </div>
 
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Your Skill Materials</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.yourSkillMaterials', {}, 'Your Skill Materials')}</h2>
         <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Learning Speedups (minutes)</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.learningSpeedups', {}, 'Learning Speedups (minutes)')}</label>
             <input type="text" value={materials.skillExp} onChange={(e) => handleChangeMat('skillExp', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Skill Books</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.skillBooks', {}, 'Skill Books')}</label>
             <input type="text" value={materials.skillBooks} onChange={(e) => handleChangeMat('skillBooks', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
         </div>
@@ -326,11 +328,11 @@ const Experts = () => {
 
         return (
           <div className="card-panel" style={{ marginTop: '24px' }}>
-            <h2 style={{ marginBottom: '16px' }}>Skill Totals</h2>
+            <h2 style={{ marginBottom: '16px' }}>{t('results.skillTotals', {}, 'Skill Totals')}</h2>
             
             {results.skillResults.warnings && results.skillResults.warnings.length > 0 && (
               <div style={{ marginBottom: '24px', background: 'rgba(244,67,54,0.1)', borderLeft: '4px solid #f44336', padding: '12px' }}>
-                <h3 style={{ color: '#f44336', marginBottom: '8px' }}>Requirements Not Met</h3>
+                <h3 style={{ color: '#f44336', marginBottom: '8px' }}>{t('results.requirementsNotMet', {}, 'Requirements Not Met')}</h3>
                 <ul style={{ listStyleType: 'circle', paddingLeft: '20px' }}>
                   {results.skillResults.warnings.map((w, idx) => (
                     <li key={idx} style={{ marginBottom: '4px' }}>{w}</li>
@@ -340,32 +342,32 @@ const Experts = () => {
             )}
 
             <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-              <strong style={{ color: 'var(--accent-color)' }}>TARGET UPGRADES TOTAL</strong><br />
-              Total Learning Speedups Required: {Math.ceil(results.skillResults.costs.skillExp / 60).toLocaleString()} mins<br />
-              Total Skill Books Required: {results.skillResults.costs.skillBooks.toLocaleString()}<br />
+              <strong style={{ color: 'var(--accent-color)' }}>{t('results.targetUpgradesTotal', {}, 'TARGET UPGRADES TOTAL')}</strong><br />
+              {t('results.totalLearningSpeedupsRequired', {}, 'Total Learning Speedups Required:')} {Math.ceil(results.skillResults.costs.skillExp / 60).toLocaleString()} {t('labels.mins', {}, 'mins')}<br />
+              {t('results.totalSkillBooksRequired', {}, 'Total Skill Books Required:')} {results.skillResults.costs.skillBooks.toLocaleString()}<br />
               
-              <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>Remaining After Upgrades</strong>
-              Learning Speedups Left: {Math.floor(remainingSkillExp / 60).toLocaleString()} mins<br />
-              Skill Books Left: {remainingSkillBooks.toLocaleString()}<br />
+              <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>{t('results.remainingAfterUpgrades', {}, 'Remaining After Upgrades')}</strong>
+              {t('results.learningSpeedupsLeft', {}, 'Learning Speedups Left:')} {Math.floor(remainingSkillExp / 60).toLocaleString()} {t('labels.mins', {}, 'mins')}<br />
+              {t('results.skillBooksLeft', {}, 'Skill Books Left:')} {remainingSkillBooks.toLocaleString()}<br />
             </div>
 
             {results.skillResults.optimized && (
               <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-                <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
-                Based on your available resources:<br />
+                <strong style={{ color: 'var(--accent-color)' }}>{t('results.optimizedPlan', {}, 'OPTIMIZED PLAN')}</strong><br />
+                {t('results.basedOnResources', {}, 'Based on your available resources:')}<br />
                 {results.skillResults.optimized.plan.length > 0 ? (
                   <>
                     {results.skillResults.optimized.plan.map((step, idx) => (
                       <div key={idx} style={{ marginTop: '10px' }}>
-                        <strong>{step.slot}</strong> ({step.startLevel || 1} → {step.label})
+                        <strong>{t(`experts.${step.slot.split('_')[0].replace(/\s+/g, '')}`, {}, step.slot.split('_')[0])} - {t('labels.skill', {}, 'Skill')} {step.slot.split('_')[1].replace('skill', '')}</strong> ({step.startLevel || 1} → {step.label})
                       </div>
                     ))}
                     <div style={{ marginTop: '10px', borderTop: '1px solid var(--glass-border)', paddingTop: '10px' }}>
-                      <strong>Total Cost:</strong> Speedups: {Math.ceil((totalInvSkillExp - results.skillResults.optimized.resources.skillExp) / 60).toLocaleString()} mins | Skill Books: {(totalInvSkillBooks - results.skillResults.optimized.resources.skillBooks).toLocaleString()}
+                      <strong>{t('results.totalCost', {}, 'Total Cost:')}</strong> {t('labels.speedups', {}, 'Speedups')}: {Math.ceil((totalInvSkillExp - results.skillResults.optimized.resources.skillExp) / 60).toLocaleString()} {t('labels.mins', {}, 'mins')} | {t('labels.skillBooks', {}, 'Skill Books')}: {(totalInvSkillBooks - results.skillResults.optimized.resources.skillBooks).toLocaleString()}
                     </div>
                   </>
                 ) : (
-                  <em style={{ display: 'block', marginTop: '8px' }}>No target upgrades selected and no optimized upgrades possible with current materials.</em>
+                  <em style={{ display: 'block', marginTop: '8px' }}>{t('results.noPetUpgrades', {}, 'No target upgrades selected and no optimized upgrades possible with current materials.')}</em>
                 )}
               </div>
             )}

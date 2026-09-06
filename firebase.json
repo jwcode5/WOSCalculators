@@ -2,7 +2,7 @@
   "hosting": [
     {
       "target": "woscalculator",
-      "public": ".",
+      "public": "react-app/dist",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -17,7 +17,7 @@
     },
     {
       "target": "kscalculator",
-      "public": ".",
+      "public": "react-app/dist",
       "ignore": [
         "firebase.json",
         "**/.*",

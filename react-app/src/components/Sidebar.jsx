@@ -2,16 +2,21 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAccounts } from '../context/AccountContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import LanguageModal from './LanguageModal';
 
 const Sidebar = () => {
   const { accounts, activeAccountId, setActiveAccountId, addAccount, renameAccount, deleteAccount } = useAccounts();
   const { currentUser, setIsAuthModalOpen, pullFromCloud, isSyncing } = useAuth();
+  const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
 
   return (
     <aside id="sidebar" className={isExpanded ? 'expanded' : ''}>
+      <LanguageModal isOpen={isLanguageModalOpen} onClose={() => setIsLanguageModalOpen(false)} />
       <div className="sidebar-header">
-        <h1>WOS Calc</h1>
+        <h1>{t('app.name', {}, 'WOS Calc')}</h1>
         <button 
           id="mobileMenuBtn" 
           className="icon-btn mobile-only" 
@@ -26,7 +31,7 @@ const Sidebar = () => {
         <button 
           id="themeToggleBtn" 
           className="icon-btn theme-toggle-icon" 
-          title="Toggle Theme"
+          title={t('common.toggleTheme', {}, 'Toggle Theme')}
           onClick={() => {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -37,11 +42,11 @@ const Sidebar = () => {
         >
           {document.documentElement.getAttribute('data-theme') === 'light' ? '☀️' : '🌙'}
         </button>
-        <button id="languageMenuBtn" className="icon-btn" title="Language">🌐</button>
+        <button id="languageMenuBtn" className="icon-btn" title={t('common.language', {}, 'Language')} onClick={() => setIsLanguageModalOpen(true)}>🌐</button>
         <button 
           id="authBtn" 
           className="icon-btn profile-btn" 
-          title="Login"
+          title={t('common.login', {}, 'Login')}
           onClick={() => setIsAuthModalOpen(true)}
           style={{ background: currentUser ? 'var(--accent-color)' : 'none' }}
         >
@@ -50,12 +55,12 @@ const Sidebar = () => {
       </div>
       
       <nav className="sidebar-nav">
-        <NavLink onClick={() => setIsExpanded(false)} to="/upgrade" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>Buildings</NavLink>
-        <NavLink onClick={() => setIsExpanded(false)} to="/chiefGear" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>Chief Gear</NavLink>
-        <NavLink onClick={() => setIsExpanded(false)} to="/chiefCharm" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>Chief Charm</NavLink>
-        <NavLink onClick={() => setIsExpanded(false)} to="/pets" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>Pets</NavLink>
-        <NavLink onClick={() => setIsExpanded(false)} to="/experts" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>Experts</NavLink>
-        <NavLink onClick={() => setIsExpanded(false)} to="/svs" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>SvS Calculator</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/upgrade" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.upgrade', {}, 'Upgrade')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/chiefGear" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.chiefGear', {}, 'Chief Gear')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/chiefCharm" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.chiefCharm', {}, 'Chief Charm')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/pets" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.pets', {}, 'Pets')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/experts" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.experts', {}, 'Experts')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/svs" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.svs', {}, 'SvS Calculator')}</NavLink>
       </nav>
       
       <div className="sidebar-footer" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', borderTop: '1px solid var(--glass-border)' }}>
@@ -75,10 +80,10 @@ const Sidebar = () => {
             className="icon-btn" 
             style={{ padding: '8px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
             onClick={() => {
-              const name = prompt('Enter new account name:');
+              const name = prompt(t('account.namePrompt', {}, 'Enter new account name:'));
               if (name) addAccount(name);
             }}
-            title="Add Account"
+            title={t('account.addTitle', {}, 'Add Account')}
           >
             +
           </button>
@@ -87,24 +92,24 @@ const Sidebar = () => {
           <button 
             style={{ flex: 1, padding: '8px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontSize: '0.85em' }}
             onClick={() => {
-              const name = prompt('Rename account to:', accounts.find(a => a.id === activeAccountId)?.name);
+              const name = prompt(t('account.renamePrompt', {}, 'Rename account to:'), accounts.find(a => a.id === activeAccountId)?.name);
               if (name) renameAccount(activeAccountId, name);
             }}
           >
-            Rename
+            {t('account.renameTitle', {}, 'Rename')}
           </button>
           <button 
             style={{ flex: 1, padding: '8px', background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)', borderRadius: '8px', color: '#ff6b6b', cursor: 'pointer', fontSize: '0.85em' }}
             onClick={() => {
-              if (confirm('Delete this account?')) deleteAccount(activeAccountId);
+              if (confirm(t('account.deleteConfirm', { name: accounts.find(a => a.id === activeAccountId)?.name }, 'Delete this account?'))) deleteAccount(activeAccountId);
             }}
           >
-            Delete
+            {t('account.deleteTitle', {}, 'Delete')}
           </button>
         </div>
         <div className="global-controls" style={{ display: 'flex' }}>
           <select id="globalValeriaSkill" className="global-select" style={{ flex: 1, padding: '10px' }}>
-            <option value="0">Well Prepared (0%)</option>
+            <option value="0">Valeria: {t('options.none0', {}, 'Well Prepared (0%)')}</option>
             <option value="1">Level 1 (2%)</option>
             <option value="2">Level 2 (4%)</option>
             <option value="3">Level 3 (6%)</option>
@@ -125,7 +130,7 @@ const Sidebar = () => {
             onClick={() => pullFromCloud(true)}
             disabled={isSyncing}
           >
-            {isSyncing ? 'Syncing...' : 'Sync with Cloud'}
+            {isSyncing ? t('buttons.refresh', {}, 'Syncing...') : t('buttons.refresh', {}, 'Sync with Cloud')}
           </button>
         )}
       </div>

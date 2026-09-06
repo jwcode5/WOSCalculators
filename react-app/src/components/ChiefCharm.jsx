@@ -1,3 +1,4 @@
+import { useLanguage } from '../context/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAccounts } from '../context/AccountContext';
 import charmData from '../data/chiefCharm.json';
@@ -13,6 +14,7 @@ const PIECES = [
 ];
 
 const ChiefCharm = () => {
+  const { t } = useLanguage();
   const { activeAccount, updateAccountState } = useAccounts();
   const levels = charmData.levelOrder;
 
@@ -100,14 +102,14 @@ const ChiefCharm = () => {
   return (
     <section id="chiefCharmPanel">
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Chief Charm Levels</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.chiefCharmLevels', {}, 'Chief Charm Levels')}</h2>
 
 
         <div className="gear-table" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div className="gear-table-header" style={{ display: 'flex', gap: '16px', fontWeight: 'bold', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>
-            <span style={{ flex: 1.5 }}>Charm</span>
-            <span style={{ flex: 1 }}>Current Level</span>
-            <span style={{ flex: 1 }}>Target Level</span>
+            <span style={{ flex: 1.5 }}>{t('labels.charm', {}, 'Charm')}</span>
+            <span style={{ flex: 1 }}>{t('labels.currentLevel', {}, 'Current Level')}</span>
+            <span style={{ flex: 1 }}>{t('labels.targetLevel', {}, 'Target Level')}</span>
           </div>
           
           {PIECES.map(piece => (
@@ -116,20 +118,20 @@ const ChiefCharm = () => {
                 const key = `${piece.id}_charm_${num}`;
                 return (
                   <div key={key} className="gear-table-block" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                    <span className="gear-piece-label" style={{ flex: 1.5 }}>{piece.label} - Charm {num}</span>
+                    <span className="gear-piece-label" style={{ flex: 1.5 }}>{t(`pieces.${piece.id}`, {}, piece.label)} - {t('labels.charm', {}, 'Charm')} {num}</span>
                     <select 
                       className="global-select" style={{ flex: 1 }}
                       value={charmState[`${key}_Current`]}
                       onChange={(e) => handleChangeCharm(key, 'Current', e.target.value)}
                     >
-                      {levels.map(l => <option key={l} value={l}>{charmData.levels[l]?.label || l}</option>)}
+                      {levels.map(l => <option key={l} value={l}>{t(`charm.${l}`, {}, charmData.levels[l]?.label || l)}</option>)}
                     </select>
                     <select 
                       className="global-select" style={{ flex: 1 }}
                       value={charmState[`${key}_Target`]}
                       onChange={(e) => handleChangeCharm(key, 'Target', e.target.value)}
                     >
-                      {levels.map(l => <option key={l} value={l}>{charmData.levels[l]?.label || l}</option>)}
+                      {levels.map(l => <option key={l} value={l}>{t(`charm.${l}`, {}, charmData.levels[l]?.label || l)}</option>)}
                     </select>
                   </div>
                 );
@@ -140,18 +142,18 @@ const ChiefCharm = () => {
       </div>
 
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Your Materials</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.expertSkillsMaterials', {}, 'Your Materials')}</h2>
         <div className="three-col-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Charm Designs</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.charmDesigns', {}, 'Charm Designs')}</label>
             <input type="text" value={materials.charmDesigns} onChange={(e) => handleChangeMat('charmDesigns', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Charm Guides</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.charmGuides', {}, 'Charm Guides')}</label>
             <input type="text" value={materials.charmGuides} onChange={(e) => handleChangeMat('charmGuides', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Jewel Secrets</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.jewelSecrets', {}, 'Jewel Secrets')}</label>
             <input type="text" value={materials.jewelSecrets} onChange={(e) => handleChangeMat('jewelSecrets', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
         </div>
@@ -159,52 +161,57 @@ const ChiefCharm = () => {
 
       {results && (
         <div className="card-panel" style={{ marginTop: '24px' }}>
-          <h2 style={{ marginBottom: '16px' }}>Totals</h2>
+          <h2 style={{ marginBottom: '16px' }}>{t('results.totals', {}, 'Totals')}</h2>
           
           <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-            <strong style={{ color: 'var(--accent-color)' }}>MATERIALS REQUIRED FOR TARGET</strong><br />
-            Charm Designs: {results.costs.charmDesigns.toLocaleString()}<br />
-            Charm Guides: {results.costs.charmGuides.toLocaleString()}<br />
-            Jewel Secrets: {results.costs.jewelSecrets.toLocaleString()}<br />
+            <strong style={{ color: 'var(--accent-color)' }}>{t('results.materialsRequired', {}, 'MATERIALS REQUIRED FOR TARGET')}</strong><br />
+            {t('labels.charmDesigns', {}, 'Charm Designs')}: {results.costs.charmDesigns.toLocaleString()}<br />
+            {t('labels.charmGuides', {}, 'Charm Guides')}: {results.costs.charmGuides.toLocaleString()}<br />
+            {t('labels.jewelSecrets', {}, 'Jewel Secrets')}: {results.costs.jewelSecrets.toLocaleString()}<br />
             
-            <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>REMAINING MATERIALS AFTER UPGRADES</strong>
-            Charm Designs: {results.remaining.charmDesigns.toLocaleString()}<br />
-            Charm Guides: {results.remaining.charmGuides.toLocaleString()}<br />
-            Jewel Secrets: {results.remaining.jewelSecrets.toLocaleString()}<br />
+            <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>{t('results.materialsRemainingTarget', {}, 'REMAINING MATERIALS AFTER UPGRADES')}</strong>
+            {t('labels.charmDesigns', {}, 'Charm Designs')}: {results.remaining.charmDesigns.toLocaleString()}<br />
+            {t('labels.charmGuides', {}, 'Charm Guides')}: {results.remaining.charmGuides.toLocaleString()}<br />
+            {t('labels.jewelSecrets', {}, 'Jewel Secrets')}: {results.remaining.jewelSecrets.toLocaleString()}<br />
             
             <div className="card-panel" style={{ marginTop: '10px', background: '#1e2a3a', color: '#ffe08a', fontSize: '1.15em', textAlign: 'center' }}>
-              <strong>SVS Points Gained:</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
+              <strong>{t('results.svsPointsGained', {}, 'SVS Points Gained:')}</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
             </div>
           </div>
 
           {results.optimized && (
             <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-              <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
+              <strong style={{ color: 'var(--accent-color)' }}>{t('results.optimizedPlan', {}, 'OPTIMIZED PLAN')}</strong><br />
               {results.optimized.plan.length > 0 ? (
                 <>
                   <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
-                        <th style={{ textAlign: 'left', padding: '4px' }}>Charm Slot</th>
-                        <th style={{ textAlign: 'left', padding: '4px' }}>Final Level</th>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>{t('results.charmSlot', {}, 'Charm Slot')}</th>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>{t('results.finalLevel', {}, 'Final Level')}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {results.optimized.plan.map((step, idx) => (
-                        <tr key={idx}>
-                          <td style={{ padding: '4px' }}>{step.slot.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
-                          <td style={{ padding: '4px' }}>{step.label}</td>
-                        </tr>
-                      ))}
+                      {results.optimized.plan.map((step, idx) => {
+                        const parts = step.slot.split('_');
+                        const pieceId = parts[0];
+                        const charmNum = parts[2];
+                        return (
+                          <tr key={idx}>
+                            <td style={{ padding: '4px' }}>{t(`pieces.${pieceId}`, {}, pieceId.replace(/\b\w/g, l => l.toUpperCase()))} - {t('labels.charm', {}, 'Charm')} {charmNum}</td>
+                            <td style={{ padding: '4px' }}>{t(`charm.${step.to}`, {}, step.label)}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                   <div style={{ marginTop: '10px' }}>
-                    <strong>Materials Remaining:</strong><br />
-                    Charm Designs: {results.optimized.resources.charmDesigns.toLocaleString()} | Charm Guides: {results.optimized.resources.charmGuides.toLocaleString()} | Jewel Secrets: {results.optimized.resources.jewelSecrets.toLocaleString()}
+                    <strong>{t('results.materialsRemaining', {}, 'Materials Remaining:')}</strong><br />
+                    {t('labels.charmDesigns', {}, 'Charm Designs')}: {results.optimized.resources.charmDesigns.toLocaleString()} | {t('labels.charmGuides', {}, 'Charm Guides')}: {results.optimized.resources.charmGuides.toLocaleString()} | {t('labels.jewelSecrets', {}, 'Jewel Secrets')}: {results.optimized.resources.jewelSecrets.toLocaleString()}
                   </div>
                 </>
               ) : (
-                <em style={{ display: 'block', marginTop: '8px' }}>No upgrades possible with current resources.</em>
+                <em style={{ display: 'block', marginTop: '8px' }}>{t('results.noUpgrades', {}, 'No upgrades possible with current resources.')}</em>
               )}
             </div>
           )}

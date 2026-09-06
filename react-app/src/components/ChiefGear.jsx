@@ -1,3 +1,4 @@
+import { useLanguage } from '../context/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAccounts } from '../context/AccountContext';
 import gearData from '../data/chiefGear.json';
@@ -13,6 +14,7 @@ const PIECES = [
 ];
 
 const ChiefGear = () => {
+  const { t } = useLanguage();
   const { activeAccount, updateAccountState } = useAccounts();
   const levels = gearData.levelOrder;
 
@@ -103,30 +105,30 @@ const ChiefGear = () => {
   return (
     <section id="chiefGearPanel">
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Chief Gear Levels</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.chiefGearLevels', {}, 'Chief Gear Levels')}</h2>
         <div className="gear-table" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div className="gear-table-header" style={{ display: 'flex', gap: '16px', fontWeight: 'bold', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>
-            <span style={{ flex: 1 }}>Piece</span>
-            <span style={{ flex: 1 }}>Current Level</span>
-            <span style={{ flex: 1 }}>Target Level</span>
+            <span style={{ flex: 1 }}>{t('labels.piece', {}, 'Piece')}</span>
+            <span style={{ flex: 1 }}>{t('labels.currentLevel', {}, 'Current Level')}</span>
+            <span style={{ flex: 1 }}>{t('labels.targetLevel', {}, 'Target Level')}</span>
           </div>
           
           {PIECES.map(piece => (
             <div key={piece.id} className="gear-table-block" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-              <span className="gear-piece-label" style={{ flex: 1 }}>{piece.label}</span>
+              <span className="gear-piece-label" style={{ flex: 1 }}>{t(`pieces.${piece.id}`, {}, piece.label)}</span>
               <select 
                 className="global-select" style={{ flex: 1 }}
                 value={gearState[`${piece.id}Current`]}
                 onChange={(e) => handleChangeGear(piece.id, 'Current', e.target.value)}
               >
-                {levels.map(l => <option key={l} value={l}>{gearData.levels[l]?.label || l}</option>)}
+                {levels.map(l => <option key={l} value={l}>{t(`gear.${l}`, {}, gearData.levels[l]?.label || l)}</option>)}
               </select>
               <select 
                 className="global-select" style={{ flex: 1 }}
                 value={gearState[`${piece.id}Target`]}
                 onChange={(e) => handleChangeGear(piece.id, 'Target', e.target.value)}
               >
-                {levels.map(l => <option key={l} value={l}>{gearData.levels[l]?.label || l}</option>)}
+                {levels.map(l => <option key={l} value={l}>{t(`gear.${l}`, {}, gearData.levels[l]?.label || l)}</option>)}
               </select>
             </div>
           ))}
@@ -134,22 +136,22 @@ const ChiefGear = () => {
       </div>
 
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Your Materials</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.expertSkillsMaterials', {}, 'Your Materials')}</h2>
         <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Hardened Alloy</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.hardenedAlloy', {}, 'Hardened Alloy')}</label>
             <input type="text" value={materials.hardenedAlloy} onChange={(e) => handleChangeMat('hardenedAlloy', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Polishing Solution</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.polishingSolution', {}, 'Polishing Solution')}</label>
             <input type="text" value={materials.polishingSolution} onChange={(e) => handleChangeMat('polishingSolution', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Design Plans</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.designPlans', {}, 'Design Plans')}</label>
             <input type="text" value={materials.designPlans} onChange={(e) => handleChangeMat('designPlans', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Lunar Amber</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.lunarAmber', {}, 'Lunar Amber')}</label>
             <input type="text" value={materials.lunarAmber} onChange={(e) => handleChangeMat('lunarAmber', e.target.value)} className="global-select" style={{ width: '100%' }} placeholder="0" />
           </div>
         </div>
@@ -157,54 +159,54 @@ const ChiefGear = () => {
 
       {results && (
         <div className="card-panel" style={{ marginTop: '24px' }}>
-          <h2 style={{ marginBottom: '16px' }}>Totals</h2>
+          <h2 style={{ marginBottom: '16px' }}>{t('results.totals', {}, 'Totals')}</h2>
           
           <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-            <strong style={{ color: 'var(--accent-color)' }}>MATERIALS REQUIRED FOR TARGET</strong><br />
-            Hardened Alloy: {results.costs.hardenedAlloy.toLocaleString()}<br />
-            Polishing Solution: {results.costs.polishingSolution.toLocaleString()}<br />
-            Design Plans: {results.costs.designPlans.toLocaleString()}<br />
-            Lunar Amber: {results.costs.lunarAmber.toLocaleString()}<br />
+            <strong style={{ color: 'var(--accent-color)' }}>{t('results.materialsRequired', {}, 'MATERIALS REQUIRED FOR TARGET')}</strong><br />
+            {t('labels.hardenedAlloy', {}, 'Hardened Alloy')}: {results.costs.hardenedAlloy.toLocaleString()}<br />
+            {t('labels.polishingSolution', {}, 'Polishing Solution')}: {results.costs.polishingSolution.toLocaleString()}<br />
+            {t('labels.designPlans', {}, 'Design Plans')}: {results.costs.designPlans.toLocaleString()}<br />
+            {t('labels.lunarAmber', {}, 'Lunar Amber')}: {results.costs.lunarAmber.toLocaleString()}<br />
             
-            <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>REMAINING MATERIALS AFTER UPGRADES</strong>
-            Hardened Alloy: {results.remainingMaterials.hardenedAlloy.toLocaleString()}<br />
-            Polishing Solution: {results.remainingMaterials.polishingSolution.toLocaleString()}<br />
-            Design Plans: {results.remainingMaterials.designPlans.toLocaleString()}<br />
-            Lunar Amber: {results.remainingMaterials.lunarAmber.toLocaleString()}<br />
+            <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>{t('results.materialsRemainingTarget', {}, 'REMAINING MATERIALS AFTER UPGRADES')}</strong>
+            {t('labels.hardenedAlloy', {}, 'Hardened Alloy')}: {results.remainingMaterials.hardenedAlloy.toLocaleString()}<br />
+            {t('labels.polishingSolution', {}, 'Polishing Solution')}: {results.remainingMaterials.polishingSolution.toLocaleString()}<br />
+            {t('labels.designPlans', {}, 'Design Plans')}: {results.remainingMaterials.designPlans.toLocaleString()}<br />
+            {t('labels.lunarAmber', {}, 'Lunar Amber')}: {results.remainingMaterials.lunarAmber.toLocaleString()}<br />
             
             <div className="card-panel" style={{ marginTop: '10px', background: '#1e2a3a', color: '#ffe08a', fontSize: '1.15em', textAlign: 'center' }}>
-              <strong>SVS Points Gained:</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
+              <strong>{t('results.svsPointsGained', {}, 'SVS Points Gained:')}</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
             </div>
           </div>
 
           {results.optimized && (
             <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-              <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
+              <strong style={{ color: 'var(--accent-color)' }}>{t('results.optimizedPlan', {}, 'OPTIMIZED PLAN')}</strong><br />
               {results.optimized.plan.length > 0 ? (
                 <>
                   <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '8px' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
-                        <th style={{ textAlign: 'left', padding: '4px' }}>Gear Piece</th>
-                        <th style={{ textAlign: 'left', padding: '4px' }}>Final Level</th>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>{t('results.gearPiece', {}, 'Gear Piece')}</th>
+                        <th style={{ textAlign: 'left', padding: '4px' }}>{t('results.finalLevel', {}, 'Final Level')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {results.optimized.plan.map((step, idx) => (
                         <tr key={idx}>
-                          <td style={{ padding: '4px' }}>{step.slot.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</td>
-                          <td style={{ padding: '4px' }}>{step.label}</td>
+                          <td style={{ padding: '4px' }}>{t(`pieces.${step.slot}`, {}, step.slot.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))}</td>
+                          <td style={{ padding: '4px' }}>{t(`gear.${step.to}`, {}, step.label)}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   <div style={{ marginTop: '10px' }}>
-                    <strong>Materials Remaining:</strong><br />
-                    Hardened Alloy: {results.optimized.resources.hardenedAlloy.toLocaleString()} | Polishing Solution: {results.optimized.resources.polishingSolution.toLocaleString()} | Design Plans: {results.optimized.resources.designPlans.toLocaleString()} | Lunar Amber: {results.optimized.resources.lunarAmber.toLocaleString()}
+                    <strong>{t('results.materialsRemaining', {}, 'Materials Remaining:')}</strong><br />
+                    {t('labels.hardenedAlloy', {}, 'Hardened Alloy')}: {results.optimized.resources.hardenedAlloy.toLocaleString()} | {t('labels.polishingSolution', {}, 'Polishing Solution')}: {results.optimized.resources.polishingSolution.toLocaleString()} | {t('labels.designPlans', {}, 'Design Plans')}: {results.optimized.resources.designPlans.toLocaleString()} | {t('labels.lunarAmber', {}, 'Lunar Amber')}: {results.optimized.resources.lunarAmber.toLocaleString()}
                   </div>
                 </>
               ) : (
-                <em style={{ display: 'block', marginTop: '8px' }}>No upgrades possible with current resources.</em>
+                <em style={{ display: 'block', marginTop: '8px' }}>{t('results.noUpgrades', {}, 'No upgrades possible with current resources.')}</em>
               )}
             </div>
           )}

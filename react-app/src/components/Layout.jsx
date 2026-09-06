@@ -1,8 +1,10 @@
+import { useLanguage } from '../context/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 
 const Layout = ({ children }) => {
+  const { t } = useLanguage();
   const [links, setLinks] = useState([]);
   const location = useLocation();
 

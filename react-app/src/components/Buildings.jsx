@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAccounts } from '../context/AccountContext';
+import { useLanguage } from '../context/LanguageContext';
 import buildingData from '../data/buildings.json';
 import { calculateBuildingUpgrade, getAggregatedPrerequisites, getBuildingLevelOrder } from '../logic/upgradeMath';
 
@@ -31,6 +32,7 @@ function parseResourceAmount(rawInput) {
 }
 
 const Buildings = () => {
+  const { t } = useLanguage();
   const { activeAccount, accounts, setActiveAccountId, updateAccountState } = useAccounts();
   
   // State
@@ -125,7 +127,7 @@ const Buildings = () => {
     positionBuffPct, bearHuntMails, optionalBuildings
   ]);
   
-  // Auto-populate required buildings into the Additional Buildings list
+  // Auto-populate required buildings into the {t('sections.optionalAdditionalBuildings', {}, 'Additional Buildings')} list
   useEffect(() => {
     const prereqs = getAggregatedPrerequisites(targetBuilding, currentLevel, targetLevel);
     if (!prereqs || prereqs.size === 0) return;
@@ -256,16 +258,16 @@ const Buildings = () => {
   return (
     <section id="upgradeCalculatorPanel">
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Target Building (React Demo)</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.targetBuilding', {}, 'Target Building')}</h2>
         <div className="three-col-grid">
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Building</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>{t('labels.building', {}, 'Building')}</label>
             <select className="global-select" value={targetBuilding} onChange={(e) => setTargetBuilding(e.target.value)}>
-              {buildingKeys.map(b => <option key={b} value={b}>{b.replace(/_/g, ' ')}</option>)}
+              {buildingKeys.map(b => <option key={b} value={b}>{t(`building.${b}`, {}, b.replace(/_/g, ' '))}</option>)}
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Current Level</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>{t('labels.currentLevel', {}, 'Current Level')}</label>
             <select className="global-select" value={currentLevel} onChange={(e) => {
               const val = e.target.value;
               setCurrentLevel(val);
@@ -277,7 +279,7 @@ const Buildings = () => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Target (Goal) Level</label>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>{t('labels.targetGoalLevel', {}, 'Target (Goal) Level')}</label>
             <select className="global-select" value={targetLevel} onChange={(e) => {
               const val = e.target.value;
               setTargetLevel(val);
@@ -292,46 +294,46 @@ const Buildings = () => {
       </div>
 
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Your Resources</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.yourResources', {}, 'Your Resources')}</h2>
         <div className="four-col-grid">
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Meat</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.meat', {}, 'Meat')}</label>
             <input type="text" value={meat} onChange={(e) => setMeat(e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Wood</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.wood', {}, 'Wood')}</label>
             <input type="text" value={wood} onChange={(e) => setWood(e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Coal</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.coal', {}, 'Coal')}</label>
             <input type="text" value={coal} onChange={(e) => setCoal(e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Iron</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.iron', {}, 'Iron')}</label>
             <input type="text" value={iron} onChange={(e) => setIron(e.target.value)} className="global-select" placeholder="0" />
           </div>
         </div>
 
         <div style={{ marginTop: '16px' }} className="two-col-grid">
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Fire Crystals</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.fireCrystals', {}, 'Fire Crystals')}</label>
             <input type="text" value={fireCrystals} onChange={(e) => setFireCrystals(e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Refined Fire Crystals</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.refinedFireCrystals', {}, 'Refined Fire Crystals')}</label>
             <input type="text" value={refinedFireCrystals} onChange={(e) => setRefinedFireCrystals(e.target.value)} className="global-select" placeholder="0" />
           </div>
         </div>
 
         <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--glass-border)', borderRadius: '8px', marginTop: '24px', width: 'fit-content' }}>
           <input type="checkbox" checked={useCustomChests} onChange={(e) => setUseCustomChests(e.target.checked)} style={{ width: '18px', height: '18px' }} />
-          <span style={{ fontWeight: 600 }}>Use Custom Resource Chests</span>
+          <span style={{ fontWeight: 600 }}>{t('labels.useCustomResourceChests', {}, 'Use Custom Resource Chests')}</span>
         </label>
         
         {useCustomChests && (
           <div style={{ marginTop: '16px' }} className="two-col-grid">
             <div style={{ padding: '16px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-              <h3 style={{ marginBottom: '12px', fontSize: '1rem', color: '#ffb347' }}>Unsecured Chests</h3>
+              <h3 style={{ marginBottom: '12px', fontSize: '1rem', color: '#ffb347' }}>{t('labels.unsecuredChests', {}, 'Unsecured Chests')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {[1, 2, 3].map(lvl => (
                   <div key={`unsecuredLv${lvl}`}>
@@ -349,7 +351,7 @@ const Buildings = () => {
             </div>
 
             <div style={{ padding: '16px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-              <h3 style={{ marginBottom: '12px', fontSize: '1rem', color: '#47ffb3' }}>Secured Chests</h3>
+              <h3 style={{ marginBottom: '12px', fontSize: '1rem', color: '#47ffb3' }}>{t('labels.securedChests', {}, 'Secured Chests')}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {[1, 2, 3].map(lvl => (
                   <div key={`securedLv${lvl}`}>
@@ -370,7 +372,7 @@ const Buildings = () => {
 
         <div className="two-col-grid" style={{ marginTop: '24px' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>General Speedups (minutes)</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.generalSpeedups', {}, 'General Speedups (minutes)')}</label>
             <input 
               type="number" 
               min="0" 
@@ -380,7 +382,7 @@ const Buildings = () => {
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Construction Speedups (minutes)</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.constructionSpeedups', {}, 'Construction Speedups (minutes)')}</label>
             <input 
               type="number" 
               min="0" 
@@ -393,28 +395,28 @@ const Buildings = () => {
       </div>
 
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Construction Buffs (%)</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.constructionBuffs', {}, 'Construction Buffs (%)')}</h2>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--glass-border)', borderRadius: '8px' }}>
             <input type="checkbox" checked={doubleTimeEnabled} onChange={e => setDoubleTimeEnabled(e.target.checked)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-            <span style={{ fontWeight: 600 }}>Double Time (20%)</span>
+            <span style={{ fontWeight: 600 }}>{t('labels.doubleTime', {}, 'Double Time')} (20%)</span>
           </label>
           <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '12px 16px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--glass-border)', borderRadius: '8px' }}>
             <input type="checkbox" checked={castleBuffEnabled} onChange={e => setCastleBuffEnabled(e.target.checked)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
-            <span style={{ fontWeight: 600 }}>Castle Buff (10%)</span>
+            <span style={{ fontWeight: 600 }}>{t('labels.castleBuff', {}, 'Castle Buff (10%)')}</span>
           </label>
         </div>
 
         <div className="two-col-grid">
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Construction Speed</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.constructionSpeed', {}, 'Construction Speed')}</label>
             <input type="number" min="0" step="0.1" className="global-select" value={constructionSpeedPct} onChange={e => setConstructionSpeedPct(e.target.value)} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Builder's Aide (Hyena) Buff</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.hyenaBuff', {}, 'Builder\'s Aide (Hyena) Buff')}</label>
             <select className="global-select" value={hyenaBuffPct} onChange={e => setHyenaBuffPct(e.target.value)}>
-              <option value="">None (0%)</option>
+              <option value="">{t('options.none0', {}, 'None (0%)')}</option>
               <option value="5">5%</option>
               <option value="7">7%</option>
               <option value="9">9%</option>
@@ -423,9 +425,9 @@ const Buildings = () => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Zinman's Bastionist Skill</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.zinmanBastionist', {}, 'Zinman\'s Bastionist Skill')}</label>
             <select className="global-select" value={zinmanBastionistPct} onChange={e => setZinmanBastionistPct(e.target.value)}>
-              <option value="">None (0%)</option>
+              <option value="">{t('options.none0', {}, 'None (0%)')}</option>
               <option value="3">3%</option>
               <option value="6">6%</option>
               <option value="9">9%</option>
@@ -436,7 +438,7 @@ const Buildings = () => {
           <div>
             <label style={{ display: 'block', marginBottom: '8px' }}>Agnus' Project Management Skill</label>
             <select className="global-select" value={agnusProjectManagementHours} onChange={e => setAgnusProjectManagementHours(e.target.value)}>
-              <option value="">None (0h)</option>
+              <option value="">{t('options.none0h', {}, 'None (0h)')}</option>
               <option value="2">2h</option>
               <option value="3">3h</option>
               <option value="4">4h</option>
@@ -445,28 +447,28 @@ const Buildings = () => {
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Position Buff</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.positionBuff', {}, 'Position Buff')}</label>
             <input type="number" min="0" step="0.1" className="global-select" value={positionBuffPct} onChange={e => setPositionBuffPct(e.target.value)} />
           </div>
         </div>
       </div>
 
       <div className="card-panel" style={{ marginTop: '24px' }}>
-        <h2 style={{ marginBottom: '16px' }}>Additional Buildings</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.optionalAdditionalBuildings', {}, 'Additional Buildings')}</h2>
         {optionalBuildings.map(ob => (
           <div key={ob.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr auto', gap: '8px', marginBottom: '8px', alignItems: 'end' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '4px' }}>Building</label>
+              <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '4px' }}>{t('labels.building', {}, 'Building')}</label>
               <select 
                 className="global-select" 
                 value={ob.building}
                 onChange={e => setOptionalBuildings(prev => prev.map(b => b.id === ob.id ? { ...b, building: e.target.value } : b))}
               >
-                {buildingKeys.map(k => <option key={k} value={k}>{k.replace(/_/g, ' ')}</option>)}
+                {buildingKeys.map(k => <option key={k} value={k}>{t(`building.${k}`, {}, k.replace(/_/g, ' '))}</option>)}
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '4px' }}>Current</label>
+              <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '4px' }}>{t('labels.current', {}, 'Current')}</label>
               <select 
                 className="global-select" 
                 value={ob.currentLevel}
@@ -485,7 +487,7 @@ const Buildings = () => {
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '4px' }}>Target</label>
+              <label style={{ display: 'block', fontSize: '0.85em', marginBottom: '4px' }}>{t('labels.target', {}, 'Target')}</label>
               <select 
                 className="global-select" 
                 value={ob.targetLevel}
@@ -518,12 +520,12 @@ const Buildings = () => {
           style={{ marginTop: '8px' }}
           onClick={() => setOptionalBuildings(prev => [...prev, { id: Date.now(), building: 'furnace', currentLevel: '1', targetLevel: '2' }])}
         >
-          + Add Building
+          + {t('buttons.addBuilding', {}, 'Add Building')}
         </button>
       </div>
 
       <div className="card-panel" style={{ marginTop: '24px' }}>
-        <h2 style={{ marginBottom: '16px' }}>Bear Hunt Mail</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.bearHuntMail', {}, 'Bear Hunt Mail')}</h2>
         {bearHuntMails.map(mail => (
           <div key={mail.id} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
             <select 
@@ -573,22 +575,22 @@ const Buildings = () => {
           style={{ marginTop: '8px' }}
           onClick={() => setBearHuntMails(prev => [...prev, { id: Date.now(), label: '' }])}
         >
-          + Add Bear Hunt Mail
+          + {t('buttons.addBearHuntMail', {}, 'Add Bear Hunt Mail')}
         </button>
       </div>
 
       <div className="card-panel" style={{ marginTop: '24px' }}>
-        <h2 style={{ marginBottom: '16px' }}>Totals</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('results.totals', {}, 'Totals')}</h2>
         <div id="result">
           {results ? (
             <div>
               {/* Per-building breakdown */}
               {results.buildingsCalculated.map((b, i) => (
                 <div key={i} className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid rgba(255,255,255,0.35)' }}>
-                  <strong>{b.building.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</strong> ({b.currentLevel} → {b.targetLevel})<br />
-                  Meat: {b.costs.meat.toLocaleString()} | Wood: {b.costs.wood.toLocaleString()} | Coal: {b.costs.coal.toLocaleString()} | Iron: {b.costs.iron.toLocaleString()}
+                  <strong>{t(`building.${b.building}`, {}, b.building.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))}</strong> ({b.currentLevel} → {b.targetLevel})<br />
+                  {t('labels.meat', {}, 'Meat')}: {b.costs.meat.toLocaleString()} | {t('labels.wood', {}, 'Wood')}: {b.costs.wood.toLocaleString()} | {t('labels.coal', {}, 'Coal')}: {b.costs.coal.toLocaleString()} | {t('labels.iron', {}, 'Iron')}: {b.costs.iron.toLocaleString()}
                   {(b.costs.fireCrystals > 0 || b.costs.refinedFireCrystals > 0) && (
-                    <><br />Fire Crystals: {b.costs.fireCrystals.toLocaleString()} | Refined Fire Crystals: {b.costs.refinedFireCrystals.toLocaleString()}</>
+                    <><br />{t('labels.fireCrystals', {}, 'Fire Crystals')}: {b.costs.fireCrystals.toLocaleString()} | {t('labels.refinedFireCrystals', {}, 'Refined Fire Crystals')}: {b.costs.refinedFireCrystals.toLocaleString()}</>
                   )}
                   {(b.stats.rallyFrom || b.stats.deployFrom || b.stats.storageFrom) && (
                     <>
@@ -600,29 +602,29 @@ const Buildings = () => {
                 </div>
               ))}
 
-              {/* Grand Total */}
+              {/* {t("results.grandTotal", {}, "Grand Total")} */}
               <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-                <strong style={{ color: 'var(--accent-color)' }}>GRAND TOTAL</strong><br />
-                Meat: {results.totals.meat.toLocaleString()} | Wood: {results.totals.wood.toLocaleString()} | Coal: {results.totals.coal.toLocaleString()} | Iron: {results.totals.iron.toLocaleString()}<br />
+                <strong style={{ color: 'var(--accent-color)' }}>{t('results.grandTotal', {}, 'GRAND TOTAL')}</strong><br />
+                {t('labels.meat', {}, 'Meat')}: {results.totals.meat.toLocaleString()} | {t('labels.wood', {}, 'Wood')}: {results.totals.wood.toLocaleString()} | {t('labels.coal', {}, 'Coal')}: {results.totals.coal.toLocaleString()} | {t('labels.iron', {}, 'Iron')}: {results.totals.iron.toLocaleString()}<br />
                 {(results.totals.fireCrystals > 0 || results.totals.refinedFireCrystals > 0) && (
-                  <>Fire Crystals: {results.totals.fireCrystals.toLocaleString()} | Refined Fire Crystals: {results.totals.refinedFireCrystals.toLocaleString()}<br /></>
+                  <>{t('labels.fireCrystals', {}, 'Fire Crystals')}: {results.totals.fireCrystals.toLocaleString()} | {t('labels.refinedFireCrystals', {}, 'Refined Fire Crystals')}: {results.totals.refinedFireCrystals.toLocaleString()}<br /></>
                 )}
                 {results.totals.baseMeat !== results.totals.meat && (
-                  <>Base Cost (Before Zinman Discount) - Meat: {results.totals.baseMeat.toLocaleString()} | Wood: {results.totals.baseWood.toLocaleString()} | Coal: {results.totals.baseCoal.toLocaleString()} | Iron: {results.totals.baseIron.toLocaleString()}<br /></>
+                  <>{t('results.baseCost', {}, 'Base Cost (Before Zinman Discount) - ')}{t("labels.meat", {}, "Meat")}: {results.totals.baseMeat.toLocaleString()} | {t('labels.wood', {}, 'Wood')}: {results.totals.baseWood.toLocaleString()} | {t('labels.coal', {}, 'Coal')}: {results.totals.baseCoal.toLocaleString()} | {t('labels.iron', {}, 'Iron')}: {results.totals.baseIron.toLocaleString()}<br /></>
                 )}
-                Total Upgrade Time (Base): {formatDuration(results.time.baseSeconds)}<br />
-                Additive Speed ({results.time.additiveSpeedPct.toFixed(1)}%): {formatDuration(results.time.additiveAdjustedSeconds)} ({formatDuration(results.time.additiveTimeSavedSeconds)} saved)<br />
-                Double Time ({results.time.doubleTimePct.toFixed(1)}%): {formatDuration(results.time.doubleTimeAdjustedSeconds)} ({formatDuration(results.time.doubleTimeSavedSeconds)} saved)
+                {t('results.totalUpgradeTimeBase', {}, 'Total Upgrade Time (Base):')} {formatDuration(results.time.baseSeconds)}<br />
+                {t('results.additiveSpeed', {}, 'Additive Speed')} ({results.time.additiveSpeedPct.toFixed(1)}%): {formatDuration(results.time.additiveAdjustedSeconds)} ({formatDuration(results.time.additiveTimeSavedSeconds)} {t('labels.saved', {}, 'saved')})<br />
+                {t('results.doubleTime', {}, 'Double Time')} ({results.time.doubleTimePct.toFixed(1)}%): {formatDuration(results.time.doubleTimeAdjustedSeconds)} ({formatDuration(results.time.doubleTimeSavedSeconds)} {t('labels.saved', {}, 'saved')})
                 {results.time.agnusTimeSavedSeconds > 0 && (
-                  <><br />Agnus' Project Management Skill: {formatDuration(results.time.agnusAdjustedSeconds)} ({formatDuration(results.time.agnusTimeSavedSeconds)} saved)</>
+                  <><br />{t('results.agnusSkill', {}, 'Agnus\' Project Management Skill')}: {formatDuration(results.time.agnusAdjustedSeconds)} ({formatDuration(results.time.agnusTimeSavedSeconds)} {t('labels.saved', {}, 'saved')})</>
                 )}
                 <br /><br />
                 <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>AFTER UPGRADE (BACKPACK BALANCE)</strong>
-                Meat: {results.remaining.meat.toLocaleString()} | Wood: {results.remaining.wood.toLocaleString()} | Coal: {results.remaining.coal.toLocaleString()} | Iron: {results.remaining.iron.toLocaleString()}<br />
+                {t('labels.meat', {}, 'Meat')}: {results.remaining.meat.toLocaleString()} | {t('labels.wood', {}, 'Wood')}: {results.remaining.wood.toLocaleString()} | {t('labels.coal', {}, 'Coal')}: {results.remaining.coal.toLocaleString()} | {t('labels.iron', {}, 'Iron')}: {results.remaining.iron.toLocaleString()}<br />
                 {(results.totals.fireCrystals > 0 || results.totals.refinedFireCrystals > 0) && (
-                  <>Fire Crystals: {results.remaining.fireCrystals.toLocaleString()} | Refined Fire Crystals: {results.remaining.refinedFireCrystals.toLocaleString()}<br /></>
+                  <>{t('labels.fireCrystals', {}, 'Fire Crystals')}: {results.remaining.fireCrystals.toLocaleString()} | {t('labels.refinedFireCrystals', {}, 'Refined Fire Crystals')}: {results.remaining.refinedFireCrystals.toLocaleString()}<br /></>
                 )}
-                Remaining Time After Speedups: {formatDuration(results.time.remainingTimeSeconds)}
+                {t('results.remainingTimeAfterSpeedups', {}, 'Remaining Time After Speedups:')} {formatDuration(results.time.remainingTimeSeconds)}
                 {results.time.speedupSurplusSeconds > 0 && (
                   <><br />Speedup Surplus: {formatDuration(results.time.speedupSurplusSeconds)}</>
                 )}
@@ -631,15 +633,15 @@ const Buildings = () => {
               {/* Chest Plan */}
               {results.chestPlan && (
                 <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-                  <strong style={{ color: 'var(--accent-color)' }}>CUSTOM CHEST RECOMMENDATION</strong><br />
-                  Chests Used: L3 {(results.chestPlan.used.unsecuredLv3 || 0) + (results.chestPlan.used.securedLv3 || 0)} | L2 {(results.chestPlan.used.unsecuredLv2 || 0) + (results.chestPlan.used.securedLv2 || 0)} | L1 {(results.chestPlan.used.unsecuredLv1 || 0) + (results.chestPlan.used.securedLv1 || 0)}<br /><br />
+                  <strong style={{ color: 'var(--accent-color)' }}>{t('results.customChestRecommendation', {}, 'CUSTOM CHEST RECOMMENDATION')}</strong><br />
+                  {t('results.chestsUsed', {}, 'Chests Used:')} L3 {(results.chestPlan.used.unsecuredLv3 || 0) + (results.chestPlan.used.securedLv3 || 0)} | L2 {(results.chestPlan.used.unsecuredLv2 || 0) + (results.chestPlan.used.securedLv2 || 0)} | L1 {(results.chestPlan.used.unsecuredLv1 || 0) + (results.chestPlan.used.securedLv1 || 0)}<br /><br />
                   <strong style={{ color: 'var(--accent-color)', display: 'block', marginTop: '15px' }}>AFTER RECOMMENDED CHEST USE</strong>
-                  Meat: {results.remaining.postChest.meat.toLocaleString()} | Wood: {results.remaining.postChest.wood.toLocaleString()} | Coal: {results.remaining.postChest.coal.toLocaleString()} | Iron: {results.remaining.postChest.iron.toLocaleString()}
+                  {t('labels.meat', {}, 'Meat')}: {results.remaining.postChest.meat.toLocaleString()} | {t('labels.wood', {}, 'Wood')}: {results.remaining.postChest.wood.toLocaleString()} | {t('labels.coal', {}, 'Coal')}: {results.remaining.postChest.coal.toLocaleString()} | {t('labels.iron', {}, 'Iron')}: {results.remaining.postChest.iron.toLocaleString()}
                 </div>
               )}
             </div>
           ) : (
-            <p>Loading building data...</p>
+            <p>{t('results.loading', {}, 'Loading building data...')}</p>
           )}
         </div>
       </div>

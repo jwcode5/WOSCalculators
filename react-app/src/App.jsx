@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Layout from './components/Layout';
 import { AccountProvider } from './context/AccountContext';
 import { AuthProvider } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Buildings from './components/Buildings';
 import ChiefGear from './components/ChiefGear';
 import ChiefCharm from './components/ChiefCharm';
@@ -18,8 +19,9 @@ function App() {
   }, []);
 
   return (
-    <AccountProvider>
-      <AuthProvider>
+    <LanguageProvider>
+      <AccountProvider>
+        <AuthProvider>
         <Router>
           <Layout>
             <Routes>
@@ -36,6 +38,7 @@ function App() {
         </Router>
       </AuthProvider>
     </AccountProvider>
+    </LanguageProvider>
   );
 }
 

@@ -1,41 +1,11 @@
-
-:root, [data-theme="dark"] {
+:root, [data-theme="light"] {
   --option-bg: #1e1e1e;
   --option-text: #e0e0e0;
 
-  /* Core Colors - DARK MODE (Matched to old app) */
-  --bg-primary: #121212; 
-  --bg-secondary: #1e1e1e;
-  --sidebar-bg: rgba(18, 18, 18, 0.95);
-  --accent-color: #bb86fc;
-  --accent-hover: #9c4dcc;
-  
-  /* Text Colors */
-  --text-primary: #e0e0e0;
-  --text-secondary: #aaaaaa;
-  
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  
-  /* Layout variables (Desktop by default) */
-  --sidebar-width: 260px;
-  --topbar-height: 70px;
-  --base-padding: 32px;
-  --button-padding: 10px 16px;
-  --button-font-size: 1rem;
-}
-
-
-[data-theme="wos"] {
-  --option-bg: #0c285f;
-  --option-text: #eef4ff;
-
-  /* Core Colors - WOS GRADIENT MODE */
-  --bg-primary: linear-gradient(90deg, #071533 0%, #0c285f 30%, #1a468f 50%, #0c285f 70%, #071533 100%);
-  --bg-secondary: rgba(12, 34, 80, 0.7);
-  --sidebar-bg: rgba(255, 255, 255, 0.03);
+  /* Core Colors - Matched to old app 'wos' theme */
+  --bg-primary: #071533;
+  --bg-secondary: rgba(12, 34, 80, 0.92);
+  --sidebar-bg: #071533;
   --accent-color: #f1b24d;
   --accent-hover: #ffdd7a;
   
@@ -47,48 +17,54 @@
   --glass-bg: rgba(255, 255, 255, 0.08);
   --glass-border: rgba(255, 255, 255, 0.16);
   --glass-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+  
+  /* Layout variables (Desktop by default) */
+  --sidebar-width: 260px;
+  --content-padding: 30px;
+  --topbar-height: 70px;
+  --base-padding: 32px;
+  --button-padding: 10px 16px;
+  --button-font-size: 1rem;
 }
 
-[data-theme="light"] {
-  --option-bg: #ffffff;
-  --option-text: #222222;
-
-  /* Core Colors - LIGHT MODE */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --sidebar-bg: #ffffff;
-  --accent-color: #3b82f6;
-  --accent-hover: #2563eb;
+[data-theme="dark"] {
+  /* Core Colors - Matched to old app dark mode (#090f1f) */
+  --bg-primary: #040a15; 
+  --bg-secondary: #111827;
+  --sidebar-bg: #040a15;
+  --accent-color: #38bdf8;
+  --accent-hover: #7dd3fc;
   
   /* Text Colors */
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
+  --text-primary: #f8fafc;
+  --text-secondary: #93a9c6;
   
-  /* Glassmorphism / Panels */
-  --glass-bg: rgba(255, 255, 255, 1);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
-/* ==========================================================================
-   Responsive Variables (Mobile overrides)
-   Everything below 768px (typical tablet/mobile) will use these values
-   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-
-
-/* ==========================================================================
-   Base Layout
-   ========================================================================== */
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(90deg, #071533 0%, #0c285f 30%, #1a468f 50%, #0c285f 70%, #071533 100%);
   background-attachment: fixed;
   color: var(--text-primary);
+  line-height: 1.6;
   height: 100dvh;
   overflow: hidden;
+}
+
+[data-theme="dark"] body {
+  background: var(--bg-primary);
 }
 
 #root {

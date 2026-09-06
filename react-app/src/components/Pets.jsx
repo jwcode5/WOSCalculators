@@ -1,3 +1,4 @@
+import { useLanguage } from '../context/LanguageContext';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAccounts } from '../context/AccountContext';
 import petData from '../data/petUpgrades.tiered.json';
@@ -11,6 +12,7 @@ const PET_ORDER = [
 ];
 
 const Pets = () => {
+  const { t } = useLanguage();
   const { activeAccount, updateAccountState } = useAccounts();
   const [petState, setPetState] = useState({});
   const [materials, setMaterials] = useState({
@@ -105,14 +107,14 @@ const Pets = () => {
   return (
     <section id="petsPanel">
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Pet Collection</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.petCollection', {}, 'Pet Collection')}</h2>
         
 
         <div className="gear-table" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)', padding: '20px', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
           <div className="gear-table-header" style={{ display: 'flex', gap: '16px', fontWeight: 'bold', marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--glass-border)' }}>
-            <span style={{ flex: 1.5 }}>Pet</span>
-            <span style={{ flex: 1 }}>Current Level</span>
-            <span style={{ flex: 1 }}>Target Level</span>
+            <span style={{ flex: 1.5 }}>{t('labels.pet', {}, 'Pet')}</span>
+            <span style={{ flex: 1 }}>{t('labels.currentLevel', {}, 'Current Level')}</span>
+            <span style={{ flex: 1 }}>{t('labels.targetLevel', {}, 'Target Level')}</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {PET_ORDER.map((name, index) => {
@@ -130,7 +132,7 @@ const Pets = () => {
                 
                 divider = (
                   <div key={`div-${name}`} style={{ height: '2px', background: 'linear-gradient(90deg, transparent, rgba(255,224,138,0.3), transparent)', margin: '10px 0', position: 'relative' }}>
-                    <span style={{ position: 'absolute', right: '10px', top: '-12px', fontSize: '0.65em', color: '#ffe08a', fontStyle: 'italic', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reach Lv.{reqLevel} to unlock next</span>
+                    <span style={{ position: 'absolute', right: '10px', top: '-12px', fontSize: '0.65em', color: '#ffe08a', fontStyle: 'italic', opacity: 0.8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('labels.reachUnlockNext', { reqLevel }, `Reach Lv.${reqLevel} to unlock next`)}</span>
                   </div>
                 );
               }
@@ -140,7 +142,7 @@ const Pets = () => {
                   {divider}
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '8px 10px', borderBottom: index < PET_ORDER.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
                     <div style={{ flex: 1.5, display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ fontWeight: 500, fontSize: '0.95em' }}>{name}</span>
+                      <span style={{ fontWeight: 500, fontSize: '0.95em' }}>{t(`pets.${name.replace(/\s+/g, '')}`, {}, name)}</span>
                       {tier && <span style={{ fontSize: '0.7em', fontWeight: 'bold', opacity: 0.7, textTransform: 'uppercase' }}>{tier}</span>}
                     </div>
                     <select 
@@ -148,14 +150,14 @@ const Pets = () => {
                       value={petState[`${key}Current`] || 'Not Tamed'}
                       onChange={(e) => handleChangePet(key, 'Current', e.target.value, levels)}
                     >
-                      {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                      {levels.map(l => <option key={l} value={l}>{l === 'Not Tamed' ? t('labels.notTamed', {}, 'Not Tamed') : l}</option>)}
                     </select>
                     <select 
                       className="global-select" style={{ flex: 1 }}
                       value={petState[`${key}Target`] || 'Not Tamed'}
                       onChange={(e) => handleChangePet(key, 'Target', e.target.value, levels)}
                     >
-                      {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                      {levels.map(l => <option key={l} value={l}>{l === 'Not Tamed' ? t('labels.notTamed', {}, 'Not Tamed') : l}</option>)}
                     </select>
                   </div>
                 </React.Fragment>
@@ -166,22 +168,22 @@ const Pets = () => {
       </div>
 
       <div className="card-panel">
-        <h2 style={{ marginBottom: '16px' }}>Your Materials</h2>
+        <h2 style={{ marginBottom: '16px' }}>{t('sections.expertSkillsMaterials', {}, 'Your Materials')}</h2>
         <div className="four-col-grid">
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Pet Food</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.petFood', {}, 'Pet Food')}</label>
             <input type="text" value={materials.petFood} onChange={(e) => handleChangeMat('petFood', e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Taming Manual</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.tamingManual', {}, 'Taming Manual')}</label>
             <input type="text" value={materials.tamingManual} onChange={(e) => handleChangeMat('tamingManual', e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Energizing Potion</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.energizingPotion', {}, 'Energizing Potion')}</label>
             <input type="text" value={materials.energizingPotion} onChange={(e) => handleChangeMat('energizingPotion', e.target.value)} className="global-select" placeholder="0" />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '8px' }}>Strengthening Serum</label>
+            <label style={{ display: 'block', marginBottom: '8px' }}>{t('labels.strengtheningSerum', {}, 'Strengthening Serum')}</label>
             <input type="text" value={materials.strengtheningSerum} onChange={(e) => handleChangeMat('strengtheningSerum', e.target.value)} className="global-select" placeholder="0" />
           </div>
         </div>
@@ -189,39 +191,39 @@ const Pets = () => {
 
       {results && (
         <div className="card-panel" style={{ marginTop: '24px' }}>
-          <h2 style={{ marginBottom: '16px' }}>Totals</h2>
+          <h2 style={{ marginBottom: '16px' }}>{t('results.totals', {}, 'Totals')}</h2>
           
           <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-            <strong style={{ color: 'var(--accent-color)' }}>TARGET UPGRADES TOTAL</strong><br />
-            Pet Food: {results.costs.petFood.toLocaleString()}<br />
-            Taming Manuals: {results.costs.tamingManual.toLocaleString()}<br />
-            Energizing Potions: {results.costs.energizingPotion.toLocaleString()}<br />
-            Strengthening Serums: {results.costs.strengtheningSerum.toLocaleString()}<br />
+            <strong style={{ color: 'var(--accent-color)' }}>{t('results.targetUpgradesTotal', {}, 'TARGET UPGRADES TOTAL')}</strong><br />
+            {t('labels.petFood', {}, 'Pet Food')}: {results.costs.petFood.toLocaleString()}<br />
+            {t('labels.tamingManual', {}, 'Taming Manuals')}: {results.costs.tamingManual.toLocaleString()}<br />
+            {t('labels.energizingPotion', {}, 'Energizing Potions')}: {results.costs.energizingPotion.toLocaleString()}<br />
+            {t('labels.strengtheningSerum', {}, 'Strengthening Serums')}: {results.costs.strengtheningSerum.toLocaleString()}<br />
             
             <div className="card-panel" style={{ marginTop: '10px', background: '#1e2a3a', color: '#ffe08a', fontSize: '1.15em', textAlign: 'center' }}>
-              <strong>SVS Points Gained:</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
+              <strong>{t('results.svsPointsGained', {}, 'SVS Points Gained:')}</strong> <span style={{ fontSize: '1.2em' }}>{results.totalSvsPoints.toLocaleString()}</span>
             </div>
           </div>
 
           {results.optimized && (
             <div className="card-panel" style={{ marginTop: '15px', borderLeft: '3px solid var(--accent-color)' }}>
-              <strong style={{ color: 'var(--accent-color)' }}>OPTIMIZED PLAN</strong><br />
-              Based on your available resources:<br />
+              <strong style={{ color: 'var(--accent-color)' }}>{t('results.optimizedPlan', {}, 'OPTIMIZED PLAN')}</strong><br />
+              {t('results.basedOnResources', {}, 'Based on your available resources:')}<br />
               {results.optimized.plan.length > 0 ? (
                 <>
                   {results.optimized.plan.map((step, idx) => (
                     <div key={idx} style={{ marginTop: '10px' }}>
-                      <strong>{step.slot}</strong> (→ {step.label})
+                      <strong>{t(`pets.${step.slot.replace(/\s+/g, '')}`, {}, step.slot)}</strong> (→ {step.label === 'Not Tamed' ? t('labels.notTamed', {}, 'Not Tamed') : step.label})
                     </div>
                   ))}
                   <div style={{ marginTop: '10px', borderTop: '1px solid var(--glass-border)', paddingTop: '10px' }}>
-                    <strong>Total Cost:</strong><br />
-                    Food: {((parseFloat(materials.petFood)||0) - results.optimized.resources.petFood).toLocaleString()} | Manuals: {((parseFloat(materials.tamingManual)||0) - results.optimized.resources.tamingManual).toLocaleString()} | Potions: {((parseFloat(materials.energizingPotion)||0) - results.optimized.resources.energizingPotion).toLocaleString()} | Serums: {((parseFloat(materials.strengtheningSerum)||0) - results.optimized.resources.strengtheningSerum).toLocaleString()}<br />
-                    <strong>Total SVS Points Gained: {results.optimized.svsPoints.toLocaleString()}</strong>
+                    <strong>{t('results.totalCost', {}, 'Total Cost:')}</strong><br />
+                    {t('labels.petFood', {}, 'Food')}: {((parseFloat(materials.petFood)||0) - results.optimized.resources.petFood).toLocaleString()} | {t('labels.tamingManual', {}, 'Manuals')}: {((parseFloat(materials.tamingManual)||0) - results.optimized.resources.tamingManual).toLocaleString()} | {t('labels.energizingPotion', {}, 'Potions')}: {((parseFloat(materials.energizingPotion)||0) - results.optimized.resources.energizingPotion).toLocaleString()} | {t('labels.strengtheningSerum', {}, 'Serums')}: {((parseFloat(materials.strengtheningSerum)||0) - results.optimized.resources.strengtheningSerum).toLocaleString()}<br />
+                    <strong>{t('results.totalSvsPointsGainedText', {}, 'Total SVS Points Gained:')} {results.optimized.svsPoints.toLocaleString()}</strong>
                   </div>
                 </>
               ) : (
-                <em style={{ display: 'block', marginTop: '8px' }}>No target upgrades selected and no optimized upgrades possible with current materials.</em>
+                <em style={{ display: 'block', marginTop: '8px' }}>{t('results.noPetUpgrades', {}, 'No target upgrades selected and no optimized upgrades possible with current materials.')}</em>
               )}
             </div>
           )}

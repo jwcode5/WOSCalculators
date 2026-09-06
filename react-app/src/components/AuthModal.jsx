@@ -1,7 +1,9 @@
+import { useLanguage } from '../context/LanguageContext';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const AuthModal = () => {
+  const { t } = useLanguage();
   const { isAuthModalOpen, setIsAuthModalOpen, currentUser, loginWithEmail, registerWithEmail, loginWithGoogle, logout } = useAuth();
   
   const [email, setEmail] = useState('');
@@ -61,14 +63,14 @@ const AuthModal = () => {
           
           {currentUser ? (
             <div style={{ textAlign: 'center' }}>
-              <p style={{ marginBottom: '16px' }}>Logged in as: <strong>{currentUser.email}</strong></p>
-              <button className="secondary-button" onClick={handleLogout} style={{ width: '100%', padding: '10px', borderRadius: '8px' }}>Logout</button>
+              <p style={{ marginBottom: '16px' }}>{t("auth.loggedInAs", {}, "Logged in as:")} <strong>{currentUser.email}</strong></p>
+              <button className="secondary-button" onClick={handleLogout} style={{ width: '100%', padding: '10px', borderRadius: '8px' }}>{t("auth.logout", {}, "Logout")}</button>
             </div>
           ) : (
             <>
               <input 
                 type="email" 
-                placeholder="Email" 
+                placeholder={t("auth.email", {}, "Email")} 
                 className="auth-input global-select" 
                 value={email} 
                 onChange={e => setEmail(e.target.value)} 
@@ -76,18 +78,18 @@ const AuthModal = () => {
               />
               <input 
                 type="password" 
-                placeholder="Password" 
+                placeholder={t("auth.password", {}, "Password")} 
                 className="auth-input global-select" 
                 value={password} 
                 onChange={e => setPassword(e.target.value)} 
                 style={{ width: '100%', marginBottom: '16px', padding: '10px' }} 
               />
               <div className="auth-buttons" style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                <button className="accent-button" onClick={handleLogin} style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none' }}>Login</button>
-                <button className="secondary-button" onClick={handleRegister} style={{ flex: 1, padding: '10px', borderRadius: '8px' }}>Register</button>
+                <button className="accent-button" onClick={handleLogin} style={{ flex: 1, padding: '10px', borderRadius: '8px', background: 'var(--accent-color)', color: 'white', border: 'none' }}>{t("auth.login", {}, "Login")}</button>
+                <button className="secondary-button" onClick={handleRegister} style={{ flex: 1, padding: '10px', borderRadius: '8px' }}>{t("auth.register", {}, "Register")}</button>
               </div>
               <div className="auth-divider" style={{ textAlign: 'center', margin: '16px 0', borderBottom: '1px solid var(--glass-border)', lineHeight: '0.1em' }}>
-                <span style={{ background: 'var(--sidebar-bg)', padding: '0 10px', color: 'var(--text-secondary)' }}>OR</span>
+                <span style={{ background: 'var(--sidebar-bg)', padding: '0 10px', color: 'var(--text-secondary)' }}>{t("auth.or", {}, "OR")}</span>
               </div>
               <button className="google-button" onClick={handleGoogle} style={{ width: '100%', display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center', padding: '10px', borderRadius: '8px', background: 'white', color: 'black', border: 'none' }}>
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '20px', height: '20px' }} />
@@ -98,7 +100,7 @@ const AuthModal = () => {
           
           {currentUser && (
             <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--glass-border)' }}>
-              <p style={{ fontSize: '0.85em', color: 'var(--text-secondary)', marginBottom: '8px', textAlign: 'center' }}>Missing data? Click below to allow your live app to re-sync its data upwards.</p>
+              <p style={{ fontSize: '0.85em', color: 'var(--text-secondary)', marginBottom: '8px', textAlign: 'center' }}>{t("auth.syncPrompt", {}, "Missing data? Click below to allow your live app to re-sync its data upwards.")}</p>
               <button 
                 className="secondary-button" 
                 style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #ff6b6b', color: '#ff6b6b', background: 'rgba(255,107,107,0.1)' }}
