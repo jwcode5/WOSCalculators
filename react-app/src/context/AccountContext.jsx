@@ -88,7 +88,7 @@ export const AccountProvider = ({ children }) => {
 
   return (
     <AccountContext.Provider value={{ 
-      accounts, activeAccount, activeAccountId, 
+      accounts, setAccounts, activeAccount, activeAccountId, 
       setActiveAccountId, addAccount, renameAccount, deleteAccount, updateAccountState 
     }}>
       {children}

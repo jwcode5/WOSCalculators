@@ -6,8 +6,28 @@ import { useLanguage } from '../context/LanguageContext';
 import LanguageModal from './LanguageModal';
 
 const Sidebar = () => {
+  const handleForceUpdate = async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let reg of registrations) {
+          await reg.unregister();
+        }
+      }
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        for (let name of cacheNames) {
+          await caches.delete(name);
+        }
+      }
+      window.location.href = window.location.pathname + '?v=' + new Date().getTime();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to update: ' + e.message);
+    }
+  };
   const { accounts, activeAccountId, setActiveAccountId, addAccount, renameAccount, deleteAccount } = useAccounts();
-  const { currentUser, setIsAuthModalOpen, pullFromCloud, isSyncing } = useAuth();
+  const { currentUser, setIsAuthModalOpen, pullFromCloud, pushToCloud, isSyncing } = useAuth();
   const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
@@ -123,16 +143,20 @@ const Sidebar = () => {
           </select>
         </div>
         <select id="languageSelect" className="language-select" style={{ display: 'none' }}></select>
-        {currentUser && (
-          <button 
-            className="secondary-button" 
-            style={{ padding: '10px', fontSize: '0.9em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-            onClick={() => pullFromCloud(true)}
-            disabled={isSyncing}
-          >
-            {isSyncing ? t('buttons.refresh', {}, 'Syncing...') : t('buttons.refresh', {}, 'Sync with Cloud')}
-          </button>
-        )}
+        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+          <button className="secondary-button" style={{ flex: 1, padding: '10px', fontSize: '0.85em' }} onClick={handleForceUpdate}>Update App</button>
+          {currentUser && <button className="secondary-button" style={{ flex: 1, padding: '10px', fontSize: '0.85em' }} onClick={pushToCloud} disabled={isSyncing}>Force Push</button>}
+          {currentUser && (
+            <button 
+              className="secondary-button" 
+              style={{ flex: 1, padding: '10px', fontSize: '0.85em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+              onClick={() => pullFromCloud(true)}
+              disabled={isSyncing}
+            >
+              {isSyncing ? t('buttons.refresh', {}, 'Syncing...') : t('buttons.refresh', {}, 'Sync with Cloud')}
+            </button>
+          )}
+        </div>
       </div>
     </aside>
   );

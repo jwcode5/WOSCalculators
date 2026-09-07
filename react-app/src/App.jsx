@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Layout from './components/Layout';
 import { AccountProvider } from './context/AccountContext';
@@ -12,6 +12,21 @@ import Experts from './components/Experts';
 import SvS from './components/SvS';
 import AuthModal from './components/AuthModal';
 
+const RouteTracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname !== '/' && location.pathname !== '/index.html') {
+      localStorage.setItem('wosCalc_lastRoute', location.pathname);
+    }
+  }, [location]);
+  return null;
+};
+
+const IndexRedirect = () => {
+  const lastRoute = localStorage.getItem('wosCalc_lastRoute') || '/upgrade';
+  return <Navigate to={lastRoute} replace />;
+};
+
 function App() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('wosCalc_theme') || 'dark';
@@ -23,9 +38,11 @@ function App() {
       <AccountProvider>
         <AuthProvider>
         <Router>
+          <RouteTracker />
           <Layout>
             <Routes>
-              <Route path="/" element={<Navigate to="/upgrade" replace />} />
+              <Route path="/" element={<IndexRedirect />} />
+              <Route path="/index.html" element={<IndexRedirect />} />
               <Route path="/upgrade" element={<Buildings />} />
               <Route path="/chiefGear" element={<ChiefGear />} />
               <Route path="/chiefCharm" element={<ChiefCharm />} />
