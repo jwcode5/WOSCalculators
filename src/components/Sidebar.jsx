@@ -79,7 +79,8 @@ const Sidebar = () => {
         <NavLink onClick={() => setIsExpanded(false)} to="/chiefGear" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.chiefGear', {}, 'Chief Gear')}</NavLink>
         <NavLink onClick={() => setIsExpanded(false)} to="/chiefCharm" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.chiefCharm', {}, 'Chief Charm')}</NavLink>
         <NavLink onClick={() => setIsExpanded(false)} to="/pets" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.pets', {}, 'Pets')}</NavLink>
-        <NavLink onClick={() => setIsExpanded(false)} to="/experts" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.experts', {}, 'Experts')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/experts" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.experts', {}, 'Experts')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/research" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.research', {}, 'Research')}</NavLink>
         <NavLink onClick={() => setIsExpanded(false)} to="/svs" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.svs', {}, 'SvS Calculator')}</NavLink>
       </nav>
       

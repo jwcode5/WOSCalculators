@@ -9,6 +9,7 @@ import ChiefGear from './components/ChiefGear';
 import ChiefCharm from './components/ChiefCharm';
 import Pets from './components/Pets';
 import Experts from './components/Experts';
+import Research from './components/Research';
 import SvS from './components/SvS';
 import AuthModal from './components/AuthModal';
 
@@ -48,6 +49,7 @@ function App() {
               <Route path="/chiefCharm" element={<ChiefCharm />} />
               <Route path="/pets" element={<Pets />} />
               <Route path="/experts" element={<Experts />} />
+              <Route path="/research" element={<Research />} />
               <Route path="/svs" element={<SvS />} />
             </Routes>
           </Layout>
