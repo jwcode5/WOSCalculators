@@ -13,7 +13,9 @@ export const LANGUAGES = [
   { value: "pt", label: "Português" },
   { value: "pl", label: "Polski" },
   { value: "ko", label: "한국어" },
-  { value: "ja", label: "日本語" }
+  { value: "ja", label: "日本語" },
+  { value: "tr", label: "Türkçe" },
+  { value: "ar", label: "العربية" }
 ];
 
 export const LanguageProvider = ({ children }) => {
