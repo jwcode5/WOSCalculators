@@ -134,6 +134,8 @@ export default function TerritoryPlanner() {
   // Canvas Viewport: pan & zoom
   const [zoom, setZoom] = useState(24); // pixels per tile
   const [pan, setPan] = useState({ x: 250, y: 250 });
+  const panRef = useRef(pan);
+  panRef.current = pan;
   const [isPanning, setIsPanning] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [hoveredTile, setHoveredTile] = useState(null);
@@ -155,7 +157,16 @@ export default function TerritoryPlanner() {
   const containerRef = useRef(null);
 
   // Pinch-to-zoom tracking on touch devices
-  const touchStateRef = useRef({ lastDist: 0, isPinching: false });
+  // Touch state for pinch-to-zoom and 1-finger panning via native listeners
+  const touchStateRef = useRef({
+    isPinching: false,
+    lastDist: 0,
+    midX: 0,
+    midY: 0,
+    isPanning: false,
+    startX: 0,
+    startY: 0
+  });
 
   // Handle URL share param (?plan=...)
   useEffect(() => {
@@ -274,13 +285,28 @@ export default function TerritoryPlanner() {
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
         const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
-        const midX = (touch1.clientX + touch2.clientX) / 2;
-        const midY = (touch1.clientY + touch2.clientY) / 2;
-        touchStateRef.current = { lastDist: dist, isPinching: true, midX, midY };
+        const rect = canvas.getBoundingClientRect();
+        const midX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+        const midY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+
+        touchStateRef.current = {
+          ...touchStateRef.current,
+          lastDist: dist,
+          isPinching: true,
+          midX,
+          midY,
+          isPanning: false
+        };
       } else if (e.touches.length === 1) {
         const touch = e.touches[0];
+        touchStateRef.current = {
+          ...touchStateRef.current,
+          isPanning: true,
+          isPinching: false,
+          startX: touch.clientX - panRef.current.x,
+          startY: touch.clientY - panRef.current.y
+        };
         setIsPanning(true);
-        setDragStart({ x: touch.clientX - pan.x, y: touch.clientY - pan.y });
         const tile = screenToTile(touch.clientX, touch.clientY);
         setHoveredTile(tile);
       }
@@ -292,16 +318,15 @@ export default function TerritoryPlanner() {
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
         const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
-        if (touchStateRef.current.lastDist > 0) {
-          const ratio = dist / touchStateRef.current.lastDist;
-          // Dampen pinch ratio slightly for smooth iPad control
-          const dampenedRatio = 1 + (ratio - 1) * 0.7;
+        const prevDist = touchStateRef.current.lastDist;
 
+        if (prevDist > 0 && dist > 0) {
+          const ratio = dist / prevDist;
+          // Apply pinch zoom
           setZoom(prevZoom => {
-            const newZoom = Math.min(60, Math.max(6, prevZoom * dampenedRatio));
-            const rect = canvas.getBoundingClientRect();
-            const midX = (touchStateRef.current.midX || (rect.left + rect.width / 2)) - rect.left;
-            const midY = (touchStateRef.current.midY || (rect.top + rect.height / 2)) - rect.top;
+            const newZoom = Math.min(60, Math.max(6, prevZoom * ratio));
+            const midX = touchStateRef.current.midX;
+            const midY = touchStateRef.current.midY;
 
             setPan(prevPan => ({
               x: midX - (midX - prevPan.x) * (newZoom / prevZoom),
@@ -312,43 +337,58 @@ export default function TerritoryPlanner() {
           });
         }
         touchStateRef.current.lastDist = dist;
-      } else if (e.touches.length === 1 && isPanning) {
+      } else if (e.touches.length === 1 && touchStateRef.current.isPanning) {
         e.preventDefault();
         const touch = e.touches[0];
         setPan({
-          x: touch.clientX - dragStart.x,
-          y: touch.clientY - dragStart.y
+          x: touch.clientX - touchStateRef.current.startX,
+          y: touch.clientY - touchStateRef.current.startY
         });
         const tile = screenToTile(touch.clientX, touch.clientY);
         setHoveredTile(tile);
       }
     };
 
-    const onTouchEndHandler = () => {
-      touchStateRef.current.isPinching = false;
-      setIsPanning(false);
+    const onTouchEndHandler = (e) => {
+      if (e.touches.length === 0) {
+        touchStateRef.current.isPinching = false;
+        touchStateRef.current.isPanning = false;
+        setIsPanning(false);
+      } else if (e.touches.length === 1) {
+        // Transitioned from pinch down to 1 finger
+        touchStateRef.current.isPinching = false;
+        const touch = e.touches[0];
+        touchStateRef.current.isPanning = true;
+        touchStateRef.current.startX = touch.clientX - panRef.current.x;
+        touchStateRef.current.startY = touch.clientY - panRef.current.y;
+      }
     };
 
-    // Safari iOS gesture prevention
+    // Safari iOS gesture prevention (pinch gesture on Safari)
     const onGestureStart = (e) => e.preventDefault();
     const onGestureChange = (e) => e.preventDefault();
+    const onGestureEnd = (e) => e.preventDefault();
 
     canvas.addEventListener('wheel', onWheelHandler, { passive: false });
     canvas.addEventListener('touchstart', onTouchStartHandler, { passive: false });
     canvas.addEventListener('touchmove', onTouchMoveHandler, { passive: false });
     canvas.addEventListener('touchend', onTouchEndHandler, { passive: false });
+    canvas.addEventListener('touchcancel', onTouchEndHandler, { passive: false });
     canvas.addEventListener('gesturestart', onGestureStart, { passive: false });
     canvas.addEventListener('gesturechange', onGestureChange, { passive: false });
+    canvas.addEventListener('gestureend', onGestureEnd, { passive: false });
 
     return () => {
       canvas.removeEventListener('wheel', onWheelHandler);
       canvas.removeEventListener('touchstart', onTouchStartHandler);
       canvas.removeEventListener('touchmove', onTouchMoveHandler);
       canvas.removeEventListener('touchend', onTouchEndHandler);
+      canvas.removeEventListener('touchcancel', onTouchEndHandler);
       canvas.removeEventListener('gesturestart', onGestureStart);
       canvas.removeEventListener('gesturechange', onGestureChange);
+      canvas.removeEventListener('gestureend', onGestureEnd);
     };
-  }, [pan, isPanning, dragStart, screenToTile]);
+  }, [screenToTile]);
 
   // Track container dimensions to trigger immediate canvas re-draw on resize/panel collapse
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -951,66 +991,6 @@ export default function TerritoryPlanner() {
   };
 
   const handleMouseUp = () => {
-    setIsPanning(false);
-  };
-
-  const handleWheel = (e) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
-    const newZoom = Math.min(60, Math.max(6, zoom * zoomFactor));
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const newPanX = mouseX - (mouseX - pan.x) * (newZoom / zoom);
-    const newPanY = mouseY - (mouseY - pan.y) * (newZoom / zoom);
-
-    setZoom(newZoom);
-    setPan({ x: newPanX, y: newPanY });
-  };
-
-  // Touch event handlers for iPad
-  const handleTouchStart = (e) => {
-    if (e.touches.length === 2) {
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
-      touchStateRef.current = { lastDist: dist, isPinching: true };
-    } else if (e.touches.length === 1) {
-      const touch = e.touches[0];
-      setIsPanning(true);
-      setDragStart({ x: touch.clientX - pan.x, y: touch.clientY - pan.y });
-      const tile = screenToTile(touch.clientX, touch.clientY);
-      setHoveredTile(tile);
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (e.touches.length === 2 && touchStateRef.current.isPinching) {
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
-      const ratio = dist / touchStateRef.current.lastDist;
-      
-      const newZoom = Math.min(60, Math.max(6, zoom * ratio));
-      setZoom(newZoom);
-      touchStateRef.current.lastDist = dist;
-    } else if (e.touches.length === 1 && isPanning) {
-      const touch = e.touches[0];
-      setPan({
-        x: touch.clientX - dragStart.x,
-        y: touch.clientY - dragStart.y
-      });
-      const tile = screenToTile(touch.clientX, touch.clientY);
-      setHoveredTile(tile);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    touchStateRef.current.isPinching = false;
     setIsPanning(false);
   };
 
@@ -2260,15 +2240,17 @@ export default function TerritoryPlanner() {
         >
           <canvas
             ref={canvasRef}
-            style={{ width: '100%', height: '100%', display: 'block', cursor: activeTool === 'select' ? (isPanning ? 'grabbing' : 'grab') : 'crosshair' }}
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              display: 'block', 
+              cursor: activeTool === 'select' ? (isPanning ? 'grabbing' : 'grab') : 'crosshair',
+              touchAction: 'none'
+            }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            onWheel={handleWheel}
             onClick={handleCanvasClick}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
             onContextMenu={e => e.preventDefault()}
           />
 
