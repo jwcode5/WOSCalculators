@@ -234,6 +234,45 @@ export default function TerritoryPlanner() {
     };
   }, [zoom, pan, plan.originX, plan.originY]);
 
+  // Non-passive wheel event listener to prevent browser page zoom (Ctrl+Wheel or Pinch on trackpads)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Trackpad pinch gesture support (Chrome/Safari map trackpad pinches to WheelEvent with ctrlKey = true)
+    const onWheelHandler = (e) => {
+      // Always prevent browser page-level zoom
+      e.preventDefault();
+
+      let zoomFactor;
+      if (e.ctrlKey) {
+        // Pinching on trackpad
+        zoomFactor = e.deltaY < 0 ? 1.05 : 0.95;
+      } else {
+        // Normal 2-finger scroll or mousewheel
+        zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+      }
+      setZoom(prevZoom => {
+        const newZoom = Math.min(60, Math.max(6, prevZoom * zoomFactor));
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        setPan(prevPan => ({
+          x: mouseX - (mouseX - prevPan.x) * (newZoom / prevZoom),
+          y: mouseY - (mouseY - prevPan.y) * (newZoom / prevZoom)
+        }));
+
+        return newZoom;
+      });
+    };
+
+    canvas.addEventListener('wheel', onWheelHandler, { passive: false });
+    return () => {
+      canvas.removeEventListener('wheel', onWheelHandler);
+    };
+  }, []);
+
   // Track container dimensions to trigger immediate canvas re-draw on resize/panel collapse
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
