@@ -234,7 +234,7 @@ export default function TerritoryPlanner() {
     };
   }, [zoom, pan, plan.originX, plan.originY]);
 
-  // Non-passive wheel event listener to prevent browser page zoom (Ctrl+Wheel or Pinch on trackpads)
+  // Non-passive wheel & touch event listeners to prevent iOS/iPad Safari/PWA browser page zoom
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -267,11 +267,88 @@ export default function TerritoryPlanner() {
       });
     };
 
+    // Native touch listeners for iPad/iOS PWA with passive: false to prevent Safari gesture zoom
+    const onTouchStartHandler = (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+        const midX = (touch1.clientX + touch2.clientX) / 2;
+        const midY = (touch1.clientY + touch2.clientY) / 2;
+        touchStateRef.current = { lastDist: dist, isPinching: true, midX, midY };
+      } else if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        setIsPanning(true);
+        setDragStart({ x: touch.clientX - pan.x, y: touch.clientY - pan.y });
+        const tile = screenToTile(touch.clientX, touch.clientY);
+        setHoveredTile(tile);
+      }
+    };
+
+    const onTouchMoveHandler = (e) => {
+      if (e.touches.length === 2 && touchStateRef.current.isPinching) {
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+        if (touchStateRef.current.lastDist > 0) {
+          const ratio = dist / touchStateRef.current.lastDist;
+          // Dampen pinch ratio slightly for smooth iPad control
+          const dampenedRatio = 1 + (ratio - 1) * 0.7;
+
+          setZoom(prevZoom => {
+            const newZoom = Math.min(60, Math.max(6, prevZoom * dampenedRatio));
+            const rect = canvas.getBoundingClientRect();
+            const midX = (touchStateRef.current.midX || (rect.left + rect.width / 2)) - rect.left;
+            const midY = (touchStateRef.current.midY || (rect.top + rect.height / 2)) - rect.top;
+
+            setPan(prevPan => ({
+              x: midX - (midX - prevPan.x) * (newZoom / prevZoom),
+              y: midY - (midY - prevPan.y) * (newZoom / prevZoom)
+            }));
+
+            return newZoom;
+          });
+        }
+        touchStateRef.current.lastDist = dist;
+      } else if (e.touches.length === 1 && isPanning) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        setPan({
+          x: touch.clientX - dragStart.x,
+          y: touch.clientY - dragStart.y
+        });
+        const tile = screenToTile(touch.clientX, touch.clientY);
+        setHoveredTile(tile);
+      }
+    };
+
+    const onTouchEndHandler = () => {
+      touchStateRef.current.isPinching = false;
+      setIsPanning(false);
+    };
+
+    // Safari iOS gesture prevention
+    const onGestureStart = (e) => e.preventDefault();
+    const onGestureChange = (e) => e.preventDefault();
+
     canvas.addEventListener('wheel', onWheelHandler, { passive: false });
+    canvas.addEventListener('touchstart', onTouchStartHandler, { passive: false });
+    canvas.addEventListener('touchmove', onTouchMoveHandler, { passive: false });
+    canvas.addEventListener('touchend', onTouchEndHandler, { passive: false });
+    canvas.addEventListener('gesturestart', onGestureStart, { passive: false });
+    canvas.addEventListener('gesturechange', onGestureChange, { passive: false });
+
     return () => {
       canvas.removeEventListener('wheel', onWheelHandler);
+      canvas.removeEventListener('touchstart', onTouchStartHandler);
+      canvas.removeEventListener('touchmove', onTouchMoveHandler);
+      canvas.removeEventListener('touchend', onTouchEndHandler);
+      canvas.removeEventListener('gesturestart', onGestureStart);
+      canvas.removeEventListener('gesturechange', onGestureChange);
     };
-  }, []);
+  }, [pan, isPanning, dragStart, screenToTile]);
 
   // Track container dimensions to trigger immediate canvas re-draw on resize/panel collapse
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
