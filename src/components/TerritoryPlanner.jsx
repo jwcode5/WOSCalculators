@@ -246,11 +246,11 @@ export default function TerritoryPlanner() {
 
       let zoomFactor;
       if (e.ctrlKey) {
-        // Pinching on trackpad
-        zoomFactor = e.deltaY < 0 ? 1.05 : 0.95;
+        // Pinching on trackpad: smooth fine-grained control
+        zoomFactor = e.deltaY < 0 ? 1.025 : 0.975;
       } else {
-        // Normal 2-finger scroll or mousewheel
-        zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+        // Normal 2-finger scroll or mousewheel: gentle steps
+        zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
       }
       setZoom(prevZoom => {
         const newZoom = Math.min(60, Math.max(6, prevZoom * zoomFactor));
