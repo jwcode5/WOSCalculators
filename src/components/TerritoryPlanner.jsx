@@ -51,24 +51,138 @@ const DEFAULT_PLAN = {
   entities: []
 };
 
-// URL Compression helper using Base64 UTF-8
-const encodePlanToHash = (plan) => {
-  try {
-    const json = JSON.stringify(plan);
-    const bytes = new TextEncoder().encode(json);
-    let binary = '';
-    for (let i = 0; i < bytes.length; i++) {
-      binary += String.fromCharCode(bytes[i]);
+const TYPE_TO_CODE = {
+  banner: 'b',
+  city: 'c',
+  hq: 'h',
+  trap: 't',
+  node: 'n',
+  statue: 's',
+  facility: 'f'
+};
+
+const CODE_TO_TYPE = Object.fromEntries(
+  Object.entries(TYPE_TO_CODE).map(([k, v]) => [v, k])
+);
+
+const getDefaultSizeForType = (type) => {
+  if (type === 'hq' || type === 'trap' || type === 'facility') return 3;
+  if (type === 'banner') return 1;
+  return 2;
+};
+
+const toUrlSafeBase64 = (bytes) => {
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+const fromUrlSafeBase64 = (str) => {
+  const padded = str.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((str.length + 3) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
+const compactPlanData = (plan) => {
+  const compactEntities = (plan.entities || []).map((ent) => {
+    const code = TYPE_TO_CODE[ent.type] || ent.type;
+    const row = [code, ent.x, ent.y, ent.label || ''];
+    if (ent.type === 'hq') {
+      row.push([ent.color || 'gold', ent.hqType || 'Icefield']);
+    } else if (ent.type === 'banner') {
+      if (ent.color && ent.color !== 'gold') row.push(ent.color);
+    } else if (ent.type === 'node') {
+      if (ent.resourceType) row.push(ent.resourceType);
     }
-    return btoa(binary);
+    if (row.length === 4 && row[3] === '') row.pop();
+    return row;
+  });
+  return [
+    2,
+    plan.name || 'Main Hive Plan',
+    plan.stateNumber || '',
+    plan.allianceTag || '',
+    plan.originX ?? 550,
+    plan.originY ?? 550,
+    compactEntities
+  ];
+};
+
+const expandPlanData = (arr) => {
+  const [, name, stateNumber, allianceTag, originX, originY, compactEntities] = arr;
+  const baseId = Date.now().toString(36);
+  const entities = (compactEntities || []).map((row, idx) => {
+    const [code, x, y, label, extra] = row;
+    const type = CODE_TO_TYPE[code] || code;
+    const size = getDefaultSizeForType(type);
+    const ent = {
+      id: `${baseId}_${idx}_${Math.random().toString(36).slice(2, 6)}`,
+      type,
+      x,
+      y,
+      width: size,
+      height: size
+    };
+    if (label) ent.label = label;
+    if (type === 'hq') {
+      const [color, hqType] = Array.isArray(extra) ? extra : ['gold', 'Icefield'];
+      ent.color = color || 'gold';
+      ent.hqType = hqType || 'Icefield';
+    } else if (type === 'banner') {
+      ent.color = extra || 'gold';
+    } else if (type === 'node') {
+      ent.resourceType = extra || 'Meat';
+    }
+    return ent;
+  });
+  return {
+    name: name || 'Main Hive Plan',
+    stateNumber: stateNumber || '',
+    allianceTag: allianceTag || '',
+    originX: originX ?? 550,
+    originY: originY ?? 550,
+    entities
+  };
+};
+
+// URL Compression helper using compact tuples + deflate-raw + URL-safe Base64
+const encodePlanToHash = async (plan) => {
+  try {
+    const json = JSON.stringify(compactPlanData(plan));
+    const bytes = new TextEncoder().encode(json);
+    if (typeof CompressionStream !== 'undefined') {
+      const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+      const compressed = new Uint8Array(await new Response(stream).arrayBuffer());
+      return 'z' + toUrlSafeBase64(compressed);
+    }
+    return 'c' + toUrlSafeBase64(bytes);
   } catch (e) {
     console.error('Failed to encode plan', e);
     return '';
   }
 };
 
-const decodePlanFromHash = (hash) => {
+const decodePlanFromHash = async (hash) => {
   try {
+    if (hash.startsWith('z') && typeof DecompressionStream !== 'undefined') {
+      const compressed = fromUrlSafeBase64(hash.slice(1));
+      const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      const decompressed = new Uint8Array(await new Response(stream).arrayBuffer());
+      const json = new TextDecoder().decode(decompressed);
+      return expandPlanData(JSON.parse(json));
+    }
+    if (hash.startsWith('c')) {
+      const bytes = fromUrlSafeBase64(hash.slice(1));
+      const json = new TextDecoder().decode(bytes);
+      return expandPlanData(JSON.parse(json));
+    }
+    // Legacy uncompressed Base64 JSON fallback
     const binary = atob(hash);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
@@ -171,15 +285,20 @@ export default function TerritoryPlanner() {
   // Handle URL share param (?plan=...)
   useEffect(() => {
     const planParam = searchParams.get('plan');
-    if (planParam) {
-      const decoded = decodePlanFromHash(planParam);
-      if (decoded && decoded.entities) {
+    if (!planParam) return;
+    let cancelled = false;
+    (async () => {
+      const decoded = await decodePlanFromHash(planParam);
+      if (!cancelled && decoded && decoded.entities) {
         setImportedPlan(decoded);
         setPlan(decoded);
         // Clear the ?plan= from the browser URL without refreshing so subsequent reloads don't re-import
         window.history.replaceState({}, document.title, window.location.pathname);
       }
-    }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [searchParams]);
 
   // Sync to account state and direct localStorage when plan changes
@@ -1226,15 +1345,27 @@ export default function TerritoryPlanner() {
   };
 
   // Generate shareable link
-  const handleGenerateShareLink = () => {
-    const encoded = encodePlanToHash(plan);
+  const handleGenerateShareLink = async () => {
+    const encoded = await encodePlanToHash(plan);
+    if (!encoded) return;
     const url = new URL(window.location.origin + window.location.pathname);
     url.searchParams.set('plan', encoded);
-    
-    navigator.clipboard.writeText(url.toString()).then(() => {
-      setShareSuccess(true);
-      setTimeout(() => setShareSuccess(false), 3000);
-    });
+    const shareUrl = url.toString();
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = shareUrl;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    setShareSuccess(true);
+    setTimeout(() => setShareSuccess(false), 3000);
   };
 
   // Export as PNG image
