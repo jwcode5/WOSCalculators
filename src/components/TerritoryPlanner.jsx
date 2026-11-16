@@ -96,11 +96,17 @@ export default function TerritoryPlanner() {
   const { accounts, activeAccountId, updateAccountState } = useAccounts();
   const [searchParams] = useSearchParams();
 
-  // Load from active account or fallback to default
-  const activeAccount = accounts.find(a => a.id === activeAccountId);
-  const savedTerritoryState = activeAccount?.state?.territoryPlanner;
-
-  const [plan, setPlan] = useState(() => savedTerritoryState || DEFAULT_PLAN);
+  // Load from direct localStorage or active account or fallback to default
+  const [plan, setPlan] = useState(() => {
+    try {
+      const direct = localStorage.getItem('wosCalc_activeTerritoryPlan');
+      if (direct) return JSON.parse(direct);
+    } catch (e) {
+      console.error(e);
+    }
+    const activeAcc = accounts.find(a => a.id === activeAccountId);
+    return activeAcc?.state?.territoryPlanner || DEFAULT_PLAN;
+  });
   const [activeTool, setActiveTool] = useState('select'); // select, trap, hq, banner, city, node, statue, eraser
   const [selectedEntityId, setSelectedEntityId] = useState(null);
   const [overlapWarning, setOverlapWarning] = useState(null);
@@ -159,17 +165,21 @@ export default function TerritoryPlanner() {
       if (decoded && decoded.entities) {
         setImportedPlan(decoded);
         setPlan(decoded);
+        // Clear the ?plan= from the browser URL without refreshing so subsequent reloads don't re-import
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
   }, [searchParams]);
 
-  // Sync to account state when plan changes (debounced auto-save)
+  // Sync to account state and direct localStorage when plan changes
   useEffect(() => {
     if (!plan) return;
-    const timer = setTimeout(() => {
-      updateAccountState('territoryPlanner', plan);
-    }, 600);
-    return () => clearTimeout(timer);
+    try {
+      localStorage.setItem('wosCalc_activeTerritoryPlan', JSON.stringify(plan));
+    } catch (e) {
+      console.error(e);
+    }
+    updateAccountState('territoryPlanner', plan);
   }, [plan, updateAccountState]);
 
   // Keep city counter up to date
