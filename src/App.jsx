@@ -11,6 +11,7 @@ import Pets from './components/Pets';
 import Experts from './components/Experts';
 import Research from './components/Research';
 import SvS from './components/SvS';
+import TerritoryPlanner from './components/TerritoryPlanner';
 import AuthModal from './components/AuthModal';
 
 const RouteTracker = () => {
@@ -51,6 +52,7 @@ function App() {
               <Route path="/experts" element={<Experts />} />
               <Route path="/research" element={<Research />} />
               <Route path="/svs" element={<SvS />} />
+              <Route path="/territory" element={<TerritoryPlanner />} />
             </Routes>
           </Layout>
           <AuthModal />

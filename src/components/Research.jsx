@@ -304,7 +304,14 @@ const Research = () => {
   return (
     <section id="researchCalculatorPanel">
       {/* Category Tabs */}
-      <div className="card-panel" style={{ paddingBottom: '16px' }}>
+      <div 
+        className="card-panel research-category-panel" 
+        style={{ 
+          marginTop: '0px', 
+          marginBottom: '16px', 
+          padding: '12px 16px' 
+        }}
+      >
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           {categories.map(cat => (
             <button

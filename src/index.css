@@ -83,8 +83,20 @@ body {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, margin-left 0.3s ease;
   z-index: 20;
+}
+
+@media (min-width: 769px) {
+  #sidebar.collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    margin-left: 0 !important;
+    overflow: hidden !important;
+    border-right: none !important;
+    visibility: hidden;
+  }
 }
 
 .sidebar-header {
@@ -236,6 +248,26 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.action-btn {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
 .accent-button {
   background: var(--accent-color);
   color: #fff;
@@ -282,6 +314,16 @@ body {
   #sidebar:not(.expanded) .header-actions,
   #sidebar:not(.expanded) .sidebar-nav,
   #sidebar:not(.expanded) .sidebar-footer {
+    display: none !important;
+  }
+
+  /* On mobile screens, hide desktop sidebar collapse toggle (◀) */
+  .desktop-collapse-btn {
+    display: none !important;
+  }
+
+  /* On mobile screens, hide the floating ☰ Menu button */
+  .desktop-floating-menu-btn {
     display: none !important;
   }
 
@@ -364,6 +406,16 @@ body {
     overflow: hidden;
     border-right: 1px solid var(--glass-border);
     border-bottom: none;
+  }
+
+  #sidebar.collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    margin-left: 0 !important;
+    overflow: hidden !important;
+    border-right: none !important;
+    visibility: hidden;
   }
 
   #main-content {
@@ -566,6 +618,23 @@ select option {
   overflow-x: auto;
   border-bottom: 1px solid var(--glass-border);
   scrollbar-width: none;
+  transition: padding-left 0.2s ease;
+}
+
+@media (min-width: 769px) {
+  body.sidebar-collapsed .quick-links-bar {
+    padding-left: calc(var(--base-padding) + 110px) !important;
+  }
+  body.sidebar-collapsed .territory-topbar {
+    padding-left: 99px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .quick-links-bar {
+    padding: 12px 30px !important;
+    margin: -16px -16px 16px -16px !important;
+  }
 }
 .quick-links-bar::-webkit-scrollbar {
   display: none;

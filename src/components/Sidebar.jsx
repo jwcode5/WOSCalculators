@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import LanguageModal from './LanguageModal';
 
-const Sidebar = () => {
+const Sidebar = ({ isCollapsed, onToggleCollapse }) => {
   const handleForceUpdate = async () => {
     try {
       if ('serviceWorker' in navigator) {
@@ -33,10 +33,22 @@ const Sidebar = () => {
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
 
   return (
-    <aside id="sidebar" className={isExpanded ? 'expanded' : ''}>
+    <aside id="sidebar" className={`${isExpanded ? 'expanded' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
       <LanguageModal isOpen={isLanguageModalOpen} onClose={() => setIsLanguageModalOpen(false)} />
       <div className="sidebar-header">
-        <h1>{t('app.name', {}, 'WOS Calc')}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {onToggleCollapse && (
+            <button 
+              className="icon-btn desktop-collapse-btn" 
+              title="Hide Sidebar" 
+              onClick={onToggleCollapse} 
+              style={{ fontSize: '0.9rem', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+            >
+              ◀
+            </button>
+          )}
+          <h1>{t('app.name', {}, 'WOS Calc')}</h1>
+        </div>
         <button 
           id="mobileMenuBtn" 
           className="icon-btn mobile-only" 
@@ -79,9 +91,10 @@ const Sidebar = () => {
         <NavLink onClick={() => setIsExpanded(false)} to="/chiefGear" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.chiefGear', {}, 'Chief Gear')}</NavLink>
         <NavLink onClick={() => setIsExpanded(false)} to="/chiefCharm" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.chiefCharm', {}, 'Chief Charm')}</NavLink>
         <NavLink onClick={() => setIsExpanded(false)} to="/pets" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.pets', {}, 'Pets')}</NavLink>
-        <NavLink onClick={() => setIsExpanded(false)} to="/experts" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.experts', {}, 'Experts')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/experts" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.experts', {}, 'Experts')}</NavLink>
         <NavLink onClick={() => setIsExpanded(false)} to="/research" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.research', {}, 'Research')}</NavLink>
         <NavLink onClick={() => setIsExpanded(false)} to="/svs" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.svs', {}, 'SvS Calculator')}</NavLink>
+        <NavLink onClick={() => setIsExpanded(false)} to="/territory" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>{t('calculator.territory', {}, 'Territory Planner')}</NavLink>
       </nav>
       
       <div className="sidebar-footer" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', borderTop: '1px solid var(--glass-border)' }}>
@@ -98,39 +111,61 @@ const Sidebar = () => {
             ))}
           </select>
           <button 
+            id="renameAccountBtn" 
             className="icon-btn" 
-            style={{ padding: '8px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
+            title={t('account.renameTitle', {}, 'Rename account')}
             onClick={() => {
-              const name = prompt(t('account.namePrompt', {}, 'Enter new account name:'));
-              if (name) addAccount(name);
-            }}
-            title={t('account.addTitle', {}, 'Add Account')}
-          >
-            +
-          </button>
-        </div>
-        <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
-          <button 
-            style={{ flex: 1, padding: '8px', background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontSize: '0.85em' }}
-            onClick={() => {
-              const name = prompt(t('account.renamePrompt', {}, 'Rename account to:'), accounts.find(a => a.id === activeAccountId)?.name);
-              if (name) renameAccount(activeAccountId, name);
+              const current = accounts.find(a => a.id === activeAccountId);
+              const newName = prompt(t('account.renamePrompt', {}, 'Rename account:'), current ? current.name : '');
+              if (newName && newName.trim()) renameAccount(activeAccountId, newName.trim());
             }}
           >
-            {t('account.renameTitle', {}, 'Rename')}
+            ✏️
           </button>
           <button 
-            style={{ flex: 1, padding: '8px', background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)', borderRadius: '8px', color: '#ff6b6b', cursor: 'pointer', fontSize: '0.85em' }}
+            id="addAccountBtn" 
+            className="icon-btn" 
+            title={t('account.addTitle', {}, 'Add account')}
             onClick={() => {
-              if (confirm(t('account.deleteConfirm', { name: accounts.find(a => a.id === activeAccountId)?.name }, 'Delete this account?'))) deleteAccount(activeAccountId);
+              const name = prompt(t('account.namePrompt', {}, 'Account name:'), t('account.defaultName', { number: accounts.length + 1 }, `Account ${accounts.length + 1}`));
+              if (name && name.trim()) addAccount(name.trim());
             }}
           >
-            {t('account.deleteTitle', {}, 'Delete')}
+            ➕
+          </button>
+          <button 
+            id="deleteAccountBtn" 
+            className="icon-btn" 
+            title={t('account.deleteTitle', {}, 'Delete account')}
+            onClick={() => {
+              const current = accounts.find(a => a.id === activeAccountId);
+              if (confirm(t('account.deleteConfirm', { name: current ? current.name : '' }, `Delete "${current ? current.name : ''}"? This cannot be undone.`))) {
+                deleteAccount(activeAccountId);
+              }
+            }}
+          >
+            🗑️
           </button>
         </div>
-        <div className="global-controls" style={{ display: 'flex' }}>
-          <select id="globalValeriaSkill" className="global-select" style={{ flex: 1, padding: '10px' }}>
-            <option value="0">Valeria: {t('options.none0', {}, 'Well Prepared (0%)')}</option>
+
+        {/* VP Buff Selection */}
+        <div className="vp-buff-selection-control" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <label htmlFor="vpBuffSelect" style={{ fontSize: '0.85em', color: 'var(--text-secondary)' }}>VP Buff Level</label>
+          <select 
+            id="vpBuffSelect" 
+            className="state-select global-select" 
+            style={{ width: '100%', padding: '10px' }}
+            value={accounts.find(a => a.id === activeAccountId)?.vpBuff || '0'}
+            onChange={(e) => {
+              const newBuff = e.target.value;
+              const current = accounts.find(a => a.id === activeAccountId);
+              if (current) {
+                current.vpBuff = newBuff;
+                renameAccount(activeAccountId, current.name);
+              }
+            }}
+          >
+            <option value="0">None (0%)</option>
             <option value="1">Level 1 (2%)</option>
             <option value="2">Level 2 (4%)</option>
             <option value="3">Level 3 (6%)</option>

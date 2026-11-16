@@ -50,7 +50,9 @@ const TRANSLATIONS = {
       "generic": "Calculator",
       "pets": "Pets",
       "experts": "Experts",
-      "svs": "SvS Calculator"
+      "research": "Research",
+      "svs": "SvS Calculator",
+      "territory": "Territory Planner"
     },
     "sections": {
       "targetBuilding": "Target Building",
