@@ -180,9 +180,14 @@ export default function TerritoryPlanner() {
     }
   }, [plan.entities.length]);
 
-  // Find bear trap for distance calculations
-  const bearTrap = useMemo(() => {
-    return plan.entities.find(e => e.type === 'trap') || null;
+  // Find bear trap(s) and HQ for quick reference & distance calculations
+  const bearTraps = useMemo(() => {
+    return plan.entities.filter(e => e.type === 'trap');
+  }, [plan.entities]);
+  const bearTrap = bearTraps[0] || null;
+
+  const allianceHQs = useMemo(() => {
+    return plan.entities.filter(e => e.type === 'hq');
   }, [plan.entities]);
 
   // Fixed world structures (Castle, Turrets, Strongholds, Fortresses)
@@ -1936,9 +1941,26 @@ export default function TerritoryPlanner() {
                 
                 <optgroup label="Core Objectives" style={{ background: '#1e293b', color: '#f8fafc' }}>
                   <option value="600,600">👑 Sunfire Castle (600, 600)</option>
-                  <option value={`${plan.originX + Math.round(plan.gridWidth / 2)},${plan.originY + Math.round(plan.gridHeight / 2)}`}>
-                    🏠 Hive Origin ({plan.originX}, {plan.originY})
-                  </option>
+                  
+                  {/* Auto-populated HQ Quick Jumps */}
+                  {allianceHQs.map(hq => (
+                    <option key={hq.id} value={`${hq.x + 1.5},${hq.y + 1.5}`}>
+                      🏰 {hq.label || 'Alliance HQ'} ({hq.x}, {hq.y})
+                    </option>
+                  ))}
+
+                  {/* Auto-populated Bear Trap Quick Jumps */}
+                  {bearTraps.map(trap => (
+                    <option key={trap.id} value={`${trap.x + 1.5},${trap.y + 1.5}`}>
+                      🐻 {trap.label || 'Bear Trap'} ({trap.x}, {trap.y})
+                    </option>
+                  ))}
+
+                  {allianceHQs.length === 0 && bearTraps.length === 0 && (
+                    <option value={`${plan.originX},${plan.originY}`}>
+                      🏠 Hive Origin ({plan.originX}, {plan.originY})
+                    </option>
+                  )}
                 </optgroup>
 
                 <optgroup label="Strongholds (Level 4)" style={{ background: '#1e293b', color: '#c084fc' }}>
