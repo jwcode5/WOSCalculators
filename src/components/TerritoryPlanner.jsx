@@ -379,31 +379,7 @@ export default function TerritoryPlanner() {
       }
     }
 
-    // 3. Draw Territory Overlays (Multi-color Banners: 7x7, HQ: 15x15)
-    plan.entities.forEach(ent => {
-      const allianceColor = ALLIANCE_COLORS.find(c => c.id === (ent.color || 'gold')) || ALLIANCE_COLORS[0];
-      if (ent.type === 'hq') {
-        const terrX = ent.x - 6;
-        const terrY = ent.y - 6;
-        const p = tileToScreen(terrX, terrY + 15);
-        ctx.fillStyle = allianceColor.terrBg;
-        ctx.strokeStyle = allianceColor.terrBorder;
-        ctx.lineWidth = 2;
-        ctx.fillRect(p.x, p.y, 15 * zoom, 15 * zoom);
-        ctx.strokeRect(p.x, p.y, 15 * zoom, 15 * zoom);
-      } else if (ent.type === 'banner') {
-        const terrX = ent.x - 3;
-        const terrY = ent.y - 3;
-        const p = tileToScreen(terrX, terrY + 7);
-        ctx.fillStyle = allianceColor.terrBg;
-        ctx.strokeStyle = allianceColor.terrBorder;
-        ctx.lineWidth = 1.5;
-        ctx.fillRect(p.x, p.y, 7 * zoom, 7 * zoom);
-        ctx.strokeRect(p.x, p.y, 7 * zoom, 7 * zoom);
-      }
-    });
-
-    // 4. Draw Bear Trap Range Rings (Traps are 3x3, center is at x + 1.5, y + 1.5)
+    // 3. Draw Bear Trap Range Rings (Traps are 3x3, center is at x + 1.5, y + 1.5)
     const allTraps = plan.entities.filter(e => e.type === 'trap');
     allTraps.forEach(trap => {
       const centerScreen = tileToScreen(trap.x + 1.5, trap.y + 1.5);
@@ -421,7 +397,7 @@ export default function TerritoryPlanner() {
       });
     });
 
-    // 5. Draw Fixed World Objectives (Castle, Turrets, Strongholds, Fortresses)
+    // 4. Draw Fixed World Objectives (Castle, Turrets, Strongholds, Fortresses)
     if (showObjectives) {
       fixedWorldObjects.forEach(obj => {
         const p = tileToScreen(obj.x, obj.y + obj.height);
@@ -723,6 +699,31 @@ export default function TerritoryPlanner() {
         ctx.fillRect(p.x + 2, p.y + h - 14, tw + 4, 12);
         ctx.fillStyle = '#f8fafc';
         ctx.fillText(coordText, p.x + 4, p.y + h - 4);
+      }
+    });
+
+    // 6. Draw Territory Overlays OVER entities (Translucent Multi-color Banners: 7x7, HQ: 15x15)
+    // This allows territory coverage and borders to show through all player cities, nodes, and statues!
+    plan.entities.forEach(ent => {
+      const allianceColor = ALLIANCE_COLORS.find(c => c.id === (ent.color || 'gold')) || ALLIANCE_COLORS[0];
+      if (ent.type === 'hq') {
+        const terrX = ent.x - 6;
+        const terrY = ent.y - 6;
+        const p = tileToScreen(terrX, terrY + 15);
+        ctx.fillStyle = allianceColor.terrBg;
+        ctx.strokeStyle = allianceColor.terrBorder;
+        ctx.lineWidth = 2.5;
+        ctx.fillRect(p.x, p.y, 15 * zoom, 15 * zoom);
+        ctx.strokeRect(p.x, p.y, 15 * zoom, 15 * zoom);
+      } else if (ent.type === 'banner') {
+        const terrX = ent.x - 3;
+        const terrY = ent.y - 3;
+        const p = tileToScreen(terrX, terrY + 7);
+        ctx.fillStyle = allianceColor.terrBg;
+        ctx.strokeStyle = allianceColor.terrBorder;
+        ctx.lineWidth = 2;
+        ctx.fillRect(p.x, p.y, 7 * zoom, 7 * zoom);
+        ctx.strokeRect(p.x, p.y, 7 * zoom, 7 * zoom);
       }
     });
 
